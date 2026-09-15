@@ -26,7 +26,7 @@ website:
     dismissable: false
     content: |
       The first lecture begins on **25th September @12pm**
-    type: danger
+    type: info
     position: below-navbar
 
   navbar:
