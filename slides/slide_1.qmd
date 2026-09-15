@@ -1,0 +1,544 @@
+---
+title: Welcome to ST303 - Linear Models
+subtitle: Module Overview
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(4321)
+
+# Options ----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+heights <- readRDS(here::here("data/heights.RDS"))
+bacteria <- readRDS(here::here("data/bacteria.RDS"))
+```
+
+<br>
+<br>
+<br> <!--- EXTREMELY HACKY -->
+<br>
+<br>
+
+[**How can we use data to understand and predict numerical outcomes?**]{.center}
+
+## Let's start with a question
+
+[**Can we predict the height of someone's daughter?**]{.center}
+
+::: {.fragment}
+::: {.callout-note icon="false"}
+## Suppose we know the height of someone's mother.
+:::
+
+::: {.callout-note icon="false"}
+## Can we use that information to predict her height?
+:::
+:::
+
+<br>
+
+::: {.fragment}
+::: {.callout-tip icon="false"}
+## What would you expect?
+:::
+:::
+
+::: {.fragment}
+::: {.callout-tip icon="false"}
+## Would you expect a taller mother to have a taller daughter?
+:::
+:::
+
+::: {.fragment}
+::: {.callout-tip icon="false"}
+## Would you expect the relationship to be perfect?
+:::
+:::
+
+::: {.fragment}
+::: {.callout-tip icon="false"}
+## How accurate do you think our predictions could be?
+:::
+:::
+
+## Let's start with a question
+
+[**Can we predict the height of someone's daughter?**]{.center}
+
+::: {.callout-note icon="false"}
+## Suppose we know the height of someone's mother.
+:::
+
+::: {.callout-note icon="false"}
+## Can we use that information to predict her height?
+:::
+
+<br>
+
+::: {.callout-caution icon="false" title="Let's do a quick exercise"}
+Let's say the height of a mother is 64.37 inches.
+
+[**What would you predict the height of the daughter to be** ]{.center}
+:::
+
+---
+
+<br>
+
+```{r}
+#| label: fig-heights-1
+#| fig-cap: "Height of mother versus height of daughter"
+
+heights |>
+  ggplot(aes(x = mother, y = daughter)) +
+  geom_jitter() +
+  scale_x_continuous(labels = scales::label_number(suffix = "in")) +
+  scale_y_continuous(labels = scales::label_number(suffix = "in")) +
+  labs(x = "Mother height", y = "Daughter height") +
+  theme_st303()
+```
+
+::: {.notes}
+- Is there a relationship?
+- What direction is it?
+- How strong does it appear?
+- Does it look linear?
+- Are there any unusual observations?
+:::
+
+## Predict the height of someone's daughter
+
+```{r}
+#| label: heights
+
+heights |>
+  ggplot(aes(x = mother, y = daughter)) +
+  geom_jitter() +
+  scale_x_continuous(labels = scales::label_number(suffix = "in")) +
+  scale_y_continuous(labels = scales::label_number(suffix = "in")) +
+  labs(x = "Mother height", y = "Daughter height") +
+  theme_st303()
+```
+
+We have two variables
+
+$$
+X = \text{Mother's height} \\[8pt]
+Y = \text{Daughter's height}
+$$
+
+::: {.callout-note icon="false"}
+## Could we summarise this data using a single line?
+:::
+
+---
+
+<br>
+
+```{r}
+#| label: fig-best-line-example
+#| fig-cap: "Height of mother versus height of daughter (with prediction lines)"
+
+# ACTUAL PREDICTION
+heights |>
+  ggplot(aes(x = mother, y = daughter)) +
+  geom_jitter() +
+  geom_line(
+    aes(x = mother, y = mother + 5),
+    colour = ggokabeito::palette_okabe_ito(2)
+  ) +
+  geom_line(
+    aes(x = mother, y = mother - 1.5),
+    colour = ggokabeito::palette_okabe_ito(6)
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    colour = ggokabeito::palette_okabe_ito(3)
+  ) +
+  scale_x_continuous(labels = scales::label_number(suffix = "in")) +
+  scale_y_continuous(labels = scales::label_number(suffix = "in")) +
+  labs(x = "Mother height", y = "Daughter height") +
+  theme_st303()
+```
+
+## But what is the best line?
+
+<br>
+
+```{r}
+#| label: residual-example
+
+# ACTUAL PREDICTION
+heights |>
+  mutate(
+    to_colour = case_when(
+      mother == 60 & daughter == 61 ~ TRUE,
+      TRUE ~ FALSE
+    )
+  ) |>
+  ggplot(aes(x = mother, y = daughter, colour = to_colour)) +
+  geom_jitter(aes(size = to_colour)) +
+  geom_line(
+    aes(x = mother, y = mother + 5),
+    colour = ggokabeito::palette_okabe_ito(2)
+  ) +
+  geom_line(
+    aes(x = mother, y = mother - 1.5),
+    colour = ggokabeito::palette_okabe_ito(6)
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    colour = ggokabeito::palette_okabe_ito(3)
+  ) +
+  scale_x_continuous(labels = scales::label_number(suffix = "in")) +
+  scale_y_continuous(labels = scales::label_number(suffix = "in")) +
+  scale_colour_manual(
+    values = c(
+      "TRUE" = ggokabeito::palette_okabe_ito(7),
+      "FALSE" = ggokabeito::palette_okabe_ito(8, alpha = 0.5)
+    )
+  ) +
+  scale_size_manual(
+    values = c(
+      "TRUE" = rel(3.5),
+      "FALSE" = rel(0.8)
+    )
+  ) +
+  labs(x = "Mother height", y = "Daughter height") +
+  guides(colour = "none", size = "none") +
+  theme_st303()
+```
+
+## But what is the best line?
+
+```{r}
+tribble(
+  ~""             , ~Mother , ~Daughter ,
+  "Original data" ,      60 , 61        ,
+  "Blue line"     ,      60 , 65        ,
+  "Orange line"   ,      60 , 58.5      ,
+  "Green line"    ,      60 , 60.74
+) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE) |>
+  style_tt(j = c(2, 3), align = "c")
+```
+
+::: {.fragment}
+::: {.callout-note icon="false"}
+## Blue over predicted by 5 inches
+:::
+
+::: {.callout-warning icon="false"}
+## Orange under predicted by 1.5 inches
+:::
+
+::: {.callout-tip icon="false"}
+## Green under predicted by 0.26 inches
+:::
+:::
+
+::: {.fragment}
+::: {.callout-important icon="false"}
+## We call these differences "residuals"
+
+$$
+\epsilon_i = y_i - \hat{y}_i
+$$
+:::
+:::
+
+## But what is the best line?
+
+### Residuals
+
+Every possible line gives us a different set of residuals.
+
+**Residuals hold the key to determining which line is the best.**
+
+We want a line that **minimises the sum of squared residuals**.
+
+$$
+\text{minimise} \sum^n_{i = 1}(y_i - \hat{y}_i)^2
+$$
+
+::: {.callout-note icon="false"}
+## This is the idea behind ordinary least squares.
+:::
+
+---
+
+```{r}
+#| label: fig-interactive-regression
+#| fig-cap: "Interactive demonstration of how different slopes affect the candidate line and residuals. Watch how the dashed lines (residuals) change as the line changes."
+
+# Some candiate slope lines
+slopes <- seq(0, 1, length.out = 100)
+
+# Predict from all these slopes
+anim_data <- purrr::map_dfr(slopes, function(s) {
+  b0 <- mean(heights$daughter - s * heights$mother)
+
+  heights |>
+    mutate(
+      slope = s,
+      intercept = b0,
+      predicted = b0 + s * mother,
+      residual = daughter - predicted
+    )
+})
+
+# Calculate sum of squared residuals
+anim_data <- anim_data |>
+  group_by(slope, intercept) |>
+  mutate(
+    ssr = sum(residual^2)
+  ) |>
+  ungroup()
+
+# Plot the different lines -----------------------------------------------------
+anim_data |>
+  ggplot(aes(mother, daughter)) +
+  geom_jitter(
+    data = heights,
+    width = 0,
+    height = 0.15
+  ) +
+  geom_abline(
+    aes(
+      slope = slope,
+      intercept = intercept
+    ),
+    linewidth = 1,
+    colour = ggokabeito::palette_okabe_ito(3)
+  ) +
+  geom_segment(
+    aes(
+      xend = mother,
+      y = predicted,
+      yend = daughter
+    ),
+    colour = "grey70",
+    linetype = "dashed"
+  ) +
+  labs(
+    x = "Mother height",
+    y = "Daughter height"
+  ) +
+  theme_st303() +
+  gganimate::transition_states(
+    slope,
+    transition_length = 2,
+    state_length = 1
+  )
+```
+
+## The regression equation
+
+$$
+\hat{y_i} = \beta_0 + \beta_1x_i + \epsilon_i
+$$
+
+
+::: {.fragment}
+- $\hat{Y}$ is our **predicted value**
+- $X$ is our **observed value**
+- $\beta_0$ is our **intercept**
+- $\beta_1$ is our **slope**
+- $\epsilon$ is our **error term** (we'll come back to this)
+:::
+
+## The regression equation
+
+### The slope
+
+Let's say we have the following regression equation
+
+$$
+\hat{y} = 30 + \textbf{0.5}x
+$$
+
+:::: {.fragment}
+::: {.callout-note icon="false"}
+## What does 0.5 mean?
+:::
+::::
+
+:::: {.fragment}
+::: {.callout-tip icon="false"}
+## For every 1-unit increase in X, predicted values of Y increases by 0.5 units.
+:::
+::::
+
+<br>
+
+:::: {.fragment}
+::: {.callout-caution icon="false"}
+## A higher slope value means that the predicted value of Y increases faster
+:::
+::::
+
+---
+
+<br>
+
+```{r}
+#| label: slope-example
+#|
+tibble(
+  x = seq(1:100),
+  y_1 = 30 + (0.5 * x),
+  y_2 = 30 + (1 * x),
+  y_3 = 30 + (3 * x)
+) |>
+  tidyr::pivot_longer(
+    cols = !x,
+    names_to = "slope",
+    values_to = "y"
+  ) |>
+  mutate(
+    slope = case_when(
+      slope == "y_1" ~ "Slope = 0.5",
+      slope == "y_2" ~ "Slope = 1",
+      slope == "y_3" ~ "Slope = 2",
+    )
+  ) |>
+  ggplot(aes(x = x, y = y, colour = slope)) +
+  geom_line(linewidth = rel(1)) +
+  scale_y_continuous(breaks = seq(30, 330, by = 70)) +
+  labs(x = NULL, y = NULL, colour = NULL) +
+  theme_st303()
+```
+
+## The regression equation {style="font-size: 90%;"}
+
+### The intercept
+
+Let's say we have the following regression equation
+
+$$
+\hat{y} = \textbf{30} + 0.5x
+$$
+
+::: {.callout-note icon="false"}
+## But what about the value of 30
+:::
+
+::: {.fragment}
+::: {.callout-tip icon="false"}
+## This is the predicted of Y when X is equal to 0
+:::
+:::
+
+<br>
+
+:::: {.fragment}
+::: {.callout-important icon="false" title="Helpful way to understand"}
+A helpful way that I learned to understand this was to think about when you
+start a job.
+
+Everyone will have **0 years of experience** when the first start and
+will earn the **same salary** (this is the **intercept**)
+
+As their **years of experience progress** their salary will **increase by a set
+amount** (this is the **slope**)
+:::
+::::
+
+---
+
+<br>
+
+```{r}
+#| label: intercept-example
+#|
+tibble(
+  x = seq(1:100),
+  y_1 = 30 + (0.5 * x),
+  y_2 = 30 + (1 * x),
+  y_3 = 30 + (3 * x)
+) |>
+  tidyr::pivot_longer(
+    cols = !x,
+    names_to = "slope",
+    values_to = "y"
+  ) |>
+  mutate(
+    slope = case_when(
+      slope == "y_1" ~ "Slope = 0.5",
+      slope == "y_2" ~ "Slope = 1",
+      slope == "y_3" ~ "Slope = 2",
+    )
+  ) |>
+  ggplot(aes(x = x, y = y, colour = slope)) +
+  geom_line(linewidth = rel(1)) +
+  geom_point(
+    data = tibble(x = 0, y = 30),
+    aes(x = x, y = y),
+    colour = "black",
+    size = rel(3)
+  ) +
+  scale_y_continuous(breaks = seq(30, 330, by = 70)) +
+  labs(x = NULL, y = NULL, colour = NULL) +
+  theme_st303()
+```
+
+## Back to the mother and daughter example
+
+### How do we find $\beta_0$ and $\beta_1$
+
+```{.r filename="linear-model.R"}
+fit <- lm(daughter ~ mother, data = heights)
+
+coef(fit)
+```
+
+```{r}
+#| label: linear-model-example
+#|
+fit <- lm(daughter ~ mother, data = heights)
+
+coef(fit)
+```
+
+:::: {.fragment}
+::: {.callout-tip icon="false" title="Model results"}
+
+- $\beta_0$ = 17.61
+- $\beta_1$ = 0.74
+
+:::
+::::
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+[**But where do these values come from?**]{.center}

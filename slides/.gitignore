@@ -1,0 +1,9 @@
+# Ignore all this stuff
+_drafts/
+output/
+data/
+assets/
+
+# Default Quarto stuff
+/.quarto/
+**/*.quarto_ipynb

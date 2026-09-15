@@ -1,0 +1,601 @@
+---
+title: Ordinary Least Squares
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(4321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+heights <- readRDS(here::here("data/heights.RDS"))
+fuel <- readRDS(here::here("data/fuel.RDS"))
+```
+
+## Where did we leave off
+
+Earlier today we asked:
+
+::: {.callout-note}
+## **What is the "best" line?**
+:::
+
+And we decided that the best line is the one that
+
+::: {.callout-tip}
+## Minimises the sum of squared residuals
+:::
+
+$$
+\sum_{i=1}^{n}\epsilon_i^2
+$$
+
+<br>
+
+::: {.fragment}
+[**Now, we'll be asking how do we actually find that line?**]{.center}
+:::
+
+## The Goal
+
+Suppose our regression line is
+
+$$
+\hat{y_i} = \beta_0 + \beta_1x_i + \epsilon
+$$
+
+Find the values of $\beta_0$ and $\beta_1$ that give the smallest possible residual
+
+
+:::: {.columns}
+::: {.column}
+$$
+\begin{align*}
+S(\beta_0, \beta_1) &= \sum^n_{i = 1} \epsilon_i^2 \\[4pt]
+&= \sum^n_{i = 1} (y_i - \hat{y_i})^2 \\[4pt]
+&= \boxed{\sum^n_{i = 1} (y_i - \beta_0 - \beta_1x_i)^2}
+\end{align*}
+$$
+
+:::
+::: {.column}
+::: {.fragment}
+<br>
+<br>
+
+**Becomes an optimisation problem**
+:::
+:::
+::::
+
+## The Goal
+
+$$
+\boxed{S(\beta_0, \beta_1) = \sum^n_{i = 1} (y_i - \beta_0 - \beta_1x_i)^2}
+$$
+
+
+There are **infinitely** many possible values of $\beta_0$ and $\beta_1$.
+
+Each **combination** gives us a **different line**.
+
+Each line gives us **different residuals**.
+
+Each set of residuals gives us a **different value** of $\beta_0$ and $\beta_1$
+
+<br>
+
+::: {.callout-important icon="false"}
+## **We want the values of $\beta_0$ and $\beta_1$ that make $S$ as small as possible.**
+:::
+
+---
+
+<br>
+
+```{r}
+#| label: fig-interactive-regression
+#| fig-cap: "Interactive demonstration of how different slopes affect the candidate line and residuals. Watch how the dashed lines (residuals) change as the line changes."
+
+# Some candiate slope lines
+slopes <- seq(0, 1, length.out = 100)
+
+# Predict from all these slopes
+anim_data <- purrr::map_dfr(slopes, function(s) {
+  b0 <- mean(heights$daughter - s * heights$mother)
+
+  heights |>
+    mutate(
+      slope = s,
+      intercept = b0,
+      predicted = b0 + s * mother,
+      residual = daughter - predicted
+    )
+})
+
+# Calculate sum of squared residuals
+anim_data <- anim_data |>
+  group_by(slope, intercept) |>
+  mutate(
+    ssr = sum(residual^2)
+  ) |>
+  ungroup()
+
+# Plot the different lines -----------------------------------------------------
+anim_data |>
+  ggplot(aes(mother, daughter)) +
+  geom_jitter(
+    data = heights,
+    width = 0,
+    height = 0.15
+  ) +
+  geom_abline(
+    aes(slope = slope, intercept = intercept),
+    linewidth = 1.2,
+    colour = ggokabeito::palette_okabe_ito(3)
+  ) +
+  geom_segment(
+    aes(
+      xend = mother,
+      y = predicted,
+      yend = daughter,
+      colour = abs(residual)
+    ),
+    linetype = "dashed",
+    alpha = 0.7
+  ) +
+  scale_color_gradient(
+    low = "grey80",
+    high = "steelblue",
+    guide = "none"
+  ) +
+  labs(
+    x = "Mother height",
+    y = "Daughter height"
+  ) +
+  theme_st303() +
+  gganimate::transition_states(
+    slope,
+    transition_length = 3,
+    state_length = 0.5
+  )
+```
+
+## Finding $\beta_0$ and $\beta_1$
+
+We want to find the line that gives the **smallest possible sum of squared errors**.
+
+There are two things we can change:
+$$
+\boxed{\beta_0 = \text{intercept}} \qquad \boxed{\beta_1 = \text{slope}}
+$$
+
+
+::: {.callout-important icon="false"}
+## What values of $\beta_0$ and $\beta_1$ give us the minimum error?
+:::
+
+::: {.fragment}
+Using calculus, we can find the point where changing **either** the
+intercept or slope would no longer reduce the error:
+
+$$
+\frac{\partial S}{\partial \beta_0}=0
+\qquad
+\frac{\partial S}{\partial \beta_1}=0
+$$
+:::
+
+## Finding $\beta_0$ and $\beta_1$ {style="font-size: 75%;"}
+
+### How to derive $\beta_0$
+
+$$
+\boxed{S(\beta_0, \beta_1) = \sum^n_{i = 1} (y_i - \beta_0 - \beta_1x_i)^2}
+$$
+
+::: {.fragment}
+$$
+\frac{\partial S}{\partial \beta_0} = -2 \sum^n_{i = 1} (y_i - \beta_0 - \beta_1x_i) \\[8pt]
+\sum^n_{i = 1} (y_i - \hat{\beta_0} - \hat{\beta_1}x_i) = 0 \\[8pt]
+\sum y_i - n\hat{\beta_0} - \hat{\beta_1}\sum x_i = 0 \\[8pt]
+\bar{y} - \hat{\beta_0} - \hat{\beta_1}\bar{x} = 0 \\[8pt]
+\boxed{\hat{\beta_0} = \bar{y} - \hat{\beta_1}\bar{x}}
+$$
+
+:::
+::: {.fragment}
+::: {.callout-important}
+## The OLS regression line always passes through $(\bar{x},\bar{y})$.
+:::
+:::
+
+## Finding $\beta_0$ and $\beta_1$ {style="font-size: 75%;"}
+
+### How to derive $\beta_1$
+
+$$
+\boxed{S(\beta_0, \beta_1) = \sum^n_{i = 1} (y_i - \beta_0 - \beta_1x_i)^2}
+$$
+
+::: {.fragment}
+$$
+\frac{\partial S}{\partial \beta_0} = -2\sum^n_{i = 1} x_i (y_i - \beta_0 - \beta_1x_i) \\[4pt]
+\sum^n_{i = 1} x_i (y_i - \hat{\beta_0} - \hat{\beta_1}x_i) = 0 \\[4pt]
+$$
+
+:::
+
+\vspace{-1cm}
+
+::: {.fragment}
+$$
+\sum^n_{i = 1} x_i (y_i - {\color{blue}\bar{y} - \hat{\beta_1}\bar{x}} - \hat{\beta_1}x_i) = 0 \\[4pt]
+\sum^n_{i=1}(x_i - \bar{x})(y_i - \bar{y}) = \hat{\beta_1}\sum^n_{i=1}(x_i - \bar{x})^2 \\[4pt]
+\boxed{\hat{\beta_1} = \frac{\sum^n_{i=1}(x_i - \bar{x})(y_i - \bar{y})}{\sum^n_{i=1}(x_i - \bar{x})^2}}
+$$
+
+:::
+
+
+## Some notation
+
+To make this things a little easier to work with, we can define:
+
+$$
+S_{xx} = \sum_{i=1}^{n}(x_i-\bar x)^2 \qquad S_{xy} = \sum_{i=1}^{n}(x_i-\bar x)(y_i-\bar y).
+$$
+
+
+::: {.fragment}
+Therefore, our derived equations become
+
+$$
+\boxed{\hat{\beta_0} = \bar{y} -\hat{\beta_1} \bar{x}} \qquad \boxed{\hat{\beta_1} = \frac{S_{xy}}{S_{xx}}}
+$$
+
+:::
+
+
+::: {.fragment}
+::: {.callout-tip}
+## At the end of the day, we just need to calculate some means!
+:::
+:::
+
+## Let's look at an example
+
+Eight office complexes were observed over one week.
+We recorded **average temperature** and **fuel consumption**.
+
+```{r}
+#| label: tbl-fuel
+#| tbl-cap: "Overview of our data"
+
+fuel |>
+  rename(Temperature = temp, Fuel = fuel) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE) |>
+  style_tt(j = c(1, 2), align = "c")
+```
+
+---
+
+<br>
+
+```{r}
+#| label: fig-fuel-1
+#| fig-cap: "Scatter plot showing the relationship between temperature and fuel consumption"
+fuel |>
+  ggplot(aes(temp, fuel)) +
+  geom_point(size = rel(3)) +
+  labs(
+    x = "Average temperature (°F)",
+    y = "Fuel consumption"
+  ) +
+  theme_st303()
+```
+
+::: {.fragment}
+::: {.callout-caution icon="false"}
+## What do you expect the slope for this data to be?
+:::
+:::
+
+---
+
+```{.r filename="OLS.R"}
+# Deriving beta 0 and beta 1 using a small dataset -----------------------------
+
+# Create a small fuel dataset
+fuel <- dplyr::tibble(
+  temp = c(28, 28, 32.5, 39, 45.9, 57.8, 58.1, 62.5),
+  fuel = c(12.4, 11.7, 12.4, 10.8, 9.4, 9.5, 8, 7.5)
+)
+
+# Get our means ----------------------------------------------------------------
+x_bar <- mean(fuel$temp)
+y_bar <- mean(fuel$fuel)
+
+# Get S_xx ---------------------------------------------------------------------
+s_xx <- (fuel$temp - x_bar)^2 |> sum()
+
+# Get S_xy ---------------------------------------------------------------------
+s_xy <- ((fuel$temp - x_bar) * (fuel$fuel - y_bar)) |> sum()
+
+# Now we can find beta 1 (S_xy / S_xx) -----------------------------------------
+beta_1 <- s_xy / s_xx
+
+# And then we can find beta 0 (y_bar - beta_1 * x_bar) --------------------------
+beta_0 <- y_bar - (beta_1 * x_bar)
+
+beta_0 # 15.838
+beta_1 # -0.128
+
+# Thus our regression becomes: y = 15.838 - 0.128x
+```
+
+## {style="font-size: 60%;"}
+
+**Calculate $\bar{x}$ and $\bar{y}$**
+
+$$
+\bar{x} = 43.975 \qquad \bar{y} = 10.2125
+$$
+
+**Calculate $S_{xx}$**
+
+$$
+S_{xx} = \sum^n_{i = 1} (x_i - \bar{x}) ^2 = 1404.355
+$$
+
+**Calculate $S_{xy}$**
+
+$$
+S_{xy} = \sum^n_{i = 1}(x_i - \bar{x})(y_i - \bar{y}) = -179.6475
+$$
+
+**Calculate $\beta_1$**
+
+$$
+\hat{\beta_1} = \frac{S_{xy}}{S_{xx}} = \frac{-179.6475}{1404.355} = -0.128
+$$
+
+**Calculate $\beta_0$**
+
+$$
+\beta_0 = \bar{y} - \hat{\beta_1}\bar{x} = 10.2125 + 0.128(43.975) = 15.838
+$$
+
+$$
+\boxed{\hat{y} = 15.838 - 0.128x}
+$$
+
+---
+
+<br>
+
+```{r}
+#| label: fig-fuel-2
+#| fig-cap: "Scatter plot showing the relationship between temperature and fuel consumption"
+
+label <- "y = 15.838 - 0.128x"
+
+fuel |>
+  ggplot(aes(temp, fuel)) +
+  geom_point(size = rel(3)) +
+  geom_smooth(method = "lm", colour = "#56B4E9", se = FALSE) +
+  ggtext::geom_richtext(
+    data = tibble(x = 52, y = 12),
+    aes(x = x, y = y, label = label),
+    size = rel(5),
+    fontface = "bold"
+  ) +
+  labs(
+    x = "Average temperature (°F)",
+    y = "Fuel consumption"
+  ) +
+  theme_st303()
+```
+
+---
+
+<br>
+
+```{r}
+#| label: fig-fuel-3
+#| fig-cap: "Scatter plot showing the relationship between temperature and fuel consumption"
+
+label <- "10.078 ≈ 15.838 - 0.128(45)"
+
+fuel |>
+  ggplot(aes(temp, fuel)) +
+  geom_point(size = rel(3)) +
+  geom_smooth(method = "lm", colour = "#56B4E9", se = FALSE) +
+  geom_point(
+    data = tibble(x = 45, y = 10.078),
+    aes(x = x, y = y),
+    colour = "red",
+    size = rel(6)
+  ) +
+  ggtext::geom_richtext(
+    data = tibble(x = 52, y = 12),
+    aes(x = x, y = y, label = label),
+    size = rel(5),
+    fontface = "bold"
+  ) +
+  labs(
+    x = "Average temperature (°F)",
+    y = "Fuel consumption"
+  ) +
+  theme_st303()
+```
+
+## Some properties of OLS fits
+
+- The residuals sum to zero $\sum^n_{i=1} \epsilon^2_i = 0$
+- The OLS line passed through $(\bar{x}, \bar{y})$
+- The observed values and predicted values have the same mean $(\bar{y} = \bar{y_i})$
+- Residuals are uncorrelated with $x$ $(\sum x_i \epsilon_i = 0)$
+
+## Practice question
+
+$$
+\boxed{\hat{\beta_0} = \bar{y} -\hat{\beta_1} \bar{x}} \qquad \boxed{\hat{\beta_1} = \frac{S_{xy}}{S_{xx}}}
+$$
+
+
+::: {.callout-note icon="false"}
+## Find the OLS regression line from the following results
+
+$$
+\bar{x} = 10 \qquad \bar{y} = 25 \qquad S_{xx} = 50 \qquad S_{xy} = 20
+$$
+
+:::
+
+
+::: {.fragment}
+$$
+\beta_1 = \frac{20}{50} = 0.4 \qquad \beta_0 = 25 - 0.4(10) = 21
+$$
+
+$$
+\boxed{\hat{y} = 21 + 0.4x}
+$$
+
+
+:::
+
+
+## Some special cases
+
+Consider the following two models
+
+**Intercept only simple linear regression model**
+
+$$
+y_i = \beta_0 + \epsilon_i
+$$
+**No-intercept simple linear regression model**
+
+$$
+y_i = \beta_1x + \epsilon_i
+$$
+
+
+::: {.callout-tip icon="false"}
+## Find the ordinary least squares estimate for $\beta_0$ and $\beta_1$, respectively
+:::
+
+
+::: {.fragment}
+$$
+\boxed{S(\beta_0, \beta_1) = \sum^n_{i = 1} (y_i - \hat{y_i})^2}
+$$
+
+:::
+
+## Intercept only simple linear regression model
+
+$$
+S(\beta_0) = \sum^n_{i = 1} (y_i - \beta_0)^2 \\[8pt]
+\frac{dS}{d\beta_0} = -2\sum^n_{i = 1} (y_i - \beta_0) \\[8pt]
+\sum^n_{i = 1} (y_i - \hat{\beta_0}) = 0 \\[8pt]
+\sum y_i - \sum \hat{\beta_0} = 0 \\[8pt]
+\sum y_i - n\hat{\beta_0} = 0 \\[8pt]
+\hat{\beta_0} = \frac{\sum y_i}{n} = \bar{y}
+$$
+
+## No-intercept simple linear regression model
+
+$$
+S(\beta_0) = \sum^n_{i = 1} (y_i - \beta_1x_i)^2 \\[8pt]
+\frac{dS}{d\beta_1} = -2\sum^n_{i = 1} x_i(y_i - \beta_1x_i) \\[8pt]
+\sum^n_{i = 1} x_i(y_i - \hat{\beta_1}x_i) = 0 \\[8pt]
+\sum x_i y_i - \hat{\beta_1} \sum x_i^2 = 0 \\[8pt]
+\hat{\beta_1} = \frac{\sum x_i y_i}{\sum x_i^2}
+$$
+
+---
+
+<br>
+
+```{r}
+#| label: fig-special-cases
+#| fig-cap: "Illustration of an intercept only and no-intercept model"
+#|
+fuel |>
+  ggplot(aes(x = temp, y = fuel)) +
+  geom_point(size = 0, alpha = 0) +
+  geom_abline(
+    intercept = 10,
+    slope = 0,
+    linetype = "dashed",
+    colour = ggokabeito::palette_okabe_ito(2, alpha = 0.7)
+  ) +
+  geom_abline(
+    intercept = 0,
+    slope = 0.2022612,
+    linetype = "dashed",
+    colour = ggokabeito::palette_okabe_ito(3, alpha = 0.7)
+  ) +
+  annotate(
+    geom = "text",
+    x = 10,
+    y = 10.5,
+    label = "Intercept only model",
+    size = rel(5)
+  ) +
+  annotate(
+    geom = "text",
+    x = 32,
+    y = 5,
+    label = "No-intercept model",
+    angle = 35,
+    size = rel(5)
+  ) +
+  ylim(0, 12) +
+  xlim(0, 60) +
+  labs(x = NULL, y = NULL) +
+  theme_st303()
+```
+
+## Wrapping up
+
+OLS finds the **best-fitting line**.
+
+$$
+\sum_{i=1}^n (y_i-\hat y_i)^2
+$$
+
+We can calculate both $\beta_0$ and $\beta_1$ such that
+
+$$
+\hat{\beta_0} =\bar{y} - \hat{\beta_1}\bar{x} \qquad \hat{\beta}_1= \frac{S_{xy}}{S_{xx}}
+$$
+
+- **When there is only an intercept:** $\hat{\beta_0} = \bar{y}$
+- **When there is no intercept:** $\hat{\beta_1} = \frac{\sum x_i y_i}{\sum x_i^2}$

@@ -1,0 +1,213 @@
+---
+title: Welcome to ST303 - Linear Models
+subtitle: Module Overview
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(4321)
+
+# Options ----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+heights <- readRDS(here::here("data/heights.RDS"))
+bacteria <- readRDS(here::here("data/bacteria.RDS"))
+```
+
+## ST303 - Linear Models {style="font-size: 85%;"}
+
+### Module information
+
+{{< fa university >}} **Office**: Logic House Room 113 (**eventually 223!**)
+
+{{< fa envelope >}} **Email**: <a href='mailto:cormac.monaghan@mumail.ie'>cormac.monaghan@mumail.ie</a>
+
+{{< fa person-chalkboard >}} **Lectures**
+
+- Friday @12pm in Arts Building
+- Friday @4pm in Physics Hall
+
+{{< fa chalkboard-user >}} **Tutorials**
+
+- Tutorials will run weekly starting in **Week 3 (5th October)**
+- Make sure you **sign up** to one the times on Moodle
+
+## ST303 - Linear Models
+
+### Module information
+
+{{< fa scroll >}} **Assessment**
+
+- 4 Moodle quizzes worth 10%
+- 1 Midterm worth 15% (during week 6 or 7)
+- Final Exam worth 75% (In January)
+
+{{< fa book >}} **Textbook**
+
+- [Linear models in statistics](https://utstat.utoronto.ca/~brunner/books/LinearModelsInStatistics.pdf)
+- [Linear models and extensions](https://arxiv.org/pdf/2401.00649)
+
+## ST303 - Linear Models
+
+### ~~Office~~ **Student** Hours
+
+**Student hours** are set times dedicated to all of you. Most professors call
+these *"office hours"* - which I always found too formal and scary!
+
+::: {.callout-warning title="Why student hours?"}
+Students often think that *"office hours"* are times when [professors should be
+left alone](https://www.chronicle.com/article/can-this-man-change-how-elite-colleges-treat-low-income-students/) - **which is the total opposite**.
+I'm hoping that by calling them student hours, it might alleviate this
+misunderstanding.
+:::
+
+This means that during these times I'll be waiting for you to talk to me
+(either in-person or online) where you can ask whatever questions you may have.
+
+You can [schedule a meeting with me here](https://calendly.com/cormac-monaghan-mu).
+This can be either an online or in-person meeting. If you choose an online
+meeting a confirmation email with a Teams link will be send to your email.
+
+## ST303 - Linear Models
+
+### Lecture format
+
+- All the **slides** will be uploaded to **Moodle** after the class.
+- Just like the slides, all the R code will be provided to help you along
+  with your learning.
+
+
+::: {.callout-note title="If you have questions"}
+**Please stop me at any point** to ask a question or ask me to clarify something.
+Alternatively, if you're a shy person (like me!) you can come up and ask me at
+the end of class!
+:::
+
+## ST303 - Linear Models {style="font-size: 90%;"}
+
+### What we will cover
+
+This modules aims to introduction you to the **fundamentals of linear models**
+This course will cover (but is not limited to) the following:
+
+- Statistical ideas
+- Mathematical models
+- Real data
+- R demonstrations
+- Short activities and questions
+- Case studies
+
+::: {.callout-note icon="false"}
+## The important skill is knowing how to interpret and evaluate a linear model.
+:::
+
+## ST303 - Linear Models
+
+### Software
+
+We will be using `R` and [RStudio](https://posit.co/downloads) for this
+module. Alternatively, if anyone wants to they can use the new
+[Positron IDE](https://positron.posit.co/).
+
+The departmental server used **RStudio**, so to keep things consistent, I'll be
+sticking with that for this module (although, I highly recommend checking out
+Positron if you get the chance).
+
+<br>
+
+:::: {.fragment}
+::: {.callout-important}
+## Has anyone not used R or RStudio before
+:::
+::::
+
+:::: {.fragment}
+::: {.callout-tip}
+## I'll be running a beginner friendly crash course on R in Week 2 (Friday 4pm)
+:::
+::::
+
+## ST303 - Linear Models
+
+### Generative AI and LLMs
+
+AI is a thing and it's not going anywhere. However, the connection between
+**AI** and **learning** is **fragile**, especially when **you are a beginner**
+<br> [(see this post for more details)](https://stats.andrewheiss.com/pinky-lychee/)
+
+> “Using ChatGPT to complete assignments is like bringing a forklift into the
+> weight room; you will never improve your cognitive fitness that way.”
+> [(Chiang 2024)](https://www.newyorker.com/culture/the-weekend-essay/why-ai-isnt-going-to-make-art)
+
+
+::: {.fragment}
+That being said, I have two rules when it comes to AI
+
+1. **Whatever you submit must be written by you**
+2. **You are responsible for checking everything that AI generates**
+:::
+
+## ST303 - Linear Models
+
+### What does this mean in practice
+
+```{.r filename="analysis.R"}
+# I have a dataset named "penguins" and I want to calculate the number of
+# different penguin types on each island. However, I can't remember the exact
+# function - so I asked Gemini
+
+# Gemini gave me two ways of doing. One using the `table()` function and another
+# using the `count()` function from the `dplyr` package.
+#
+# I decided to use the `table()` function as I recall seeing it used in the
+# lectures before
+
+table(penguins$species, penguins$island)
+```
+
+This is a very comment heavy piece of code and it's not something you will often
+see in real life. However, **for your own learning** I would recommend writing
+comments like this when you decide to get help from AI <br>
+**Future you will thank you when you go back to revise**.
+
+## Does anyone like cats?
+
+
+::::: {.columns}
+
+:::: {.fragment .fade-up}
+
+::: {.column}
+
+- This is my cat
+- His name is Bigsy
+- His favourite things are sleeping, eating, and hiding mice in the house
+
+:::
+
+::: {.column width="40%"}
+![](assets/bigsy.jpg)
+:::
+::::
+:::::
+

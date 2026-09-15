@@ -1,0 +1,47 @@
+---
+title: Linear models and ordinary least squares
+page-layout: full
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+purrr::map(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+## Learning objectives
+
+- Understand where residuals come from
+- Understand the intercept and slope
+- Learn how to derive the formula for the intercept and slope
+
+## Readings
+
+### Suggested readings
+
+- {{< fa book >}} [Linear models in statistics (Chapter 6)](https://utstat.utoronto.ca/~brunner/books/LinearModelsInStatistics.pdf)
+- {{< fa link >}} [Ordinary Least Squares Regression - Explained Visually](https://setosa.io/ev/ordinary-least-squares-regression/)
+- {{< fa link >}} [Doing linear regression by hand](https://c-monaghan.github.io/posts/2025/03/12/Linear-Regression/)
+
+## Slides
+
+### Lecture 1
+
+```{r}
+#| label: week-1a
+#| echo: false
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_1.html")
+```
+
+### Lecture 2
+
+```{r}
+#| label: week-1b
+#| echo: false
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_2.html")
+```
