@@ -1,0 +1,123 @@
+// Additional styling for an ST303 assignment ----------------------------------
+
+/*-- scss:defaults --*/
+
+// Colours ---------------------------------------------------------------------
+$st303-teal: #356B70;
+$st303-dark: #263638;
+$st303-grey: #667477;
+$st303-light: #F4F6F6;
+$st303-rule: #D9DEDF;
+
+/*-- scss:rules --*/
+
+// Headings --------------------------------------------------------------------
+h1 {
+  color: $st303-teal;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+
+  border-bottom: 1px solid $st303-rule;
+  padding-bottom: 0.4rem;
+  margin-top: 2.5rem;
+}
+
+h2 {
+  color: $st303-grey;
+  font-weight: 700;
+  margin-top: 2rem;
+}
+
+h3 {
+  color: $st303-teal;
+  font-weight: 600;
+}
+
+// Links -----------------------------------------------------------------------
+a {
+  color: $st303-teal;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.15em;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
+}
+
+// Code ------------------------------------------------------------------------
+div.sourceCode {
+  background: $st303-light;
+  border: 1px solid $st303-rule;
+  border-radius: 5px;
+  padding: 0.65rem 0.8rem;
+  margin: 1rem 0;
+}
+
+pre.sourceCode {
+  margin: 0;
+}
+
+code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.88em;
+}
+
+// Tables ----------------------------------------------------------------------
+.table {
+  margin: 1.5rem auto;
+
+  th {
+    color: $st303-dark;
+    font-weight: 600;
+    border-bottom: 2px solid $st303-teal;
+  }
+
+  td {
+    border-bottom: 1px solid $st303-rule;
+  }
+}
+
+// Callouts --------------------------------------------------------------------
+.callout {
+  border-radius: 4px;
+  margin: 1.5rem 0;
+}
+
+.callout-note {
+  border-left-color: $st303-teal;
+}
+
+.callout-tip {
+  border-left-color: $st303-teal;
+}
+
+// Styling for the title block -------------------------------------------------
+.st303-title-block {
+  margin-bottom: 1rem;
+}
+
+.st303-module {
+  color: $st303-teal;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.75rem;
+}
+
+.st303-title {
+  border-bottom: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.st303-subtitle {
+  color: $st303-grey;
+  font-size: 1.15rem;
+  font-style: italic;
+  margin-top: 0.4rem;
+}
+
+.st303-description {
+  color: $st303-grey;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+}
