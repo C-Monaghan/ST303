@@ -1,58 +1,138 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "\n            Linear Models\n        ",
-    "section": "",
-    "text": "Learning the fundamental principles of linear models  using R\n        \n        \n            ST303 - Linear Models  Department of Mathematics and Statistics  Maynooth University\n        \n    \n    \n      \n        \n        \n        \n      \n    \n\n\n\n\n\n\nInstructor\n\n Cormac Monaghan\n cormac.monaghan@mu.ie\n Room 133 Logic House\n Bluesky\n\n\n\nCourse details\n\n Friday\n September - December 2026\n Friday 12pm and 4pm\n Arts Building and Physics Hall\n\n\n\nContacting me\nE-mail is the best way to get in contact with me. I usually try to respond to all e-mails within 24 hours (really), but also remember that life can be busy and chaotic for everyone (including me!), so if I don’t respond right away, don’t worry!"
-  },
-  {
-    "objectID": "content/content_00.html",
-    "href": "content/content_00.html",
+    "objectID": "overview/index.html",
+    "href": "overview/index.html",
     "title": "Welcome to ST303",
     "section": "",
     "text": "Welcome to third year and welcome to ST303!\nWe will be covering lots of things related to linear models. This will range from the simple and multiple linear regression, ordinary and weighted least squares, inference, and diagnostics (among other things).\n\n\nOn successful completion of the module, you should be able to\n\nFit and interpret multiple regression models.\nUnderstand the theory of multiple regression.\nAssess model assumptions.\nUse model diagnostics.\n\n\n\n\nThis module is broken down as 25% continuous assessment and 75% official exam.\n\n4 assignments in the form of a Moodle quiz (worth 10%)\n1 mid-term exam (worth 15%)\n1 university exam (worth 75%)\n\n\n\n\n\n\n\nNoteThe dates for each exam are still being finalised\n\n\n\n\n\n\n\n\n\n\n\n\nImportantDetails for Erasmus students\n\n\n\nIf you are an Erasmus student here for Semester 1 only (September - December), you will not be here for the final exam. With that in mind, your assignments and mid-term will be worth more marks.\nIf you are here for the full academic year (semester 1 AND semester 2), then your grades will follow the same breakdown as listed above.\n\n\n\n\n\n\n\n\nTime\nLocation\nClass Details\n\n\n\n\nFriday (12pm - 1pm)\nArts Building (Room F)\nStandard format (slides)\n\n\nFriday (4pm - 5pm)\nPhysics Hall\nStandard format (slides)\n\n\n\n\n\n\n\nTutorials will run weekly starting from the week of the 5th October (week 3)\nThese tutorials will be in the form of help desks where you get assistance with the assignments and consolidate and apply what you learned in class."
   },
   {
-    "objectID": "content/content_00.html#module-overview",
-    "href": "content/content_00.html#module-overview",
+    "objectID": "overview/index.html#module-overview",
+    "href": "overview/index.html#module-overview",
     "title": "Welcome to ST303",
     "section": "",
     "text": "Welcome to third year and welcome to ST303!\nWe will be covering lots of things related to linear models. This will range from the simple and multiple linear regression, ordinary and weighted least squares, inference, and diagnostics (among other things).\n\n\nOn successful completion of the module, you should be able to\n\nFit and interpret multiple regression models.\nUnderstand the theory of multiple regression.\nAssess model assumptions.\nUse model diagnostics.\n\n\n\n\nThis module is broken down as 25% continuous assessment and 75% official exam.\n\n4 assignments in the form of a Moodle quiz (worth 10%)\n1 mid-term exam (worth 15%)\n1 university exam (worth 75%)\n\n\n\n\n\n\n\nNoteThe dates for each exam are still being finalised\n\n\n\n\n\n\n\n\n\n\n\n\nImportantDetails for Erasmus students\n\n\n\nIf you are an Erasmus student here for Semester 1 only (September - December), you will not be here for the final exam. With that in mind, your assignments and mid-term will be worth more marks.\nIf you are here for the full academic year (semester 1 AND semester 2), then your grades will follow the same breakdown as listed above.\n\n\n\n\n\n\n\n\nTime\nLocation\nClass Details\n\n\n\n\nFriday (12pm - 1pm)\nArts Building (Room F)\nStandard format (slides)\n\n\nFriday (4pm - 5pm)\nPhysics Hall\nStandard format (slides)\n\n\n\n\n\n\n\nTutorials will run weekly starting from the week of the 5th October (week 3)\nThese tutorials will be in the form of help desks where you get assistance with the assignments and consolidate and apply what you learned in class."
   },
   {
-    "objectID": "content/content_00.html#slides",
-    "href": "content/content_00.html#slides",
+    "objectID": "overview/index.html#slides",
+    "href": "overview/index.html#slides",
     "title": "Welcome to ST303",
     "section": "Slides",
     "text": "Slides\nAll the slides for this module are created using Quarto. In fact, this entire module website is built using Quarto. Personally, I love Quarto. I do just about everything with it! If you every get a chance, do check it out (ok … mini rant over!)\n\nThere are many little hidden things you can do with these slides.\nYou can click in the slides and navigate through them with ← and →.\nIf you type ? (or shift + /) while viewing the slides you can see a list of slide-specific commands (such as like f for fullscreen mode or additionally s for presenter mode if you want to see my notes).\nFinally, if you want to make a PDF of these slides you can press e, followed by ctrl + p.\n\n\n\n\n\n\nCautionSlides will be available on Friday 25th September"
   },
   {
-    "objectID": "content/content_01.html",
-    "href": "content/content_01.html",
-    "title": "Linear models and ordinary least squares",
+    "objectID": "content/index.html",
+    "href": "content/index.html",
+    "title": "Lecture overview",
     "section": "",
-    "text": "Understand where residuals come from\nUnderstand the intercept and slope\nLearn how to derive the formula for the intercept and slope"
+    "text": "Each class has a set of required readings that should be completed in your own time. For the most part, these readings will mirror what we have covered in the lectures. However, there will be times that I find a cool resource that I believe may be helpful for some of you.\nAll the slides for this module are special HTML files made using both Quarto and Clean Revealjs theme by Grant McDermott. Personally, this is my favourite theme to use for presentations, although I have made a couple of minor tweaks to it myself",
+    "crumbs": [
+      "Content",
+      "Overview",
+      "Lecture overview"
+    ]
   },
   {
-    "objectID": "content/content_01.html#learning-objectives",
-    "href": "content/content_01.html#learning-objectives",
-    "title": "Linear models and ordinary least squares",
+    "objectID": "content/content_01a.html",
+    "href": "content/content_01a.html",
+    "title": "Linear models",
     "section": "",
-    "text": "Understand where residuals come from\nUnderstand the intercept and slope\nLearn how to derive the formula for the intercept and slope"
+    "text": "Understand what residuals are\nUnderstand the intercept and slope",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "The linear model"
+    ]
   },
   {
-    "objectID": "content/content_01.html#readings",
-    "href": "content/content_01.html#readings",
-    "title": "Linear models and ordinary least squares",
+    "objectID": "content/content_01a.html#learning-objectives",
+    "href": "content/content_01a.html#learning-objectives",
+    "title": "Linear models",
+    "section": "",
+    "text": "Understand what residuals are\nUnderstand the intercept and slope",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "The linear model"
+    ]
+  },
+  {
+    "objectID": "content/content_01a.html#readings",
+    "href": "content/content_01a.html#readings",
+    "title": "Linear models",
     "section": "Readings",
-    "text": "Readings\n\nSuggested readings\n\n Linear models in statistics (Chapter 6)\n Ordinary Least Squares Regression - Explained Visually\n Doing linear regression by hand"
+    "text": "Readings\n\nSuggested readings\n\n Linear models in statistics (Chapter 6)\n Simple Linear Regression: An Easy and Clear Beginner’s Guide",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "The linear model"
+    ]
   },
   {
-    "objectID": "content/content_01.html#slides",
-    "href": "content/content_01.html#slides",
-    "title": "Linear models and ordinary least squares",
+    "objectID": "content/content_01a.html#slides",
+    "href": "content/content_01a.html#slides",
+    "title": "Linear models",
     "section": "Slides",
-    "text": "Slides\n\nLecture 1\n\n\n\n\n\n\nCautionSlides will be available on Friday 25th September\n\n\n\n\n\n\n\n\nLecture 2\n\n\n\n\n\n\nCautionSlides will be available on Friday 25th September"
+    "text": "Slides\n\n\n\n\n\n\nCautionSlides will be available on Friday 25th September",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "The linear model"
+    ]
+  },
+  {
+    "objectID": "content/content_01b.html",
+    "href": "content/content_01b.html",
+    "title": "Ordinary least squares",
+    "section": "",
+    "text": "Learn how to derive the formula for the intercept and slope\nLearn about some special linear model cases",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "Ordinary least squares"
+    ]
+  },
+  {
+    "objectID": "content/content_01b.html#learning-objectives",
+    "href": "content/content_01b.html#learning-objectives",
+    "title": "Ordinary least squares",
+    "section": "",
+    "text": "Learn how to derive the formula for the intercept and slope\nLearn about some special linear model cases",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "Ordinary least squares"
+    ]
+  },
+  {
+    "objectID": "content/content_01b.html#readings",
+    "href": "content/content_01b.html#readings",
+    "title": "Ordinary least squares",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n Linear models in statistics (Chapter 6)\n Ordinary Least Squares Regression - Explained Visually\n Doing linear regression by hand",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "Ordinary least squares"
+    ]
+  },
+  {
+    "objectID": "content/content_01b.html#slides",
+    "href": "content/content_01b.html#slides",
+    "title": "Ordinary least squares",
+    "section": "Slides",
+    "text": "Slides\n\n\n\n\n\n\nCautionSlides will be available on Friday 25th September",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "Ordinary least squares"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "\n            Linear Models\n        ",
+    "section": "",
+    "text": "Learning the fundamental principles of linear models  using R\n        \n        \n            ST303 - Linear Models  Department of Mathematics and Statistics  Maynooth University\n        \n    \n    \n      \n        \n        \n        \n      \n    \n\n\n\n\n\n\nInstructor\n\n Cormac Monaghan\n cormac.monaghan@mu.ie\n Room 133 Logic House\n Bluesky\n\n\n\nCourse details\n\n Friday\n September - December 2026\n Friday 12pm and 4pm\n Arts Building and Physics Hall\n\n\n\nContacting me\nE-mail is the best way to get in contact with me. I usually try to respond to all e-mails within 24 hours (really), but also remember that life can be busy and chaotic for everyone (including me!), so if I don’t respond right away, don’t worry!"
   }
 ]

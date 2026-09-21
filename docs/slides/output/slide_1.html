@@ -78,7 +78,7 @@
   <meta name="generator" content="quarto-1.10.18">
 
   <meta name="author" content="Cormac Monaghan">
-  <title>Welcome to ST303 - Linear Models</title>
+  <title>The Linear Model</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -169,7 +169,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="slide_1_files/libs/revealjs/dist/theme/quarto-9c7888939656ed23a79e81eb4cf2ff36.css">
+  <link rel="stylesheet" href="slide_1_files/libs/revealjs/dist/theme/quarto-0bd1083bdf8466ccf673bdd24851817d.css">
   <link href="slide_1_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="slide_1_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="slide_1_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -268,8 +268,8 @@
     <div class="slides">
 
 <section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Welcome to ST303 - Linear Models</h1>
-  <p class="subtitle">Module Overview</p>
+  <h1 class="title">The Linear Model</h1>
+  <p class="subtitle">ST303 - Linear Models</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -289,12 +289,12 @@ Cormac Monaghan
 <section class="slide level2">
 
 <p><br> <br> <br> <!--- EXTREMELY HACKY --> <br> <br></p>
-<p><span class="center"><strong>How can we use data to understand and predict numerical outcomes?</strong></span></p>
+<p><span class="center" style="font-size: 90%;"><strong>How can we use data to understand and predict numerical outcomes?</strong></span></p>
 </section>
 <section id="lets-start-with-a-question" class="slide level2">
 <h2>Let’s start with a question</h2>
 <p><span class="center"><strong>Can we predict the height of someone’s daughter?</strong></span></p>
-<div class="fragment">
+<div class="fragment fade-up">
 <div class="callout callout-note no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -317,7 +317,7 @@ Cormac Monaghan
 </div>
 </div>
 <p><br></p>
-<div class="fragment">
+<div class="fragment fade-up">
 <div class="callout callout-tip no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -329,7 +329,7 @@ Cormac Monaghan
 </div>
 </div>
 </div>
-<div class="fragment">
+<div class="fragment fade-up">
 <div class="callout callout-tip no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -341,7 +341,7 @@ Cormac Monaghan
 </div>
 </div>
 </div>
-<div class="fragment">
+<div class="fragment fade-up">
 <div class="callout callout-tip no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -353,7 +353,7 @@ Cormac Monaghan
 </div>
 </div>
 </div>
-<div class="fragment">
+<div class="fragment fade-up">
 <div class="callout callout-tip no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -365,6 +365,21 @@ Cormac Monaghan
 </div>
 </div>
 </div>
+<aside class="notes">
+<ul>
+<li>Try and answer the following questions</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="lets-start-with-a-question-1" class="slide level2">
 <h2>Let’s start with a question</h2>
@@ -455,12 +470,46 @@ Y = \text{Daughter's height}
 
 <img data-src="slide_1_files/figure-revealjs/fig-best-line-example-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960" id="fig-best-line-example"><p class="caption">
 Figure&nbsp;2: Height of mother versus height of daughter (with prediction lines)
-</p></section>
+</p><aside class="notes">
+<ul>
+<li>Here, I’ve drawn three lines through the data</li>
+<li>Which provides the most accurate summation of the data</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
 <section id="but-what-is-the-best-line" class="slide level2">
 <h2>But what is the best line?</h2>
 <p><br></p>
 
-<img data-src="slide_1_files/figure-revealjs/residual-example-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<img data-src="slide_1_files/figure-revealjs/residual-example-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"><aside class="notes">
+<ul>
+<li>But how do we know this</li>
+<li>Obviously, we could just eye ball it</li>
+<li>But we need a way to quantitively prove the green line is the best line</li>
+<li>This is where <strong>residuals</strong> come in</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
 <section id="but-what-is-the-best-line-1" class="slide level2">
 <h2>But what is the best line?</h2>
 <div class="cell" data-layout-align="center">
@@ -543,7 +592,7 @@ Figure&nbsp;2: Height of mother versus height of daughter (with prediction lines
 <div class="callout callout-note no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
-<p><strong>Blue over predicted by 5 inches</strong></p>
+<p><strong>Blue over predicted by 4 inches</strong></p>
 </div>
 <div class="callout-content">
 
@@ -553,7 +602,7 @@ Figure&nbsp;2: Height of mother versus height of daughter (with prediction lines
 <div class="callout callout-warning no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
-<p><strong>Orange under predicted by 1.5 inches</strong></p>
+<p><strong>Orange under predicted by 2.5 inches</strong></p>
 </div>
 <div class="callout-content">
 
@@ -571,7 +620,7 @@ Figure&nbsp;2: Height of mother versus height of daughter (with prediction lines
 </div>
 </div>
 </div>
-<div class="fragment">
+<div class="fragment fade-up">
 <div class="callout callout-important no-icon callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -591,6 +640,7 @@ Figure&nbsp;2: Height of mother versus height of daughter (with prediction lines
 <h3 id="residuals">Residuals</h3>
 <p>Every possible line gives us a different set of residuals.</p>
 <p><strong>Residuals hold the key to determining which line is the best.</strong></p>
+<div class="fragment fade-up">
 <p>We want a line that <strong>minimises the sum of squared residuals</strong>.</p>
 <p><span class="math display">\[
 \text{minimise} \sum^n_{i = 1}(y_i - \hat{y}_i)^2
@@ -602,6 +652,7 @@ Figure&nbsp;2: Height of mother versus height of daughter (with prediction lines
 </div>
 <div class="callout-content">
 
+</div>
 </div>
 </div>
 </div>
@@ -626,6 +677,39 @@ Figure&nbsp;3: Interactive demonstration of how different slopes affect the cand
 <li><span class="math inline">\(\epsilon\)</span> is our <strong>error term</strong> (we’ll come back to this)</li>
 </ul>
 </div>
+<div class="fragment fade-up">
+<div title="You might recognise">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>You might recognise</strong></p>
+</div>
+<div class="callout-content">
+<p>This is basically the same as the <span class="math inline">\(y = mx + c\)</span> equation you may have learned growing up</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<aside class="notes">
+<ul>
+<li>Same as <span class="math inline">\(y = mx + c\)</span></li>
+<li>We’ve just complicated things by adding in Greek letters and an error term</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="the-regression-equation-1" class="slide level2">
 <h2>The regression equation</h2>
@@ -723,6 +807,24 @@ Figure&nbsp;3: Interactive demonstration of how different slopes affect the cand
 </div>
 </div>
 </div>
+<aside class="notes">
+<ul>
+<li>However, at times the intercept will have little meaning for us.</li>
+<li>0 might not be a possible value in the data (you can 0 inches tall)</li>
+<li>Mathematically it needs to be there.</li>
+<li>In reality, it does not always need to be interpreted</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section class="slide level2">
 
@@ -746,7 +848,7 @@ Figure&nbsp;3: Interactive demonstration of how different slopes affect the cand
  17.6046633   0.7368844 </code></pre>
 </div>
 </div>
-<div class="fragment">
+<div class="fragment fade-up">
 <div title="Model results">
 <div class="callout callout-tip no-icon callout-titled callout-style-default">
 <div class="callout-body">
