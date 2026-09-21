@@ -1,0 +1,37 @@
+---
+title: Linear models
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+purrr::map(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+## Learning objectives
+
+- Understand what residuals are
+- Understand the intercept and slope
+
+## Readings
+
+### Suggested readings
+
+- {{< fa book >}} [Linear models in statistics (Chapter 6)](https://utstat.utoronto.ca/~brunner/books/LinearModelsInStatistics.pdf)
+- {{< fa link >}} [Simple Linear Regression: An Easy and Clear Beginner’s Guide](https://www.youtube.com/watch?v=gPfgB4ew3RY)
+
+## Slides
+
+::: {.callout-caution}
+## Slides will be available on Friday 25th September
+:::
+
+```{r}
+#| label: week-1a
+#| echo: false
+#| eval: false
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_1.html")
+```

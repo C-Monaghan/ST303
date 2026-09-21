@@ -1,6 +1,5 @@
 ---
-title: Linear models and ordinary least squares
-page-layout: full
+title: Ordinary least squares
 ---
 
 ```{r}
@@ -12,9 +11,8 @@ purrr::map(list.files(here::here("R"), full.names = TRUE), source)
 
 ## Learning objectives
 
-- Understand where residuals come from
-- Understand the intercept and slope
 - Learn how to derive the formula for the intercept and slope
+- Learn about some special linear model cases
 
 ## Readings
 
@@ -25,23 +23,6 @@ purrr::map(list.files(here::here("R"), full.names = TRUE), source)
 - {{< fa link >}} [Doing linear regression by hand](https://c-monaghan.github.io/posts/2025/03/12/Linear-Regression/)
 
 ## Slides
-
-### Lecture 1
-
-::: {.callout-caution}
-## Slides will be available on Friday 25th September
-:::
-
-```{r}
-#| label: week-1a
-#| echo: false
-#| eval: false
-#| results: asis
-
-add_slides(slide_id = "/slides/output/slide_1.html")
-```
-
-### Lecture 2
 
 ::: {.callout-caution}
 ## Slides will be available on Friday 25th September
