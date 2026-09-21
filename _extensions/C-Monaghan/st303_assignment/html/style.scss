@@ -1,41 +1,41 @@
-// Additional styling for an ST303 assignment ----------------------------------
+// Additional styling for an ST201 assignment ----------------------------------
 
 /*-- scss:defaults --*/
 
 // Colours ---------------------------------------------------------------------
-$st303-teal: #356B70;
-$st303-dark: #263638;
-$st303-grey: #667477;
-$st303-light: #F4F6F6;
-$st303-rule: #D9DEDF;
+$st201-teal: #153638;
+$st201-dark: #263638;
+$st201-grey: #667477;
+$st201-light: #F4F6F6;
+$st201-rule: #D9DEDF;
 
 /*-- scss:rules --*/
 
 // Headings --------------------------------------------------------------------
 h1 {
-  color: $st303-teal;
+  color: $st201-teal;
   font-weight: 700;
   letter-spacing: -0.01em;
 
-  border-bottom: 1px solid $st303-rule;
+  border-bottom: 1px solid $st201-rule;
   padding-bottom: 0.4rem;
   margin-top: 2.5rem;
 }
 
 h2 {
-  color: $st303-grey;
+  color: $st201-grey;
   font-weight: 700;
   margin-top: 2rem;
 }
 
 h3 {
-  color: $st303-teal;
+  color: $st201-teal;
   font-weight: 600;
 }
 
 // Links -----------------------------------------------------------------------
 a {
-  color: $st303-teal;
+  color: $st201-teal;
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.15em;
   transition:
@@ -45,8 +45,8 @@ a {
 
 // Code ------------------------------------------------------------------------
 div.sourceCode {
-  background: $st303-light;
-  border: 1px solid $st303-rule;
+  background: $st201-light;
+  border: 1px solid $st201-rule;
   border-radius: 5px;
   padding: 0.65rem 0.8rem;
   margin: 1rem 0;
@@ -66,13 +66,13 @@ code {
   margin: 1.5rem auto;
 
   th {
-    color: $st303-dark;
+    color: $st201-dark;
     font-weight: 600;
-    border-bottom: 2px solid $st303-teal;
+    border-bottom: 2px solid $st201-teal;
   }
 
   td {
-    border-bottom: 1px solid $st303-rule;
+    border-bottom: 1px solid $st201-rule;
   }
 }
 
@@ -83,41 +83,48 @@ code {
 }
 
 .callout-note {
-  border-left-color: $st303-teal;
+  border-left-color: $st201-teal;
 }
 
 .callout-tip {
-  border-left-color: $st303-teal;
+  border-left-color: $st201-teal;
 }
 
 // Styling for the title block -------------------------------------------------
-.st303-title-block {
+.st201-title-block {
   margin-bottom: 1rem;
 }
 
-.st303-module {
-  color: $st303-teal;
+.st201-module {
+  color: $st201-teal;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   margin-bottom: 0.75rem;
 }
 
-.st303-title {
+.st201-title {
   border-bottom: 0;
   margin: 0;
   padding: 0;
 }
 
-.st303-subtitle {
-  color: $st303-grey;
+.st201-subtitle {
+  color: $st201-grey;
   font-size: 1.15rem;
   font-style: italic;
   margin-top: 0.4rem;
 }
 
-.st303-description {
-  color: $st303-grey;
+.st201-author {
+  color: $st201-grey;
+  font-size: 1.15rem;
+  font-style: italic;
+  margin-top: 0.4rem;
+}
+
+.st201-description {
+  color: $st201-grey;
   font-size: 1rem;
   margin-top: 0.25rem;
 }
