@@ -10,11 +10,12 @@ $right-arrow: "\2192"; // Unicode character for right arrow
 
 // Fonts -----------------------------------------------------------------------
 @import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,700;1,400;1,700&family=Fira+Sans+Condensed:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 
 
-$font-family-sans-serif:      Fira Sans Condensed, sans-serif !default;
-$font-family-serif:           Barlow, serif !default;  /* Not actually a serif font but whatever */
-$presentation-heading-font: Barlow, sans-serif !default;
+$font-family-sans-serif:      Quicksand, sans-serif !default;
+$font-family-serif:           Quicksand, serif !default;
+$presentation-heading-font:   Barlow, sans-serif !default;
 
 $presentation-heading-color: $jet !default;
 $presentation-heading-font-weight: lighter;
@@ -346,7 +347,6 @@ $selection-bg: #26351c !default;
   width: 40%;
 }
 
-// Center text
 .center {
   display: flex;
   justify-content: center;
