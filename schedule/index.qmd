@@ -1,0 +1,79 @@
+---
+title: Schedule
+sidebar: false
+toc: false
+page-layout: full
+---
+
+Here's your roadmap for the semester!
+
+- {{< fa person-chalkboard >}} This will be a **standard lecture format** class
+  with some in class participation.
+- {{< fa laptop-code >}} This will be **active coding workshop** where we will
+  work through a dataset (both as a class and in groups) to incorporate what we
+  previously learned.
+- {{< fa chalkboard-user >}} This will be an **in-person help-desk** where you can
+  go and get help with a previously assigned practice worksheet with a tutor or
+  to ask any questions about the course, the material, the exam, etc.
+  - *You can also ask me any of this stuff too btw!*
+- {{< fa pen-ruler >}} This will be a **graded Moodle quiz** that will take up a
+  part of your continuous assessment.
+
+```{r}
+#| label: set-up
+#| include: false
+
+# Functions --------------------------------------------------------------------
+source(here::here("R/build_schedule_table.R"))
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+
+# Class schedule
+schedule <- readxl::read_xlsx(
+  here::here("schedule/excel/schedule_st303.xlsx")
+) |>
+  build_schedule_table()
+```
+
+```{r}
+#| label: create-tbl
+#| echo: false
+show_table <- function(schedule) {
+  tbl <- schedule |>
+    knitr::kable(
+      format = "html",
+      escape = FALSE,
+      col.names = c(
+        "Date",
+        "Morning Topic",
+        "Evening Topic",
+        "Slides",
+        "Coding",
+        "Tutorial",
+        "Assignment"
+      ),
+      table.attr = 'class="schedule-table"'
+    ) |>
+    kableExtra::kable_styling() |>
+    kableExtra::column_spec(
+      1,
+      width = "10%",
+      extra_css = "padding-right: 20px;"
+    ) |>
+    kableExtra::column_spec(2:3, width = "30%") |>
+    kableExtra::column_spec(4:7, width = "8%")
+
+  return(cat(tbl))
+}
+```
+
+## Class schedule
+
+```{r}
+#| label: show-tbl
+#| echo: false
+#| results: asis
+
+show_table(schedule = schedule)
+```

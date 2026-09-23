@@ -1,10 +1,9 @@
 ---
-title: Welcome to ST303 - Linear Models
-subtitle: Module Overview
+title: The Linear Model
+subtitle: ST303 - Linear Models
 filters:
   - code-window
 ---
-
 ```{r}
 #| label: setup
 
@@ -40,13 +39,13 @@ bacteria <- readRDS(here::here("data/bacteria.RDS"))
 <br>
 <br>
 
-[**How can we use data to understand and predict numerical outcomes?**]{.center}
+[**How can we use data to understand and predict numerical outcomes?**]{.center style="font-size: 90%;"}
 
 ## Let's start with a question
 
 [**Can we predict the height of someone's daughter?**]{.center}
 
-::: {.fragment}
+::: {.fragment .fade-up}
 ::: {.callout-note icon="false"}
 ## Suppose we know the height of someone's mother.
 :::
@@ -58,28 +57,32 @@ bacteria <- readRDS(here::here("data/bacteria.RDS"))
 
 <br>
 
-::: {.fragment}
+::: {.fragment .fade-up}
 ::: {.callout-tip icon="false"}
 ## What would you expect?
 :::
 :::
 
-::: {.fragment}
+::: {.fragment .fade-up}
 ::: {.callout-tip icon="false"}
 ## Would you expect a taller mother to have a taller daughter?
 :::
 :::
 
-::: {.fragment}
+::: {.fragment .fade-up}
 ::: {.callout-tip icon="false"}
 ## Would you expect the relationship to be perfect?
 :::
 :::
 
-::: {.fragment}
+::: {.fragment .fade-up}
 ::: {.callout-tip icon="false"}
 ## How accurate do you think our predictions could be?
 :::
+:::
+
+::: {.notes}
+- Try and answer the following questions
 :::
 
 ## Let's start with a question
@@ -160,7 +163,7 @@ $$
 #| label: fig-best-line-example
 #| fig-cap: "Height of mother versus height of daughter (with prediction lines)"
 
-# ACTUAL PREDICTION
+# Bunch of different prediction lines
 heights |>
   ggplot(aes(x = mother, y = daughter)) +
   geom_jitter() +
@@ -183,14 +186,18 @@ heights |>
   theme_st303()
 ```
 
+::: {.notes}
+- Here, I've drawn three lines through the data
+- Which provides the most accurate summation of the data
+:::
+
 ## But what is the best line?
 
 <br>
 
 ```{r}
 #| label: residual-example
-
-# ACTUAL PREDICTION
+#|
 heights |>
   mutate(
     to_colour = case_when(
@@ -232,6 +239,13 @@ heights |>
   theme_st303()
 ```
 
+::: {.notes}
+- But how do we know this
+- Obviously, we could just eye ball it
+- But we need a way to quantitively prove the green line is the best line
+- This is where **residuals** come in
+:::
+
 ## But what is the best line?
 
 ```{r}
@@ -249,11 +263,11 @@ tribble(
 
 ::: {.fragment}
 ::: {.callout-note icon="false"}
-## Blue over predicted by 5 inches
+## Blue over predicted by 4 inches
 :::
 
 ::: {.callout-warning icon="false"}
-## Orange under predicted by 1.5 inches
+## Orange under predicted by 2.5 inches
 :::
 
 ::: {.callout-tip icon="false"}
@@ -261,7 +275,7 @@ tribble(
 :::
 :::
 
-::: {.fragment}
+::: {.fragment .fade-up}
 ::: {.callout-important icon="false"}
 ## We call these differences "residuals"
 
@@ -279,6 +293,7 @@ Every possible line gives us a different set of residuals.
 
 **Residuals hold the key to determining which line is the best.**
 
+:::: {.fragment .fade-up}
 We want a line that **minimises the sum of squared residuals**.
 
 $$
@@ -288,6 +303,7 @@ $$
 ::: {.callout-note icon="false"}
 ## This is the idea behind ordinary least squares.
 :::
+::::
 
 ---
 
@@ -295,10 +311,10 @@ $$
 #| label: fig-interactive-regression
 #| fig-cap: "Interactive demonstration of how different slopes affect the candidate line and residuals. Watch how the dashed lines (residuals) change as the line changes."
 
-# Some candiate slope lines
+# Some candiate slope lines ----------------------------------------------------
 slopes <- seq(0, 1, length.out = 100)
 
-# Predict from all these slopes
+# Predict from all these slopes ------------------------------------------------
 anim_data <- purrr::map_dfr(slopes, function(s) {
   b0 <- mean(heights$daughter - s * heights$mother)
 
@@ -311,12 +327,10 @@ anim_data <- purrr::map_dfr(slopes, function(s) {
     )
 })
 
-# Calculate sum of squared residuals
+# Calculate sum of squared residuals -------------------------------------------
 anim_data <- anim_data |>
   group_by(slope, intercept) |>
-  mutate(
-    ssr = sum(residual^2)
-  ) |>
+  mutate(ssr = sum(residual^2)) |>
   ungroup()
 
 # Plot the different lines -----------------------------------------------------
@@ -369,6 +383,18 @@ $$
 - $\beta_0$ is our **intercept**
 - $\beta_1$ is our **slope**
 - $\epsilon$ is our **error term** (we'll come back to this)
+:::
+
+:::: {.fragment .fade-up}
+::: {.callout-note title="You might recognise"}
+This is basically the same as the $y = mx + c$ equation you may have learned
+growing up
+:::
+::::
+
+::: {.notes}
+- Same as $y = mx + c$
+- We've just complicated things by adding in Greek letters and an error term
 :::
 
 ## The regression equation
@@ -429,6 +455,7 @@ tibble(
   ggplot(aes(x = x, y = y, colour = slope)) +
   geom_line(linewidth = rel(1)) +
   scale_y_continuous(breaks = seq(30, 330, by = 70)) +
+  ggokabeito::scale_colour_okabe_ito() +
   labs(x = NULL, y = NULL, colour = NULL) +
   theme_st303()
 ```
@@ -468,6 +495,13 @@ amount** (this is the **slope**)
 :::
 ::::
 
+::: {.notes}
+- However, at times the intercept will have little meaning for us.
+- 0 might not be a possible value in the data (you can 0 inches tall)
+- Mathematically it needs to be there.
+- In reality, it does not always need to be interpreted
+:::
+
 ---
 
 <br>
@@ -499,7 +533,7 @@ tibble(
     data = tibble(x = 0, y = 30),
     aes(x = x, y = y),
     colour = "black",
-    size = rel(3)
+    size = rel(5)
   ) +
   scale_y_continuous(breaks = seq(30, 330, by = 70)) +
   labs(x = NULL, y = NULL, colour = NULL) +
@@ -524,7 +558,7 @@ fit <- lm(daughter ~ mother, data = heights)
 coef(fit)
 ```
 
-:::: {.fragment}
+:::: {.fragment .fade-up}
 ::: {.callout-tip icon="false" title="Model results"}
 
 - $\beta_0$ = 17.61
