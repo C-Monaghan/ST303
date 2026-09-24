@@ -44,7 +44,7 @@ bacteria <- readRDS(here::here("data/bacteria.RDS"))
 
 {{< fa university >}} **Office**: Logic House Room 223
 
-{{< fa envelope >}} **Email**: <a href='mailto:cormac.monaghan@mumail.ie'>cormac.monaghan@mumail.ie</a>
+{{< fa envelope >}} **Email**: <a href='mailto:cormac.monaghan@mu.ie'>cormac.monaghan@mu.ie</a>
 
 {{< fa person-chalkboard >}} **Lectures**
 
@@ -160,26 +160,6 @@ Positron if you get the chance).
 ## I'll be running a beginner friendly crash course on R in Week 2 (Friday 4pm)
 :::
 ::::
-
-## ST303 - Linear Models
-
-### Generative AI and LLMs
-
-AI is a thing and it's not going anywhere. However, the connection between
-**AI** and **learning** is **fragile**, especially when **you are a beginner**
-<br> [(see this post for more details)](https://stats.andrewheiss.com/pinky-lychee/)
-
-> “Using ChatGPT to complete assignments is like bringing a forklift into the
-> weight room; you will never improve your cognitive fitness that way.”
-> [(Chiang 2024)](https://www.newyorker.com/culture/the-weekend-essay/why-ai-isnt-going-to-make-art)
-
-
-::: {.fragment .fade-up}
-That being said, I have two rules when it comes to AI
-
-1. **Whatever you submit must be written by you**
-2. **You are responsible for checking everything that AI generates**
-:::
 
 ## Does anyone like cats?
 

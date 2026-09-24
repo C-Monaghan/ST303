@@ -41,6 +41,8 @@ bacteria <- readRDS(here::here("data/bacteria.RDS"))
 
 [**How can we use data to understand and predict numerical outcomes?**]{.center style="font-size: 90%;"}
 
+
+
 ## Let's start with a question
 
 [**Can we predict the height of someone's daughter?**]{.center}
@@ -100,9 +102,13 @@ bacteria <- readRDS(here::here("data/bacteria.RDS"))
 <br>
 
 ::: {.callout-caution icon="false" title="Let's do a quick exercise"}
-Let's say the height of a mother is 64.37 inches.
+Let's say the height of a mother is 64.37 inches ($\approx$ 163.5cm).
 
 [**What would you predict the height of the daughter to be** ]{.center}
+:::
+
+:::{.notes}
+Let's shout out an answer
 :::
 
 ---
