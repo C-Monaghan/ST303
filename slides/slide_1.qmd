@@ -29,7 +29,7 @@ theme_st303 <- function() {
 }
 
 # Data -------------------------------------------------------------------------
-heights <- readRDS(here::here("data/heights.RDS"))
+heights <- readRDS(here::here("slides/data/heights.RDS"))
 bacteria <- readRDS(here::here("data/bacteria.RDS"))
 ```
 
