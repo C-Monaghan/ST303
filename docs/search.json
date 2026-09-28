@@ -21,51 +21,51 @@
     "text": "Learning the fundamental principles of linear models  using R\n        \n        \n            ST303 - Linear Models  Department of Mathematics and Statistics  Maynooth University\n        \n    \n    \n      \n        \n        \n        \n      \n    \n\n\n\n\n\n\nInstructor\n\n Cormac Monaghan\n cormac.monaghan@mu.ie\n Room 223 Logic House\n Bluesky\n\n\n\nCourse details\n\n Friday\n September - December 2026\n Friday 12pm and 4pm\n Arts Building and Physics Hall\n\n\n\nContacting me\nE-mail is the best way to get in contact with me. I usually try to respond to all e-mails within 24 hours (really), but also remember that life can be busy and chaotic for everyone (including me!), so if I don’t respond right away, don’t worry!"
   },
   {
-    "objectID": "content/content_01b.html",
-    "href": "content/content_01b.html",
-    "title": "Ordinary least squares",
+    "objectID": "content/content_02.html",
+    "href": "content/content_02.html",
+    "title": "The simple linear regression model",
     "section": "",
-    "text": "Learn how to derive the formula for the intercept and slope\nLearn about some special linear model cases",
+    "text": "Learn about the simple linear regression model\nLearn about the properties of simple linear regression\nLearn about the sampling distributions of \\(\\beta_0\\), \\(\\beta_1\\), and \\(\\sigma^2\\)",
     "crumbs": [
       "Content",
-      "Week 1",
-      "Ordinary least squares"
+      "Week 2",
+      "Simple linear regression"
     ]
   },
   {
-    "objectID": "content/content_01b.html#learning-objectives",
-    "href": "content/content_01b.html#learning-objectives",
-    "title": "Ordinary least squares",
+    "objectID": "content/content_02.html#learning-objectives",
+    "href": "content/content_02.html#learning-objectives",
+    "title": "The simple linear regression model",
     "section": "",
-    "text": "Learn how to derive the formula for the intercept and slope\nLearn about some special linear model cases",
+    "text": "Learn about the simple linear regression model\nLearn about the properties of simple linear regression\nLearn about the sampling distributions of \\(\\beta_0\\), \\(\\beta_1\\), and \\(\\sigma^2\\)",
     "crumbs": [
       "Content",
-      "Week 1",
-      "Ordinary least squares"
+      "Week 2",
+      "Simple linear regression"
     ]
   },
   {
-    "objectID": "content/content_01b.html#readings",
-    "href": "content/content_01b.html#readings",
-    "title": "Ordinary least squares",
+    "objectID": "content/content_02.html#readings",
+    "href": "content/content_02.html#readings",
+    "title": "The simple linear regression model",
     "section": "Readings",
-    "text": "Readings\n\nSuggested readings\n\n Linear models in statistics (Chapter 6)\n Ordinary Least Squares Regression - Explained Visually\n Doing linear regression by hand\n Quantitude - Ordinary Least Squares",
+    "text": "Readings\n\nSuggested readings\n\n The Sampling Distribution of the OLS Estimator",
     "crumbs": [
       "Content",
-      "Week 1",
-      "Ordinary least squares"
+      "Week 2",
+      "Simple linear regression"
     ]
   },
   {
-    "objectID": "content/content_01b.html#slides",
-    "href": "content/content_01b.html#slides",
-    "title": "Ordinary least squares",
+    "objectID": "content/content_02.html#slides",
+    "href": "content/content_02.html#slides",
+    "title": "The simple linear regression model",
     "section": "Slides",
-    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "text": "Slides\n\n\n\n\n\n\nCautionSlides will be available on 2nd October",
     "crumbs": [
       "Content",
-      "Week 1",
-      "Ordinary least squares"
+      "Week 2",
+      "Simple linear regression"
     ]
   },
   {
@@ -114,6 +114,61 @@
       "Content",
       "Week 1",
       "The linear model"
+    ]
+  },
+  {
+    "objectID": "assignments/assignment_01.html",
+    "href": "assignments/assignment_01.html",
+    "title": "\n    Practice Questions Sheet 1\n  ",
+    "section": "",
+    "text": "ST201 · DATA ANALYSIS\n  \n\n  \n    Practice Questions Sheet 1\n  \n\n    \n    ST303 - Linear Models\n  \n  \n    \n    Lecturer: Cormac Monaghan\n  \n  \n    \n    This sheet provides practice with simple linear regression. You will work with the regression model algebraically, fit and interpret a model in R, and reproduce key regression calculations by hand. These practice questions should be attempted in your own time. These questions are not graded and should not be handed in\n    You should attend the joint ST302/ST303 lab to get help with the questions and have your answers checked.\n  \n  \n\n\n\n\n\nSimple linear regression\nConsider the following simple linear regression model \\[\ny_i = \\beta_0 + \\beta_1x_i + \\epsilon_i, \\qquad i = 1,\\ldots,n.\n\\]\nThe above model may be alternatively written as\n\\[\ny_i = \\alpha_0 + \\alpha_1(x_i-\\bar{x}) + \\epsilon_i, \\qquad i = 1,\\ldots,n.\n\\]\nAnswer the following:\n\nUsing the method of least squares, derive expressions for the estimators \\(\\hat{\\alpha}_0\\) and \\(\\hat{\\alpha}_1\\)\nInterpret the parameters \\(\\alpha_0\\) and \\(\\alpha_1\\).\nExplain why mean-centering the predictor variable can be useful.\n\n\n\n\nSimple linear regression in R\nAs concrete cures, it gains strength overtime. The following data (see Table 1) represent the 7-day and 28-day strength, in pounds per square inch (psi), of a certain type of concrete.\n\n\n\n\nTable 1: Concrete data\n\n\n\n\n\n    \n\n    \n\n    \n    \n    \n      \n        \n        \n              \n                7 Day\n                28 Day\n              \n        \n        \n        \n                \n                  2300\n                  4370\n                \n                \n                  2430\n                  4640\n                \n                \n                  2890\n                  4620\n                \n                \n                  3120\n                  4900\n                \n                \n                  3380\n                  5020\n                \n                \n                  3390\n                  5220\n                \n        \n      \n    \n\n\n\n\n\n\nYou can read the data from the RStudio server using:\n\n# Using the `readr` and the `here` package.\n# TIP: you can press tab when writing the folder path to have all the options\n# folder / file options appear to you\n\nconcrete &lt;- readr::read_csv(here::here(\"Sharedfiles/ST303/data/Concrete.csv\"))\n\nAnswer the following set of questions using R\n\nCreate a scatterplot showing the relationship between 7-day strength on the \\(x\\)-axis and 28-day strength on the \\(y\\)-axis.\nDoes it seem appropriate to assume a linear relationship between the two variables (explain why you think so)?\nSpecify a simple linear regression model for these data algebraically.\nFit this model in R and report what the intercept, slope, and standard error for each term are.\nIn the context of this data, what do these values mean?\nUpdate the scatter plot you made earlier to include a fitted line.\n\n\n\n\nSimple linear regression by hand\nThis time, instead of using R, we will be calculating our linear regression parameters by hand. Using the concrete data we mentioned in Table 1, calculate the following:\n\n\\(\\bar{x}\\), \\(\\sum_{i=1}^n x_i^2\\), and \\(S_{xx}\\).\n\\(\\bar{y}\\), \\(\\sum_{i=1}^n y_i^2\\), and \\(S_{yy}\\).\n\\(\\sum_{i=1}^n x_i y_i\\) and \\(S_{xy}\\).\n\n\n\n\n\n\n\nTipYou may use R to verify your calculations.\n\n\n\nHowever, in an exam setting you may be asked to do calculations by hand (hint, hint, wink, wink!!).\nAs such, please show all of your workings.\n\n\nUse your calculated quantities to:\n\nCalculate the least-squares slope estimate and the least-squares intercept estimate\nIn addition, calculate the estimated error variance."
+  },
+  {
+    "objectID": "content/content_01b.html",
+    "href": "content/content_01b.html",
+    "title": "Ordinary least squares",
+    "section": "",
+    "text": "Learn how to derive the formula for the intercept and slope\nLearn about some special linear model cases",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "Ordinary least squares"
+    ]
+  },
+  {
+    "objectID": "content/content_01b.html#learning-objectives",
+    "href": "content/content_01b.html#learning-objectives",
+    "title": "Ordinary least squares",
+    "section": "",
+    "text": "Learn how to derive the formula for the intercept and slope\nLearn about some special linear model cases",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "Ordinary least squares"
+    ]
+  },
+  {
+    "objectID": "content/content_01b.html#readings",
+    "href": "content/content_01b.html#readings",
+    "title": "Ordinary least squares",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n Linear models in statistics (Chapter 6)\n Ordinary Least Squares Regression - Explained Visually\n Doing linear regression by hand\n Quantitude - Ordinary Least Squares",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "Ordinary least squares"
+    ]
+  },
+  {
+    "objectID": "content/content_01b.html#slides",
+    "href": "content/content_01b.html#slides",
+    "title": "Ordinary least squares",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 1",
+      "Ordinary least squares"
     ]
   },
   {

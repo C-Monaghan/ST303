@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Cormac Monaghan">
+<meta name="description" content="This sheet provides practice with simple linear regression. You will work with the regression model algebraically, fit and interpret a model in R, and reproduce key regression calculations by hand. These practice questions should be attempted in your own time. These questions are not graded and should not be handed inYou should attend the joint ST302/ST303 lab to get help with the questions and have your answers checked.">
 
-<title>Lecture overview – ST303: Linear Models</title>
+<title>Practice Questions Sheet 1 – ST303: Linear Models</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,6 +28,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -35,7 +72,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../content/content_01a.html" rel="next">
 <link href=".././assets/favicon.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -46,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-d6ab3ef740640893b095f2d14ec9cc4d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-305f013c4eefa7216c825c837e554a7e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/fontawesome6-6.7.2/all.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/fontawesome6-6.7.2/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
@@ -78,10 +114,39 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
-<body class="nav-sidebar docked nav-fixed quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -111,7 +176,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Schedule</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../content/index.html" aria-current="page"> 
+    <a class="nav-link" href="../content/index.html"> 
 <span class="menu-text">Content</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -131,16 +196,6 @@ ul.task-list li input[type="checkbox"] {
 </div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-        <i class="bi bi-layout-text-sidebar-reverse"></i>
-      </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/index.html">Overview</a></li><li class="breadcrumb-item"><a href="../content/index.html">Lecture overview</a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-        </a>
-    </div>
-  </nav>
   <div id="quarto-announcement" data-announcement-id="a09ef8c2e966709f1e61178aac27e9fa" class="alert alert-info hidden"><i class="bi bi-info-circle quarto-announcement-icon"></i><div class="quarto-announcement-content">
 <p>See the assignment tab for your first practice assignment</p>
 </div></div>
@@ -148,100 +203,201 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-    <div class="sidebar-menu-container"> 
-    <ul class="list-unstyled mt-1">
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Overview</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../content/index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Lecture overview</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">Week 1</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../content/content_01a.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">The linear model</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../content/content_01b.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Ordinary least squares</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">Week 2</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../content/content_02.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Simple linear regression</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-    </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#simple-linear-regression" id="toc-simple-linear-regression" class="nav-link active" data-scroll-target="#simple-linear-regression">Simple linear regression</a></li>
+  <li><a href="#simple-linear-regression-in-r" id="toc-simple-linear-regression-in-r" class="nav-link" data-scroll-target="#simple-linear-regression-in-r">Simple linear regression in <code>R</code></a></li>
+  <li><a href="#simple-linear-regression-by-hand" id="toc-simple-linear-regression-by-hand" class="nav-link" data-scroll-target="#simple-linear-regression-by-hand">Simple linear regression by hand</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="assignment_01.pdf"><i class="bi bi-file-pdf"></i>Typst (st303_assignment)</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/index.html">Overview</a></li><li class="breadcrumb-item"><a href="../content/index.html">Lecture overview</a></li></ol></nav>
-<div class="quarto-title">
-<h1 class="title">Lecture overview</h1>
+<div class="st201-title-block">
+
+  <div class="st201-module">
+    ST201 · DATA ANALYSIS
+  </div>
+
+  <h1 class="st201-title">
+    Practice Questions Sheet 1
+  </h1>
+
+    <div class="st201-subtitle">
+    ST303 - Linear Models
+  </div>
+  
+    <div class="st201-author">
+    Lecturer: Cormac Monaghan
+  </div>
+  
+    <div class="st201-description">
+    <p>This sheet provides practice with simple linear regression. You will work with the regression model algebraically, fit and interpret a model in <code>R</code>, and reproduce key regression calculations by hand. These practice questions should be attempted in your own time. These questions are <strong>not graded</strong> and <strong>should not be handed in</strong></p>
+    <p>You should attend the joint ST302/ST303 lab to get help with the questions and have your answers checked.</p>
+  </div>
+  
 </div>
 
 
+<div style="page-break-after: always;"></div>
+<section id="simple-linear-regression" class="level1">
+<h1>Simple linear regression</h1>
+<p>Consider the following simple linear regression model <span class="math display">\[
+y_i = \beta_0 + \beta_1x_i + \epsilon_i, \qquad i = 1,\ldots,n.
+\]</span></p>
+<p>The above model may be alternatively written as</p>
+<p><span class="math display">\[
+y_i = \alpha_0 + \alpha_1(x_i-\bar{x}) + \epsilon_i, \qquad i = 1,\ldots,n.
+\]</span></p>
+<p>Answer the following:</p>
+<ol type="1">
+<li>Using the method of least squares, derive expressions for the estimators <span class="math inline">\(\hat{\alpha}_0\)</span> and <span class="math inline">\(\hat{\alpha}_1\)</span></li>
+<li>Interpret the parameters <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\alpha_1\)</span>.</li>
+<li>Explain why mean-centering the predictor variable can be useful.</li>
+</ol>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="simple-linear-regression-in-r" class="level1">
+<h1>Simple linear regression in <code>R</code></h1>
+<p>As concrete cures, it gains strength overtime. The following data (see <a href="#tbl-concrete-data" class="quarto-xref">Table&nbsp;1</a>) represent the 7-day and 28-day strength, in pounds per square inch (psi), of a certain type of concrete.</p>
+<div class="cell">
+<div id="tbl-concrete-data" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-concrete-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Concrete data
+</figcaption>
+<div aria-describedby="tbl-concrete-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<!-- preamble start -->
 
-<div class="quarto-title-meta">
+    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
 
-    
-  
-    
-  </div>
-  
+    <script>
+      // Create table-specific functions using external factory
+      const tableFns_s079zborzcnz5wp8pu6o = TinyTable.createTableFunctions("tinytable_s079zborzcnz5wp8pu6o");
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: '6', j: 1 }, { i: '6', j: 2 } ], css_id: 'tinytable_css_hdumxrpwk914159ymfev',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 } ], css_id: 'tinytable_css_3j1l56zzemj9nq8nme5o',}, 
+          { positions: [ { i: '0', j: 1 }, { i: '0', j: 2 } ], css_id: 'tinytable_css_uhute2idtyu9fyw3fa4t',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  tableFns_s079zborzcnz5wp8pu6o.styleCell(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
+    <style>
+    /* tinytable css entries after */
+    #tinytable_s079zborzcnz5wp8pu6o td.tinytable_css_hdumxrpwk914159ymfev, #tinytable_s079zborzcnz5wp8pu6o th.tinytable_css_hdumxrpwk914159ymfev {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_s079zborzcnz5wp8pu6o td.tinytable_css_3j1l56zzemj9nq8nme5o, #tinytable_s079zborzcnz5wp8pu6o th.tinytable_css_3j1l56zzemj9nq8nme5o { text-align: center }
+    #tinytable_s079zborzcnz5wp8pu6o td.tinytable_css_uhute2idtyu9fyw3fa4t, #tinytable_s079zborzcnz5wp8pu6o th.tinytable_css_uhute2idtyu9fyw3fa4t {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; font-weight: bold; text-align: center }
+    </style>
+    <div class="container">
+      <table class="tinytable" id="tinytable_s079zborzcnz5wp8pu6o" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        
+        <thead>
+              <tr>
+                <th scope="col" data-row="0" data-col="1">7 Day</th>
+                <th scope="col" data-row="0" data-col="2">28 Day</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td data-row="1" data-col="1">2300</td>
+                  <td data-row="1" data-col="2">4370</td>
+                </tr>
+                <tr>
+                  <td data-row="2" data-col="1">2430</td>
+                  <td data-row="2" data-col="2">4640</td>
+                </tr>
+                <tr>
+                  <td data-row="3" data-col="1">2890</td>
+                  <td data-row="3" data-col="2">4620</td>
+                </tr>
+                <tr>
+                  <td data-row="4" data-col="1">3120</td>
+                  <td data-row="4" data-col="2">4900</td>
+                </tr>
+                <tr>
+                  <td data-row="5" data-col="1">3380</td>
+                  <td data-row="5" data-col="2">5020</td>
+                </tr>
+                <tr>
+                  <td data-row="6" data-col="1">3390</td>
+                  <td data-row="6" data-col="2">5220</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+<!-- hack to avoid NA insertion in last line -->
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>You can read the data from the RStudio server using:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the `readr` and the `here` package.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># TIP: you can press tab when writing the folder path to have all the options</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># folder / file options appear to you</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>concrete <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"Sharedfiles/ST303/data/Concrete.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Answer the following set of questions using <code>R</code></p>
+<ol type="1">
+<li>Create a scatterplot showing the relationship between 7-day strength on the <span class="math inline">\(x\)</span>-axis and 28-day strength on the <span class="math inline">\(y\)</span>-axis.</li>
+<li>Does it seem appropriate to assume a linear relationship between the two variables (explain why you think so)?</li>
+<li>Specify a simple linear regression model for these data algebraically.</li>
+<li>Fit this model in <code>R</code> and report what the <strong>intercept</strong>, <strong>slope</strong>, and <strong>standard error</strong> for each term are.</li>
+<li>In the context of this data, what do these values mean?</li>
+<li>Update the scatter plot you made earlier to include a fitted line.</li>
+</ol>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="simple-linear-regression-by-hand" class="level1">
+<h1>Simple linear regression by hand</h1>
+<p>This time, instead of using <code>R</code>, we will be calculating our linear regression parameters by hand. Using the concrete data we mentioned in <a href="#tbl-concrete-data" class="quarto-xref">Table&nbsp;1</a>, calculate the following:</p>
+<ol type="1">
+<li><span class="math inline">\(\bar{x}\)</span>, <span class="math inline">\(\sum_{i=1}^n x_i^2\)</span>, and <span class="math inline">\(S_{xx}\)</span>.</li>
+<li><span class="math inline">\(\bar{y}\)</span>, <span class="math inline">\(\sum_{i=1}^n y_i^2\)</span>, and <span class="math inline">\(S_{yy}\)</span>.</li>
+<li><span class="math inline">\(\sum_{i=1}^n x_i y_i\)</span> and <span class="math inline">\(S_{xy}\)</span>.</li>
+</ol>
+<div class="callout callout-style-simple callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>You may use <code>R</code> to verify your calculations.
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>However, in an exam setting you may be asked to do calculations by hand (<em>hint, hint, wink, wink!!</em>).</p>
+<p><strong>As such, please show all of your workings</strong>.</p>
+</div>
+</div>
+<p>Use your calculated quantities to:</p>
+<ol start="4" type="1">
+<li>Calculate the least-squares slope estimate and the least-squares intercept estimate</li>
+<li>In addition, calculate the estimated error variance.</li>
+</ol>
 
 
-</header>
-
-
-<p>Each class has a set of required readings that should be <strong>completed in your own time</strong>. For the most part, these readings will mirror what we have covered in the lectures. However, there will be times that I find a cool resource that I believe may be helpful for some of you.</p>
-<p>All the slides for this module are special HTML files made using both <a href="https://quarto.org/">Quarto</a> and <a href="https://github.com/grantmcdermott/quarto-revealjs-clean">Clean Revealjs theme</a> by <a href="https://github.com/grantmcdermott">Grant McDermott</a>. Personally, this is my favourite theme to use for presentations, although I have made a couple of minor tweaks to it myself</p>
-
-
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -644,15 +800,6 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="../content/content_01a.html" class="pagination-link" aria-label="The linear model">
-        <span class="nav-page-text">The linear model</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
