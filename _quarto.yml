@@ -6,7 +6,7 @@ project:
   render:
     - "*.qmd"
     - "!slides/"
-    - "!assignments/"
+    # - "!assignments/"
     - "!_drafts/"
 
   resources:
@@ -25,7 +25,7 @@ website:
     icon: info-circle
     dismissable: false
     content: |
-      The first lecture begins on **25th September @12pm**
+      See the assignment tab for your first practice assignment
     type: info
     position: below-navbar
 
@@ -44,6 +44,7 @@ website:
       - text: Assignments
         menu:
           - text: Assignment 1
+            href: assignments\assignment_01.qmd
 
   sidebar:
     title: Content
@@ -60,6 +61,10 @@ website:
             href: content\content_01a.qmd
           - text: Ordinary least squares
             href: content\content_01b.qmd
+      - section: Week 2
+        contents:
+          - text: Simple linear regression
+            href: content\content_02.qmd
 
   page-footer:
     left: |
