@@ -1,0 +1,37 @@
+---
+title: The simple linear regression model
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+purrr::map(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+## Learning objectives
+
+- Learn about the simple linear regression model
+- Learn about the properties of simple linear regression
+- Learn about the sampling distributions of $\beta_0$, $\beta_1$, and $\sigma^2$
+
+## Readings
+
+### Suggested readings
+
+- {{< fa book >}} [The Sampling Distribution of the OLS Estimator](https://www.econometrics-with-r.org/4.5-tsdotoe.html)
+
+## Slides
+
+::: {.callout-caution}
+## Slides will be available on 2nd October
+:::
+
+```{r}
+#| label: week-2
+#| echo: false
+#| eval: false
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_3.html")
+```
