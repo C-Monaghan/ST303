@@ -1,0 +1,160 @@
+---
+title: Practice Questions Sheet 1
+subtitle: ST303 - Linear Models
+author: Cormac Monaghan
+description: |
+  This sheet provides practice with simple linear regression. You will work
+  with the regression model algebraically, fit and interpret a model in `R`,
+  and reproduce key regression calculations by hand. These practice questions
+  should be attempted in your own time. These questions are **not graded** and **should not be handed in**
+
+  You should attend the joint ST302/ST303 lab to get help with the questions
+  and have your answers checked.
+format:
+  st303_assignment-html: default
+  st303_assignment-typst: default
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+# Computations -----------------------------------------------------------------
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  echo = FALSE
+)
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(tinytable)
+
+# Example data -----------------------------------------------------------------
+concrete <- tibble(
+  `7_day` = c(2300, 2430, 2890, 3120, 3380, 3390),
+  `28_day` = c(4370, 4640, 4620, 4900, 5020, 5220)
+)
+```
+
+\newpage
+
+# Simple linear regression
+
+Consider the following simple linear regression model
+$$
+y_i = \beta_0 + \beta_1x_i + \epsilon_i, \qquad i = 1,\ldots,n.
+$$
+
+The above model may be alternatively written as
+
+$$
+y_i = \alpha_0 + \alpha_1(x_i-\bar{x}) + \epsilon_i, \qquad i = 1,\ldots,n.
+$$
+
+Answer the following:
+
+1. Using the method of least squares, derive expressions for the estimators
+   $\hat{\alpha}_0$ and $\hat{\alpha}_1$
+2. Interpret the parameters $\alpha_0$ and $\alpha_1$.
+3. Explain why mean-centering the predictor variable can be useful.
+
+\newpage
+
+# Simple linear regression in `R`
+
+As concrete cures, it gains strength overtime. The following data
+(see @tbl-concrete-data) represent the 7-day and 28-day strength, in pounds
+per square inch (psi), of a certain type of concrete.
+
+```{r}
+#| label: tbl-concrete-data
+#| tbl-cap: "Concrete data"
+concrete |>
+  rename(`7 Day` = `7_day`, `28 Day` = `28_day`) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE) |>
+  style_tt(j = 1:2, align = "c")
+```
+
+You can read the data from the RStudio server using:
+
+```{r}
+#| label: load-data
+#| eval: false
+#| echo: true
+
+# Using the `readr` and the `here` package.
+# TIP: you can press tab when writing the folder path to have all the options
+# folder / file options appear to you
+
+concrete <- readr::read_csv(here::here("Sharedfiles/ST303/data/Concrete.csv"))
+```
+
+Answer the following set of questions using `R`
+
+1. Create a scatterplot showing the relationship between 7-day strength
+  on the $x$-axis and 28-day strength on the $y$-axis.
+2. Does it seem appropriate to assume a linear relationship between the
+  two variables (explain why you think so)?
+3. Specify a simple linear regression model for these data algebraically.
+4. Fit this model in `R` and report what the **intercept**, **slope**, and
+  **standard error** for each term are.
+5. In the context of this data, what do these values mean?
+6. Update the scatter plot you made earlier to include a fitted line.
+
+\newpage
+
+# Simple linear regression by hand
+
+This time, instead of using `R`, we will be calculating our linear regression
+parameters by hand. Using the concrete data we mentioned in @tbl-concrete-data,
+calculate the following:
+
+:::{.content-visible when-format="typst"}
+
+```{=typst}
+#v(0.25cm)
+```
+
+:::
+
+1. $\bar{x}$, $\sum_{i=1}^n x_i^2$, and $S_{xx}$.
+2. $\bar{y}$, $\sum_{i=1}^n y_i^2$, and $S_{yy}$.
+3. $\sum_{i=1}^n x_i y_i$ and $S_{xy}$.
+
+:::{.content-visible when-format="typst"}
+
+```{=typst}
+#v(0.25cm)
+
+#box(stroke: rgb("#667477"), inset: 1em)[#text(fill: rgb("#667477"))[
+  You may use `R` to verify your calculations.
+
+  However, in an exam setting you may be asked to do calculations by
+  hand (_hint, hint, wink, wink!!_).
+
+  *As such, please show all of your workings*.
+]]
+
+#v(0.25cm)
+```
+
+:::
+
+:::: {.content-visible when-format="html"}
+::: {.callout-tip appearance="simple"}
+## You may use `R` to verify your calculations.
+
+However, in an exam setting you may be asked to do calculations by hand
+(*hint, hint, wink, wink!!*).
+
+**As such, please show all of your workings**.
+:::
+::::
+
+Use your calculated quantities to:
+
+4. Calculate the least-squares slope estimate and the least-squares intercept
+  estimate
+5. In addition, calculate the estimated error variance.
