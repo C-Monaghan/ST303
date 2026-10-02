@@ -1,0 +1,52 @@
+---
+title: Crash course in R and RStudio
+subtitle: ST303 - Linear Models
+# format:
+#   clean-revealjs:
+#     revealjs-plugins:
+#       - editable
+filters:
+  - code-window
+  # - editable
+---
+
+## What is R and RStudio
+
+[**R and RStudio are two different things**]{.center}
+
+- R is a **programming language** used for statistical computing.
+- RStudio is an **interface** for working with R.
+- R does the calculations.
+- RStudio gives us a convenient place to write, run and organise our code.
+
+## What is R and RStudio
+
+<br>
+
+![](https://moderndive.com/v2/images/shutterstock/R_vs_RStudio_1.png)
+
+## Before we start
+
+You should have access to one of the following
+
+**Option 1 - Departmental RStudio server**
+
+[https://rstudio.maths.nuim.ie/](https://rstudio.maths.nuim.ie/)
+
+**Option 2 - R and RStudio on your own machine**
+
+[Installation instructions can be found here](https://moderndive.com/v2/01-getting-started.html#sec-installing)
+
+::: {.callout-warning}
+## Either option will be fine for this module
+
+However, for some of your other modules, you may be using the server for your
+exams.
+
+[**Make sure you are able to access the RServer**]{.center}
+
+:::
+
+## RStudio
+
+![](https://docs.posit.co/ide/user/ide/guide/ui/images/rstudio-panes-labeled.png){.absolute width=659.4px height=593px left=187.5px top=77.9px}

@@ -1,0 +1,981 @@
+---
+title: Simple linear regression models
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(4321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+fuel <- readRDS(here::here("data/fuel.RDS"))
+
+# Fit linear model -------------------------------------------------------------
+fit <- lm(fuel ~ temp, data = fuel)
+
+n <- nrow(fuel)
+beta_0 <- coef(fit)[1]
+beta_1 <- coef(fit)[2]
+sigma_sq <- sum(residuals(fit)^2) / (n - 2)
+```
+
+## Recap {style="font-size: 95%;"}
+
+In the last two lectures we have:
+
+- Used a line to describe the relationship between two numerical variables
+- Defined **residuals** as the difference between observed and predicted values
+- Chosen the line that **minimises the sum of squared residuals**
+- Derived the OLS estimates
+
+$$
+\boxed{
+    \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x} \qquad
+    \hat{\beta}_1 = \frac{S_{xy}}{S_{xx}}
+  }
+$$
+
+:::: {.fragment .fade-up}
+::: {.callout-important}
+## Check in: Was there anything that was not clear or confusing from last week?
+:::
+::::
+
+---
+
+## Today
+
+Today we will take a look at
+
+- The simple linear regression model in more detail
+- Some assumptions about our error term $(\varepsilon)$
+- The sampling distributions of our parameters $(\beta_0, \beta_1, \sigma^2)$
+
+---
+
+[**We will continue using our fuel-consumption data.**]{.center}
+
+```{r}
+#| label: fig-fuel-1
+#| fig-cap: "Scatter plot showing the relationship between temperature and fuel consumption"
+fuel |>
+  ggplot(aes(temp, fuel)) +
+  geom_point(size = rel(3)) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    colour = ggokabeito::palette_okabe_ito(2)
+  ) +
+  labs(
+    x = "Average temperature (°F)",
+    y = "Fuel consumption"
+  ) +
+  theme_st303()
+```
+
+
+:::: {.fragment .fade-up}
+::: {.callout-note}
+## Question: Does temperature completely determine fuel consumption?
+:::
+::::
+
+:::{.notes}
+- "All models are wrong, but some are useful" - George Box (1976)
+:::
+
+## A line doesn't explain everything
+
+[**Why don't all office complexes use exactly the amount of fuel predicted by the line?**]{style="font-size: 80%;" .center}
+
+::: {.incremental}
+- Temperature is **not the only factor** affecting fuel use
+- **Buildings differ** from one another
+- Measurements are **not perfect**
+- There is simply **natural/random variation**
+:::
+
+:::: {.fragment .fade-up}
+::: {.callout-note}
+## The line describes the expected value of $Y$ for a given $X$.
+:::
+
+::: {.callout-note}
+## The remaining variation is not explained by the line.
+:::
+::::
+
+## Same temperature, different outcomes {style="font-size: 90%;"}
+
+Suppose **two office complexes** both have a temperature of $40^\circ \text{F}$.
+
+$$
+\mathbb{E}[Y \; \vert \; X = 40] = 10.72
+$$
+
+::: {.fragment .fade-up}
+
+- However, one complex might use **11.3 units of fuel**.
+- Another complex might use **10.1 units of fuel**.
+- Because temperature **is not the only thing** affecting fuel use.
+
+:::
+
+:::: {.fragment .fade-up}
+
+:::{.callout-caution}
+## Type of building
+:::
+
+:::{.callout-caution}
+## Insulation
+:::
+
+:::{.callout-caution}
+## Cost of fuel
+:::
+
+::::
+
+## The basic idea
+
+For any given value $x$, we can think of fuel consumption as having two parts:
+
+$$
+y_i \sim \text{Systematic part } + \text{ Random part}
+$$
+
+:::{.fragment .fade-up}
+In the case of our simple linear regression model
+
+$$
+\underbrace{\beta_0+\beta_1x_i}_{\text{systematic part}}
+\qquad + \qquad
+\underbrace{\epsilon_i}_{\text{random part}}
+$$
+
+- $\beta_0 + \beta_1x_i$ tells us **what we expect**
+- $\epsilon_i$ tells us **how much this observation differs from what we expect**
+
+:::
+
+---
+
+<br>
+
+:::: {.callout-important icon="false"}
+## Population model versus fitted model
+
+The line we estimate from our data is only an
+**estimate of an underlying population relationship**.
+
+$$
+y_i = \beta_0 + \beta_1x_i + \epsilon_i \quad \epsilon_i \sim \mathcal{N}(0, \sigma^2)
+$$
+
+::: {.fragment .fade-up}
+
+- $\beta_0$ = Expected value of $y$ when $x$ = 0
+- $\beta_1$ = Expected change in $y$ for a unit increase in $x$
+- $\sigma^2$ = The variance of the errors
+
+[**These are called population parameters**]{.center}
+
+[**Unfortunately, we usually do not know these values**]{.center}
+:::
+
+::: {.fragment .fade-up}
+
+What we do instead is get an **estimate of these parameters**
+
+$$
+\hat{y_i} = \hat{\beta_0} + \hat{\beta_1}x_i
+$$
+
+:::
+
+::::
+
+---
+
+```{r}
+fuel |>
+  ggplot(aes(temp, fuel)) +
+  geom_point(size = rel(3)) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    colour = ggokabeito::palette_okabe_ito(2)
+  ) +
+  labs(
+    x = "Average temperature (°F)",
+    y = "Fuel consumption"
+  ) +
+  theme_st303()
+```
+
+
+:::: {.callout-note title="Interpretation"}
+
+$$
+y_i \sim 15.84 - 0.128x_i
+$$
+
+For each one-degree increase in temperature, predicted fuel consumption
+decreases by approximately $0.128$ units, on average.
+
+::: {.fragment .fade-up}
+[**In this sample**]{.center}
+:::
+
+::::
+
+## Errors versus residuals
+
+The **population error** can be represented as
+
+$$
+\varepsilon_i = y_i - (\beta_0 + \beta_1x_i)
+$$
+
+- But we do not know what $\beta_0$ or $\beta_1$ are
+- So we can never observe $\varepsilon_i$
+- Instead we calculate a **residual**
+
+$$
+e_i = y_i - \hat{y_i}
+$$
+
+
+## Errors versus residuals
+
+
+:::: {.columns}
+
+::: {.column}
+
+[**Error**]{.center}
+
+$$
+\varepsilon_i = y_i - (\beta_0 + \beta_1x_i)
+$$
+
+- Population quantity
+- Unobservable
+- From unknown parameters
+
+:::
+
+::: {.column}
+
+[**Residual**]{.center}
+
+$$
+e_i = y_i - \hat{y_i}
+$$
+
+- Sample quantity
+- Observable
+- From fitted parameters
+
+:::
+
+::::
+
+
+:::: {.fragment .fade-up}
+
+::: {.callout-important}
+## Errors belong to the population model
+:::
+
+
+::: {.callout-important}
+## Residuals come from our fitted model.
+:::
+
+::::
+
+## Why does this matter
+
+To actual use our model, we make several **assumptions** about the errors.
+
+:::{.incremental}
+- Centered around 0
+- Roughly equally variable
+- Independent
+- Normally distributed
+:::
+
+## Some assumptions about the errors
+
+### Errors have mean zero
+
+$$
+\mathbb{E}[\epsilon_i]=0
+$$
+
+This means that, on average, the model does not systematically over-predict or
+under-predict.
+
+$$
+\epsilon_i < 0 \longrightarrow \text{Too low} \qquad \epsilon_i > 0 \longrightarrow \text{Too high}
+$$
+
+
+[**Over many observations, these balance out**]{.center}
+
+## Some assumptions about the errors
+
+### Constant variance
+
+$$
+\text{Var}(\epsilon_i)=\sigma^2
+$$
+
+The amount of variation around the regression line is assumed
+to be roughly the same across values of $X$.
+
+```{r}
+#| label: constant-variance
+
+x <- rep(c(20, 40, 60), each = 1000)
+
+# Constant variance
+constant <- tibble(x = x, error = rnorm(length(x), 0, 1))
+
+# Plotting
+constant |>
+  ggplot(aes(x = error, fill = factor(x))) +
+  geom_density(alpha = 0.5) +
+  ggokabeito::scale_fill_okabe_ito() +
+  labs(
+    x = "Error",
+    y = "Density",
+    fill = "Temperature"
+  ) +
+  facet_wrap(~x, nrow = 1) +
+  guides(fill = "none") +
+  theme_st303()
+```
+
+## Some assumptions about the errors
+
+### Constant variance
+
+<br>
+
+```{r}
+#| label: different-variance
+
+x <- rep(c(20, 40, 60), each = 1000)
+
+# Different levels of variance
+variance <- tibble(
+  x = x,
+  constant = rnorm(length(x), 0, 1),
+  increasing = case_when(
+    x == 20 ~ rnorm(length(x), 0, 1),
+    x == 40 ~ rnorm(length(x), 0, 1.5),
+    x == 60 ~ rnorm(length(x), 0, 2)
+  ),
+  decreasing = case_when(
+    x == 20 ~ rnorm(length(x), 0, 1),
+    x == 40 ~ rnorm(length(x), 0, 0.5),
+    x == 60 ~ rnorm(length(x), 0, 0.2)
+  )
+)
+
+# Cleaning up the data
+variance <- variance |>
+  tidyr::pivot_longer(cols = !x, names_to = "variance", values_to = "error") |>
+  mutate(
+    x = factor(x),
+    variance = factor(
+      variance,
+      levels = c("constant", "increasing", "decreasing")
+    )
+  )
+
+# Plotting
+variance |>
+  ggplot(aes(x = error, fill = x)) +
+  geom_density(alpha = 0.5) +
+  ggokabeito::scale_fill_okabe_ito() +
+  labs(
+    x = "Error",
+    y = "Density",
+    fill = "Temperature"
+  ) +
+  facet_grid(
+    variance ~ x,
+    scales = "free",
+    labeller = labeller(
+      variance = function(x) stringr::str_to_sentence(x)
+    )
+  ) +
+  guides(fill = "none") +
+  theme_st303()
+```
+
+## Some assumptions about the errors
+
+### Independence
+
+The error for one observation **should not tell us anything** about the error
+for another observation.
+
+$$
+\text{Cov}(\epsilon_i,\epsilon_j)=0 \qquad i\neq j
+$$
+
+
+::: {.callout-note icon="false"}
+## If Monday's fuel use was unusually high, it should not anything about Tuesday's?
+:::
+
+## Some assumptions about the errors
+
+### Normally distributed errors
+
+$$
+\epsilon_i \sim N(0,\sigma^2)
+$$
+
+Errors are normally distributed with a mean of 0 and a variance of $\sigma^2$
+
+```{r}
+#| label: normal-errors
+tibble(x = rnorm(n = 10000, mean = 0, sd = 1)) |>
+  ggplot(aes(x = x)) +
+  geom_density(fill = ggokabeito::palette_okabe_ito(1, alpha = 0.75)) +
+  theme_void()
+```
+
+
+:::: {.fragment .fade-up}
+::: {.callout-important}
+## Normality matters mainly for the exact small-sample inference that comes later.
+:::
+::::
+
+---
+
+## Putting it all together
+
+Our simple linear regression model is
+
+$$
+y_i \sim \beta_0 + \beta_1 x_i + \varepsilon_i
+$$
+
+with errors that are
+
+$$
+\begin{align*}
+  \mathbb{E}[\varepsilon_i] &= 0 \\[8pt]
+  \text{Var}(\varepsilon_i) &= \sigma^2 \\[8pt]
+  \text{Cov}(\varepsilon_i, \varepsilon_j) &= 0 \\[8pt]
+  \varepsilon_i &\sim N(0, \sigma^2)
+\end{align*}
+$$
+
+
+:::: {.fragment .fade-up}
+::: {.callout-important}
+## Errors are centered + equally spread + independent + approximately normally
+:::
+::::
+
+## Population versus sample model {style="font-size: 90%;"}
+
+The population model is
+
+$$
+Y_i = \beta_0 + \beta_1x_i + \epsilon_i
+$$
+
+But we don't know
+
+$$
+\beta_0,\quad \beta_1,\quad \sigma^2
+$$
+
+[**So we use our sample data to estimate them.**]{.center}
+
+Which gives us
+
+$$
+\hat\beta_0,\qquad \hat\beta_1,\qquad \hat\sigma^2
+$$
+
+
+:::: {.fragment .fade-up}
+::: {.callout-important icon="false"}
+## Different samples will give different estimates.
+:::
+::::
+
+## Imagine repeating the study
+
+Suppose we could repeatedly collect new samples from the same population.
+
+Each sample would give us:
+
+- A different dataset
+- A different fitted line
+- A different $\hat\beta_0$
+- A different $\hat\beta_1$
+
+::: {.callout-important icon="false"}
+## The estimates themselves have distributions.
+:::
+
+---
+
+## Let's look at the original data
+
+```{.r filename="coeffs.R"}
+fit <- lm(fuel ~ temp, data = fuel)
+
+n <- nrow(fuel)
+beta_0 <- coef(fit)[1]
+beta_1 <- coef(fit)[2]
+sigma_sq <- sum(residuals(fit)^2) / (n - 2)
+```
+
+$$
+N = 8 \qquad \hat{\beta_0} = 15.84 \qquad \hat{\beta_1} = -0.128 \qquad \hat{\sigma^2} = 0.428
+$$
+
+## Now let's simulate a dataset {style="font-size: 80%;"}
+
+```{.r filename="simulation.r"}
+set.seed(54321) # For reproducibility
+
+x <- fuel$temp
+esp <- rnorm(n = n, mean = 0, sd = sqrt(sigma_sq))
+
+# Now let's calculate y
+y <- beta_0 + (beta_1 * x) + esp
+```
+
+```{r}
+#| label: simulation-example
+
+set.seed(54321) # For reproducibility
+
+x <- fuel$temp
+esp <- rnorm(n = n, mean = 0, sd = sqrt(sigma_sq))
+
+# Now let's calculate y
+y <- beta_0 + (beta_1 * x) + esp
+```
+
+:::: {.columns}
+::: {.column}
+
+```{r}
+#| label: tbl-og-data
+#| tbl-cap: "Original fuel data"
+fuel |>
+  rename(Temperature = temp, Fuel = fuel) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE) |>
+  style_tt(j = c(1, 2), align = "c")
+```
+
+:::
+::: {.column}
+
+```{r}
+#| label: tbl-sim-data
+#| tbl-cap: "Simulated fuel data"
+#|
+sim_data <- tibble(
+  temp = x,
+  fuel = y |> round(1)
+)
+
+sim_data |>
+  rename(Temperature = temp, Fuel = fuel) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE) |>
+  style_tt(j = c(1, 2), align = "c")
+```
+
+:::
+::::
+
+## Let's compare our coefficients
+
+**Original model**
+
+$$
+\hat{\beta_0} = 15.84 \qquad \hat{\beta_1} = -0.128 \qquad \hat{\sigma^2} = 0.428
+$$
+
+```{.r filename="simulated-regression.R"}
+# Fit and extract coefficients
+sim_fit <- lm(fuel ~ temp, data = sim_data)
+
+beta_0_sim <- coef(sim_fit)[1]
+beta_1_sim <- coef(sim_fit)[2]
+sigma_sq_sim <- sum(residuals(sim_fit)^2) / (8 - 2)
+```
+
+```{r}
+#| label: simulated-regression
+# Fit and extract coefficients
+sim_fit <- lm(fuel ~ temp, data = sim_data)
+
+beta_0_sim <- coef(sim_fit)[1]
+beta_1_sim <- coef(sim_fit)[2]
+sigma_sq_sim <- sum(residuals(sim_fit)^2) / (8 - 2)
+```
+
+**Simulated model**
+
+$$
+\hat{\beta_0} = 14.61 \qquad \hat{\beta_1} = -0.108 \qquad \hat{\sigma^2} = 0.807
+$$
+
+---
+
+<br>
+
+```{r}
+#| label: sim-data-fit
+#|
+# Plot original and simulated line
+fuel |>
+  ggplot(aes(x = temp, y = fuel)) +
+  geom_point(alpha = 0.3) +
+  geom_abline(
+    intercept = beta_0,
+    slope = beta_1,
+    colour = ggokabeito::palette_okabe_ito(3)
+  ) +
+  geom_abline(
+    intercept = beta_0_sim,
+    slope = beta_1_sim,
+    colour = ggokabeito::palette_okabe_ito(2),
+    linetype = "dashed"
+  ) +
+  labs(x = "Temperature", y = "Fuel") +
+  theme_st303()
+```
+
+## Let's do 500 simulations!
+
+```{r}
+#| label: big-simulation
+#| echo: true
+set.seed(54321) # Reprodicibility
+
+# Simulate some data and fit model 500 times
+sim_results <- purrr::map(1:500, function(i) {
+  # Simulation -----------------------------------------------------------------
+  x <- fuel$temp
+  esp <- rnorm(n = n, mean = 0, sd = sqrt(sigma_sq))
+
+  y <- beta_0 + (beta_1 * x) + esp
+
+  sim_data <- tibble(temp = x, fuel = y)
+
+  # Modelling ------------------------------------------------------------------
+  sim_fit <- lm(fuel ~ temp, data = sim_data)
+
+  beta_0_sim <- coef(sim_fit)[1]
+  beta_1_sim <- coef(sim_fit)[2]
+  sigma_sq_sim <- sum(residuals(sim_fit)^2) / (8 - 2)
+
+  # Output ---------------------------------------------------------------------
+  tibble(
+    sample = i,
+    beta_0 = beta_0_sim,
+    beta_1 = beta_1_sim,
+    sigma_sq = sigma_sq_sim,
+    data = list(sim_data)
+  )
+}) |>
+  bind_rows()
+```
+
+---
+
+<br>
+
+```{r}
+#| label: fig-regression-lines
+#| fig-cap: "500 simulated regression lines"
+sim_lines <- sim_results |>
+  select(sample, data) |>
+  tidyr::unnest(data) |>
+  split(~sample) |>
+  purrr::imap(function(s, i) {
+    fit <- lm(fuel ~ temp, data = s)
+
+    broom::augment(fit) |> mutate(sample = i) |> relocate(sample)
+  }) |>
+  bind_rows()
+
+# Plot the simulated lines
+sim_lines |>
+  ggplot(aes(x = temp, y = .fitted, group = sample)) +
+  geom_line(linewidth = rel(0.5), alpha = 0.1) +
+  labs(x = "Temperature", y = "Fuel") +
+  theme_st303()
+```
+
+---
+
+```{r}
+#| label: fig-distribution
+#| fig-cap: "Distribution of estimated parameters"
+# Calculate mean ---------------------------------------------------------------
+sim_plot <- sim_results |>
+  select(-data) |>
+  tidyr::pivot_longer(
+    cols = !sample,
+    names_to = "parameter",
+    values_to = "value"
+  ) |>
+  group_by(parameter) |>
+  mutate(mean_value = mean(value))
+
+# Plotting ---------------------------------------------------------------------
+sim_plot |>
+  ggplot(aes(x = value, fill = parameter)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(
+    aes(xintercept = mean_value),
+    linetype = "dashed",
+    colour = "#999999"
+  ) +
+  ggokabeito::scale_fill_okabe_ito() +
+  labs(x = NULL, y = "Density") +
+  facet_wrap(
+    ~parameter,
+    scales = "free",
+    labeller = labeller(
+      parameter = function(x) {
+        case_when(
+          x == "beta_0" ~ "&beta;<sub>0</sub>",
+          x == "beta_1" ~ "&beta;<sub>1</sub>",
+          x == "sigma_sq" ~ "&sigma;<sup>2</sup>",
+        )
+      }
+    )
+  ) +
+  guides(fill = "none") +
+  theme_st303() +
+  theme(strip.text = ggtext::element_markdown())
+```
+
+:::: {.fragment .fade-up}
+::: {.callout-tip}
+## These are called sampling distributions
+:::
+::::
+
+## Sampling distribution of $\beta_1$ {style="font-size: 85%;"}
+
+Under the assumptions of linear regression
+
+$$
+\boxed{\hat{\beta_1} \sim \mathcal{N}(\beta_1, \frac{\sigma^2}{S_{xx}})}
+$$
+
+where
+
+$$
+S_{xx} = \sum^n_{i=1}(x_i - \bar{x})^2
+$$
+
+
+::::: {.fragment}
+
+[**Uncertainty in our estimate decreases when**]{.center}
+
+:::: {.columns}
+
+::: {.column}
+
+[**More variation in $X$**]{.center}
+
+$$
+S_{xx} \uparrow
+$$
+
+:::
+
+::: {.column}
+
+[**Less unexplained variation**]{.center}
+
+$$
+\sigma^2 \downarrow
+$$
+
+:::
+
+::::
+
+:::::
+
+## Sampling distribution of $\beta_0$
+
+Under the assumptions of linear regression
+
+$$
+\boxed{\hat{\beta_0} \sim \mathcal{N}\Big(\beta_0, \sigma^2 \big( \frac{1}{n} + \frac{\bar{x^2}}{S_{xx}} \big) \Big)}
+$$
+
+[Here, the uncertainty in $\hat{\beta}_0$ depends on]{.fragment .fade-up}
+
+:::{.incremental}
+- $\sigma^2$: More noise means more uncertainty
+- $n$: The larger the sample the less uncertain our estimate is
+- $\bar{x}$ being close to 0
+  - If $\bar{x}$ is far from zero, estimating the intercept becomes harder.
+:::
+
+## The sampling distribution of $\sigma^2$
+
+$$
+\sigma^2 = \frac{\sum \varepsilon_i^2}{n - 2}
+$$
+
+Thus, $\sigma^2$ would follow $\sigma^2 \sim \chi^2_{n - 2}$
+
+```{r}
+#| label: chi-dist
+tibble(
+  chi_6 = rchisq(n = 1000, df = 6),
+  chi_8 = rchisq(n = 1000, df = 8),
+  chi_10 = rchisq(n = 1000, df = 10),
+) |>
+  tidyr::pivot_longer(
+    cols = everything(),
+    names_to = "df",
+    values_to = "value"
+  ) |>
+  mutate(
+    df = factor(df, levels = paste0("chi_", c(6, 8, 10)))
+  ) |>
+  ggplot(aes(x = value, fill = df)) +
+  geom_density() +
+  ggokabeito::scale_fill_okabe_ito() +
+  labs(x = NULL, y = NULL) +
+  facet_wrap(~df) +
+  guides(fill = "none") +
+  theme_st303()
+```
+
+:::{.notes}
+- We subtract two because we are estimating two parameters $(\beta_0, \beta_1)$
+:::
+
+## Wrapping up {style="font-size: 85%;"}
+
+- We can get estimates of our population parameters $\beta_0, \beta_1, \sigma^2$
+- Errors are unobservable, while residuals are observable
+- We make several assumptions about the errors
+- Our parameters have known properties and distributions
+
+```{r}
+#| label: distributions
+# Calculate mean ---------------------------------------------------------------
+sim_plot <- sim_results |>
+  select(-data) |>
+  tidyr::pivot_longer(
+    cols = !sample,
+    names_to = "parameter",
+    values_to = "value"
+  ) |>
+  group_by(parameter) |>
+  mutate(mean_value = mean(value))
+
+# Plotting ---------------------------------------------------------------------
+sim_plot |>
+  ggplot(aes(x = value, fill = parameter)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(
+    aes(xintercept = mean_value),
+    linetype = "dashed",
+    colour = "#999999"
+  ) +
+  ggokabeito::scale_fill_okabe_ito() +
+  labs(x = NULL, y = "Density") +
+  facet_wrap(
+    ~parameter,
+    scales = "free",
+    labeller = labeller(
+      parameter = function(x) {
+        case_when(
+          x == "beta_0" ~ "&beta;<sub>0</sub>",
+          x == "beta_1" ~ "&beta;<sub>1</sub>",
+          x == "sigma_sq" ~ "&sigma;<sup>2</sup>",
+        )
+      }
+    )
+  ) +
+  guides(fill = "none") +
+  theme_st303() +
+  theme(strip.text = ggtext::element_markdown())
+```
+
+## Some useful R code for linear models
+
+```{.r filename="useful-code.R"}
+# Fit a simple linear regression model
+fit <- lm(fuel ~ temp, data = fuel)
+
+## View the model coefficients
+coef(fit)
+
+# View the intercept
+coef(fit)[1]
+
+# View the lope
+coef(fit)[2]
+
+# Get the full model summmary
+summary(fit)
+
+# View the residuals
+residuals(fit)
+
+# View the fitted values
+fitted(fit)
+
+# Make predictions from a fitted model
+predict(fit, newdata = tibble(temp = 40))
+
+# Or make predictions from a range of values
+predict(fit, newdata = tibble(temp = c(30, 40, 50, 60))
+```
