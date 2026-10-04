@@ -41,11 +41,9 @@ This module is broken down as 25% continuous assessment and 75% official exam.
 
 - 4 assignments in the form of a **Moodle quiz** (worth 10%)
 - 1 mid-term exam (worth 15%)
+  - **Mid-term exam date: November 6th (12pm - 1pm)**
 - 1 university exam (worth 75%)
-
-::: {.callout-note icon="false"}
-## The dates for each exam are still being finalised
-:::
+  - **Final exam date: **TBD
 
 ::: {.callout-important title="Details for Erasmus students"}
 If you are an Erasmus student here for **Semester 1 only**
