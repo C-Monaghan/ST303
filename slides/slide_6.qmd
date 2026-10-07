@@ -1,0 +1,613 @@
+---
+title: ANOVA decomposition
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(123456789)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+library(rosdata) # Some extra datasets
+
+# Function ---------------------------------------------------------------------
+source(here::here("R/make_hibbs_plot.R"))
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(1.1), face = "bold"),
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+data("hibbs") # Election versus economic growth
+
+# Model ------------------------------------------------------------------------
+fit <- lm(vote ~ growth, data = hibbs)
+
+# Key values -------------------------------------------------------------------
+y_bar <- mean(hibbs$vote)
+y_hat <- fitted(fit)
+esp <- residuals(fit)
+
+SST <- sum((hibbs$vote - y_bar)^2)
+SSR <- sum((y_hat - y_bar)^2)
+SSE <- sum(esp^2)
+
+R2 <- SSR / SST
+
+F_obs <- summary(fit)$fstatistic[1]
+p_F <- pf(
+  F_obs,
+  df1 = summary(fit)$fstatistic[2],
+  df2 = summary(fit)$fstatistic[3],
+  lower.tail = FALSE
+)
+```
+
+
+## The Hibbs data
+
+<br>
+
+```{r}
+#| label: hibbs-overview
+
+make_hibbs_plot(hibbs = hibbs)
+```
+
+## The Hibbs data
+
+<br>
+
+```{r}
+#| label: hibbs-plot-1a
+fig_1a <- hibbs |>
+  ggplot(aes(x = growth, y = vote)) +
+  geom_point() +
+  scale_x_continuous(labels = scales::label_number(suffix = "%")) +
+  scale_y_continuous(labels = scales::label_number(suffix = "%")) +
+  labs(
+    x = "Average recent growth in personal income",
+    y = "Incumbent party's vote share"
+  ) +
+  theme_st303()
+
+fig_1a
+```
+
+## The Hibbs data
+
+<br>
+
+```{r}
+#| label: hibbs-plot-1b
+#| dev: svg
+fig_1b <- hibbs |>
+  ggplot(aes(x = growth, y = vote)) +
+  geom_point() +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    linewidth = 0.8,
+    linetype = "dashed",
+    colour = ggokabeito::palette_okabe_ito(1)
+  ) +
+  scale_x_continuous(labels = scales::label_number(suffix = "%")) +
+  scale_y_continuous(labels = scales::label_number(suffix = "%")) +
+  labs(
+    x = "Average recent growth in personal income",
+    y = "Incumbent party's vote share"
+  ) +
+  theme_st303()
+
+fig_1b
+```
+
+## How much does our regression model explain?
+
+### The regression model
+
+We have fitted a simple linear regression model
+
+$$
+Y_i \sim \beta_0 + \beta_1X_i + \varepsilon_i
+$$
+
+- $Y$ = incumbent party vote share
+- $X$ = economic growth
+
+Our model gives us a fitted value $\hat{Y_i}$ for each observation
+
+[**But how useful are these fitted values**]{.fragment .fade-up .center}
+
+:::: {.fragment .fade-up}
+::: {.callout-important}
+## How much of the variation in $Y$ is explained by the regression?
+:::
+::::
+
+## How much does our regression model explain?
+
+### Ignoring the slope
+
+Suppose we ignored economic growth completely
+
+$$
+Y_i \sim \beta_0 + \varepsilon_i
+$$
+
+```{r}
+#| label: hibbs-plot-1c
+fig_1c <- hibbs |>
+  ggplot(aes(x = growth, y = vote)) +
+  geom_point() +
+  geom_abline(
+    intercept = mean(hibbs$vote),
+    slope = 0,
+    linetype = "dashed",
+    linewidth = 0.8,
+    colour = ggokabeito::palette_okabe_ito(1)
+  ) +
+  scale_x_continuous(labels = scales::label_number(suffix = "%")) +
+  scale_y_continuous(labels = scales::label_number(suffix = "%")) +
+  labs(
+    x = "Average recent growth in personal income",
+    y = "Incumbent party's vote share"
+  ) +
+  theme_st303()
+
+fig_1c
+```
+
+## How much does our regression model explain?
+
+### Including the slope
+
+Naturally, when we include the slope we get a different set of predictions
+
+$$
+Y_i \sim \beta_0 + \beta_1X_i + \varepsilon_i
+$$
+
+
+```{r}
+#| label: hibbs-plot-1d
+
+fig_1b
+```
+
+---
+
+<br>
+
+```{r}
+#| label: hibbs-plot-1e
+
+fig_1c <- fig_1c + labs(title = "Intercept only model")
+fig_1b <- fig_1b + labs(title = "Standard regression model")
+
+ggpubr::ggarrange(plotlist = c(fig_1c, fig_1b))
+```
+
+::: {.callout-important}
+## The standard regression has reduced the prediction errors
+:::
+
+## Let's break this down
+
+### We have **three quantities** for every observation
+
+For every observation $i$ we have the following
+
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+[**The observed value**]{.center}
+
+$$Y_i$$
+
+:::
+
+::: {.column width="33%"}
+
+[**The estimated value**]{.center}
+
+$$\hat{Y_i}$$
+
+:::
+
+::: {.column width="33%"}
+
+[**The residual**]{.center}
+
+$$\varepsilon_i$$
+
+:::
+::::
+
+<br>
+
+
+::: {.fragment .fade-up}
+
+Therefore we can say
+
+$$
+\boxed{Y_i = \hat{Y_i} + \varepsilon_i}
+$$
+
+:::
+
+## From an observation to a variation {style="font-size: 80%;"}
+
+[**We want to understand the variation in $Y$**]{.center}
+
+$$
+Y_i - \bar{Y}
+$$
+
+
+:::: {.fragment .fade-up}
+
+$$
+\begin{align*}
+Y_i &= \hat{Y_i} + \varepsilon_i \\[4pt]
+Y_i - \bar{Y} &= (\hat{Y_i} - \bar{Y}) + \varepsilon_i \\[4pt]
+\sum^n_{i = 1}(Y_i - \bar{Y})^2 &= \sum^n_{i = 1}\Big[(\hat{Y_i} - \bar{Y}) + \varepsilon_i\Big]^2 \\[4pt]
+\sum(Y_i - \bar{Y})^2 &= \sum(\hat{Y_i} - \bar{Y})^2 + \sum \varepsilon_i^2 + 2 \sum(\hat{Y_i} - \bar{Y}) \varepsilon_i
+\end{align*}
+$$
+
+$$
+\boxed{\sum(Y_i - \bar{Y})^2 = \sum(\hat{Y_i} - \bar{Y})^2 + \sum \varepsilon_i^2}
+$$
+
+
+::: {.callout-tip}
+## We call this ANOVA decomposition
+:::
+::::
+
+## From an observation to a variation
+
+We have decomposed the total variation in $Y$ into two parts:
+
+:::: {.columns}
+::: {.column}
+
+[**Explained**]{.center}
+
+$$
+\sum (\hat{Y}_i - \bar{Y})^2
+$$
+
+:::
+
+::: {.column}
+
+[**Unexplained**]{.center}
+
+$$
+\sum \varepsilon_i^2
+$$
+
+:::
+::::
+
+- **Explained**: Variation accounted for by the regression
+- **Unexplained**: Variation left over in the residuals
+
+::: {.callout-tip}
+## Total variation = Explained variation + Unexplained variation
+:::
+
+## Sums of squares {style="font-size: 95%;"}
+
+### These three formulas have specific names
+
+::: {.callout-tip}
+## Total variation = Explained variation + Unexplained variation
+:::
+
+<br>
+
+| Quantity          | Definition                                   | Meaning               |
+| ----------------- | ---------------------------------------------| --------------------- |
+| **Total SS**      | $\displaystyle SS_T=\sum(Y_i-\bar Y)^2$      | Total variation       |
+| **Regression SS** | $\displaystyle SS_R=\sum(\hat Y_i-\bar Y)^2$ | Explained variation   |
+| **Error SS**      | $\displaystyle SS_E=\sum e_i^2$              | Unexplained variation |
+
+
+
+::: {.fragment .fade-up}
+
+So another way of writing this
+
+$$
+SS_T = SS_R + SS_E
+$$
+
+[This is the ANOVA decomposition]{.center .alert}
+:::
+
+## The ANOVA table
+
+The decomposition can be summarised as an ANOVA table
+
+<br>
+
+```{r}
+#| label: anova-table
+
+anova_data <- data.frame(
+  Source = c("Regression", "Error", "**Total**"),
+  df = c("$1$", "$n-2$", "$n-1$"),
+  SS = c("$SS_R$", "$SS_E$", "$SS_T$"),
+  MS = c("$MS_R$", "$MS_E$", ""),
+  F = c("$MS_R/MS_E$", "", "")
+)
+
+# Output the table
+anova_data |> tt(width = 0.75) |> format_tt(markdown = TRUE)
+```
+
+where
+
+$$
+MS_R = \frac{SS_R}{1} \qquad MS_E = \frac{SS_E}{n - 2}
+$$
+
+::: {.notes}
+The ANOVA table contains four pieces of information
+
+- degrees of freedom
+- sums of squares
+- mean squares
+- the F-statistic
+:::
+
+## The ANOVA table
+
+```{r}
+#| label: anova-table-code-1
+#| echo: true
+#| collapse: true
+anova(fit) # ANOVA table for our fitted model
+```
+
+
+::::: {.fragment .fade-up}
+:::: {.columns}
+::: {.column width="70%"}
+
+- **Explained variation**: 273.63
+- **Residual variation**: 198.27
+- **Total variation**: 273.63 + 198.27 = 472.91
+
+:::
+
+::: {.column width="30%"}
+
+**How much <br> variation <br> is explained?**
+
+:::
+
+::::
+:::::
+
+## How much variation is explained?
+
+$$
+SS_T = SS_R + SS_E
+$$
+
+[**What proportion of the total variation is explained by the regression**]{style="font-size: 90%;" .center}
+
+
+::: {.fragment .fade-up}
+
+$$
+R^2 = \frac{SS_R}{SS_T} \qquad \text{OR} \qquad R^2 = 1 - \frac{SS_E}{SS_T}
+$$
+
+
+
+- $R^2 = 0$: 0% of the variation is explained by the regression
+- $R^2 = 0.5$: 50% of the variation is explained by the regression
+- $R^2 = 1$: 100% of the variation is explained by the regression
+
+:::
+
+::: {.notes}
+
+- $SS_R$ tells us how much variation has been explained.
+- $SS_T$ tells us how much variation there was to begin with.
+
+:::
+
+## How much variation is explained?
+
+```{r}
+#| label: anova-table-code-2
+#| echo: true
+#| collapse: true
+anova(fit) # ANOVA table for our fitted model
+```
+
+$$
+R^2 = \frac{SS_R}{SS_T} = \frac{273.63}{472.91} = 0.58
+$$
+
+## Hypothesis test {style="font-size: 80%;"}
+
+::: {.callout-caution appearance="minimal"}
+## Now we know much variation does the regression explain?
+:::
+
+::: {.callout-important appearance="minimal"}
+## Is there evidence that the regression explains more variation than we would expect if there were no linear relationship?
+:::
+
+$$
+H_0: \beta_1 = 0 \qquad H_1: \beta_1 \ne 0
+$$
+
+
+::: {.fragment .fade-up}
+
+- If $\beta_1 = 0$ then there is no linear contribution from $X$
+- The fitted regression should therefore provide little improvement over the
+  <br> intercept-only model.
+- We believe the population model is essentially
+
+$$
+Y_i \sim \beta_0 + \varepsilon_i
+$$
+
+:::
+
+
+::: {.fragment .fade-up}
+Hence, if $H_0$ was true, we would expect $SS_R$ to be relatively small
+compared to $SS_E$
+:::
+
+## Hypothesis test {style="font-size: 80%;"}
+
+### F statistic
+
+We compare the two mean squares
+
+$$
+F = \frac{MS_R}{MS_E} \qquad \text{OR} \qquad F = \frac{SS_R/1}{SS_E/(n-2)}
+$$
+
+If $H_0$ was true, we would expect $F \approx 1$
+
+
+:::: {.fragment .fade-up}
+
+If the regression explains substantially more variation than expected under $H_0$
+
+$$
+MS_R \gg MS_E \qquad \text{Then} \qquad F \gg 1
+$$
+
+Hence, large F values provide evidence against $H_0$
+
+
+::: {.callout-important}
+## But how do we determine a large F value?
+:::
+::::
+
+## Hypothesis test
+
+### F distribution
+
+The F statistic has it's own corresponding distribution
+[the F distribution]{.alert}
+
+```{r}
+#| label: f-distribution-1
+fig_2 <- tibble(f = rf(n = 1000, df1 = 1, df2 = 14)) |>
+  ggplot(aes(x = f)) +
+  geom_density(colour = "#E69F00", linewidth = 0.8) +
+  labs(x = NULL, y = "Density") +
+  theme_st303()
+
+fig_2
+```
+
+## Hypothesis test
+
+### F distribution
+
+The F statistic has it's own corresponding distribution
+[the F distribution]{.alert}
+
+```{r}
+#| label: f-distribution-2
+fig_2 + geom_vline(xintercept = 19.321, linetype = "dashed", colour = "#999999")
+```
+
+## Wrapping up {style="font-size: 80%;"}
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+[**Decomposition**]{.center}
+
+$$
+\boxed{SS_T + SS_R + SS_E}
+$$
+
+:::
+
+::: {.column width="33%"}
+
+[**Variation explained**]{.center}
+
+$$
+\boxed{R^2 = \frac{SS_R}{SS_T}}
+$$
+
+:::
+
+::: {.column width="33%"}
+
+[**F-statistic**]{.center}
+
+$$
+\boxed{F = \frac{MS_R}{MS_E}}
+$$
+
+:::
+::::
+
+<br>
+
+ANOVA decomposition gives us a way to think about regression as a
+decomposition of variation
+
+::: {.callout-tip}
+## Total variation = Explained variation + Unexplained variation
+:::
+
+<br>
+
+:::: {.columns}
+
+::: {.column width="33%"}
+[Simple linear regression]{.center}
+:::
+
+::: {.column width="33%"}
+[Multiple linear regression]{.center}
+:::
+
+::: {.column width="33%"}
+[Comparing models]{.center}
+:::
+::::

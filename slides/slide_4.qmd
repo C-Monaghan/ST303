@@ -1,13 +1,8 @@
 ---
 title: Crash course in R and RStudio
 subtitle: ST303 - Linear Models
-# format:
-#   clean-revealjs:
-#     revealjs-plugins:
-#       - editable
 filters:
   - code-window
-  # - editable
 ---
 
 ## What is R and RStudio

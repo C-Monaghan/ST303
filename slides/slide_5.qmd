@@ -1,0 +1,627 @@
+---
+title: Inference for Simple Linear Regression
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(4321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+fuel <- readRDS(here::here("data/fuel.RDS"))
+
+# Fit linear model -------------------------------------------------------------
+fit <- lm(fuel ~ temp, data = fuel)
+
+n <- nrow(fuel)
+beta_0 <- coef(fit)[1]
+beta_1 <- coef(fit)[2]
+sigma_sq <- sum(residuals(fit)^2) / (n - 2)
+```
+
+## Recap of what we've done so far
+
+So far, we have:
+
+- We used **OLS** to estimate a regression line.
+- We obtained estimates for $\beta_0$ and $\beta_1$
+- We learned that these estimates would change if we collected a different sample.
+- We learned about the **sampling distributions** of $\beta_0$ and $\beta_1$
+
+<br>
+
+::: {.callout-note}
+## Today: How can we use these sampling distributions to make inferences
+:::
+
+## Three questions we might ask
+
+**The slope**
+
+What is the population value of $\beta_1$?
+
+::: {.fragment .fade-up}
+**The mean**
+
+What is the average value of $Y$ when $X = x_0$?
+:::
+
+
+::: {.fragment .fade-up}
+**An individual value**
+
+What might one future value of $Y$ be when $X = x_0$?
+:::
+
+<br>
+
+:::: {.fragment .fade-up}
+::: {.callout-note icon="false"}
+## These are different questions - so they involve different kinds of uncertainty
+:::
+::::
+
+## Why do we need to do inference
+
+Let's suppose our sample of data gave the following slope value
+
+$$
+\hat{\beta_1} = -0.128
+$$
+
+
+<br>
+
+::: {.callout-important}
+## Is this the true population slope?
+:::
+
+
+::: {.fragment .fade-up}
+If we collected another sample, we would probably get a different estimate:
+
+$$
+\hat{\beta_1}^{(1)}, \quad \hat{\beta_1}^{(2)}, \quad \hat{\beta_1}^{(3)}, \quad \dots
+$$
+
+:::
+
+<br>
+
+:::: {.fragment .fade-up}
+::: {.callout-tip}
+## Inference is about quantifying this uncertainty.
+:::
+::::
+
+## Standard error
+
+One way of beginning to quantify that uncertainty is with the **standard error**
+
+::: {.fragment .fade-up}
+
+We know that the sampling variance of $\hat{\beta_1}$ is
+
+$$
+\text{Var}(\hat{\beta_1}) = \frac{\hat{\sigma}^2}{S_{xx}}
+$$
+
+:::
+
+
+::: {.fragment .fade-up}
+
+Therefore, the **standard error** is simply the square root of the variance:
+
+$$
+SE(\hat{\beta_1}) = \sqrt{\frac{\hat{\sigma}^2}{S_{xx}}} = \frac{\hat{\sigma}}{\sqrt{S_{xx}}}
+$$
+
+:::
+
+---
+
+<br>
+
+$$
+SE(\hat{\beta_1}) = \frac{\hat{\sigma}}{\sqrt{S_{xx}}}
+$$
+
+[**So uncertainty decreases when**]{.center}
+
+:::: {.columns}
+
+::: {.column}
+
+[**Less residual variation**]{.center}
+
+$$
+\hat{\sigma} \downarrow
+$$
+
+:::
+
+::: {.column}
+
+[**More information about $X$**]{.center}
+
+$$
+S_{xx} \uparrow
+$$
+
+:::
+::::
+
+:::: {.fragment .fade-up}
+::: {.callout-tip}
+## The more information we have, the more precise our estimates will be
+:::
+::::
+
+## Quick question
+
+If we **increase the sample size** while keeping everything else similar
+
+What would you expect to happen to
+
+$$
+SE(\hat{\beta_1})
+$$
+
+:::: {.columns}
+::: {.column width="33%"}
+[**Increase**]{.center}
+:::
+
+::: {.column width="33%"}
+[**Stay the same**]{.center}
+:::
+
+::: {.column width="33%"}
+[**Decrease**]{.center .fragment .highlight-green}
+:::
+::::
+
+
+:::: {.fragment .fade-up}
+
+$$
+\boxed{SE(\hat{\beta_1}) \downarrow}
+$$
+
+::: {.callout-tip appearance="minimal"}
+## More observations generally give us a more precise estimate
+
+More data tends to increase $S_{xx}$ while $\hat{\sigma}$ stays roughly stable
+:::
+::::
+
+## Uncertainty → inference
+
+So far we have
+
+- An estimate of our slope: $\hat{\beta_1}$
+- An estimate of it's uncertainty: $\text{SE}(\hat{\beta_1})$
+
+Now we can ask
+
+::: {.callout-note}
+## What values of $\beta_1$ are compatible with our data?
+:::
+
+<br>
+
+:::: {.fragment .fade-up}
+::: {.callout-important}
+## This gives us a confidence interval
+:::
+::::
+
+## Recall our assumptions
+
+Before we build intervals, recall the model assumptions:
+
+1. **Linearity**: the mean of $Y$ is a linear function of $X$
+2. **Independence**: observations are independent
+3. **Constant variance**: $\text{Var}(\varepsilon_i) = \sigma^2$ for all $i$
+4. **Normality**: $\varepsilon_i \sim \mathcal{N}(0, \sigma^2)$
+
+<br>
+
+::: {.callout-note icon="false"}
+## SEs, $t$-tests, CIs, PIs all rely on these being reasonable
+:::
+
+## Confidence intervals
+
+<br>
+
+$$
+\boxed{\text{estimate } \pm \text{ critical value } \times \text{ standard error}}
+$$
+
+<br>
+
+For our slope this is
+
+$$
+\boxed{\hat{\beta_1} \pm t_{n-2, 1 - \alpha/2} \; \text{SE}(\hat{\beta_1})}
+$$
+
+where
+
+$$
+\alpha = 0.05
+$$
+
+## Why use the $t$-distribution
+
+If we knew the true value of $\sigma$
+
+$$
+\frac{\hat{\beta_1} - \beta_1}{\sigma / \sqrt{S_{xx}}} \sim \mathcal{N}(0, 1)
+$$
+
+::: {.fragment .fade-up}
+
+But we only have $\hat{\sigma}$, and estimating it introduces
+**additional uncertainty**.
+
+Hence we use a $t_{n-2}$ distribution:
+
+$$
+\frac{\hat{\beta_1} - \beta_1}{\hat{\sigma} / \sqrt{S_{xx}}} \sim t_{n - 2}
+$$
+
+Compared with the standard normal distribution, the $t$-distribution has
+**heavier tails**
+:::
+
+## Let's look at the fuel data example {style="font-size: 75%;"}
+
+### Confidence interval for the slope
+
+From previous lectures we know that
+
+$$
+\hat{\beta_1} = -0.128 \qquad \hat{\sigma^2} = 0.428 \qquad S_{xx} = 1404.355
+$$
+
+Therefore the standard error of $\hat{\beta}_1$ is:
+
+$$
+SE(\hat{\beta_1}) = \frac{\hat{\sigma}}{\sqrt{S_{xx}}} = \sqrt{\frac{0.428}{1404.355}} \approx 0.018
+$$
+
+And from *Student’s t-Table* we know that
+
+$$
+t_{(n-2), (1 - \alpha/2)} = t_{6, 0.975} = 2.447 \qquad \text{where } n = 8 \; \& \; \alpha = 0.05
+$$
+
+
+:::: {.fragment .fade-up}
+
+$$
+\text{CI}(\hat{\beta_1}) = -0.128 \pm (2.447 \times 0.018) = (-0.172, -0.084)
+$$
+
+
+::: {.callout-tip}
+## We are 95% confident that the population slope is between $-0.172$ and $-0.084$.
+:::
+::::
+
+## Quick little side note
+
+### Observed t-values versus critical t-values
+
+```{r}
+#| label: model-summary
+#| echo: true
+#| collapse: true
+summary(fit)
+```
+
+## Performing inference on $\beta_1$ {style="font-size: 75%;"}
+
+In some cases we may wish to perform a hypothesis test
+
+$$
+H_0: \beta_1 = 0 \qquad H_a: \beta_1 \ne 0
+$$
+
+Under the null hypothesis $(H_0)$
+
+$$
+t = \frac{\hat{\beta_1} - 0}{SE(\hat{\beta_1})}
+$$
+
+
+:::: {.fragment}
+
+From our data
+
+$$
+t = \frac{-0.128}{0.018} = -7.11 \qquad \text{df } = 6
+$$
+
+Hence we get $p < 0.001$
+
+::: {.callout-important}
+## There is strong evidence that the population slope is not zero.
+:::
+::::
+
+## Performing inference on $\beta_1$
+
+### Using the confidence intervals
+
+For a two-sided test at $\alpha = 0.05$ with $H_0: \beta_1 = 0$
+
+We **reject $H_0$** when the 95% confidence interval **does not** cross 0
+
+:::: {.fragment .fade-up}
+Our confidence interval was
+
+$$
+(-0.172, -0.084) \notin 0
+$$
+
+::: {.callout-important}
+## Providing further evidence for rejecting $H_0$
+:::
+::::
+
+## Performing inference on $\beta_0$
+
+We can apply the logic for $\beta_0$
+
+$$
+SE(\hat{\beta}_0) = \hat{\sigma} \sqrt{\frac{1}{n} + \frac{\bar{x}^2}{S_{xx}}}
+$$
+
+$$
+\hat{\beta}_0 \pm t_{(n-2),\, (1-\alpha/2)} \; SE(\hat{\beta}_0)
+$$
+
+
+::: {.fragment .fade-up}
+Therefore, for our fuel data the 95% CI for $\beta_0$ is:
+
+$$
+95\% (CI) = (13.88, 17.80)
+$$
+
+:::
+
+
+:::: {.fragment}
+::: {.callout-note}
+## We are 95% confident that the population intercept is between $13.88$ and $17.80$
+:::
+::::
+
+## Making predictions from linear models
+
+### Mean versus individual predictions
+
+Let's say we want to make a prediction from our model
+
+$$
+\hat{y} = 15.84 - 0.128(50) = 9.44
+$$
+
+At $50^\circ$F, predicted fuel usage is 9.44.
+
+[**But this value can be interpreted in two ways***]{.fragment .fade-up .center}
+
+
+:::: {.fragment .fade-up}
+::: {.callout-warning appearance="minimal"}
+## 9.44 is the [average fuel use across all weeks]{.alert} where temperature is $50^\circ$F
+:::
+::::
+
+:::: {.fragment .fade-up}
+::: {.callout-warning appearance="minimal"}
+## 9.44 is the fuel usage [for one particular week]{.alert} where temperature is $50^\circ$F
+:::
+::::
+
+:::: {.fragment}
+::: {.callout-tip appearance="minimal"}
+## The former has a [confidence interval]{.alert} and the latter has a [prediction interval]{.alert}
+:::
+::::
+
+## Confidence versus prediction intervals
+
+::: {.callout-note appearance="minimal" title="Confidence versus prediction intervals"}
+- A confidence interval is concerned with how uncertain are we <br> about the
+  **average response** at this value of $X$?
+- A prediction interval is concerned with how uncertain are we <br> about one
+  **particular future response** at this value of $X$?
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="minimal"}
+## A prediction interval has [two]{.alert} sources of uncertainty
+
+- Uncertainty about where the regression line is
+- Natural variation of individual observations around the line.
+:::
+:::
+
+::: {.fragment .fade-up}
+
+- The confidence interval is **about where the line** is
+- The prediction interval is **about where an individual observation might land**
+
+:::
+
+## Confidence interval for the mean response {style="font-size: 95%;"}
+
+::: {.callout-note icon="false"}
+## What is the average fuel use for weeks where temperature is $50^\circ$F?
+:::
+
+We know that $\hat{y_0} = 9.44$ and the standard error for this estimate can be
+represented as:
+
+$$
+SE({\hat{y_0}}) = \hat{\sigma} \sqrt{\frac{1}{n} + \frac{(x_0 -\bar{x})^2}{S_{xx}}}
+$$
+
+
+::: {.fragment .fade-up}
+
+$$
+\begin{align}
+\text{Hence } 95\% \text{ CI} &= 9.44 \; \pm \; 2.447 \times \color{blue}{0.254} \\[4pt]
+&= (8.82, 10.06)
+\end{align}
+$$
+
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="minimal"}
+## Our interpretation
+
+We are 95% confident that the mean fuel use at $50^\circ F$ is between approximately 8.82 and 10.06 units.
+:::
+:::
+
+## Prediction intervals
+
+::: {.callout-note icon="false"}
+## What might the fuel use be for one particular week when temperature is $50^\circ$F?
+:::
+
+We know that $\hat{y_0} = 9.44$, but this time we have to account for additional
+uncertainty around the regression line
+
+$$
+SE_{\text{prediction}} = \hat{\sigma} \sqrt{1 + \frac{1}{n} + \frac{(x_0 -\bar{x})^2}{S_{xx}}}
+$$
+
+
+::: {.fragment .fade-up}
+$$
+\begin{align}
+\text{Hence } 95\% \text{ CI} &= 9.44 \; \pm \; 2.447 \times \color{blue}{0.702} \\[4pt]
+&= (7.72, 11.16)
+\end{align}
+$$
+
+:::
+
+
+
+:::: {.fragment .fade-up}
+::: {.callout-important appearance="minimal"}
+## Notice how to PI is much wider than the CI
+
+It must cover both our uncertainty about the line *and* the natural spread
+of individual observations
+:::
+::::
+
+---
+
+<br>
+
+```{r}
+# Generate a new data
+new_data <- tibble(temp = seq(28, 63, by = 0.1))
+
+# Doing confidence intervals
+preds_1 <- predict(fit, newdata = new_data, interval = "confidence") |>
+  as_tibble() |>
+  mutate(interval = "Confidence interval") |>
+  bind_cols(new_data)
+
+# Doing prediction intervals
+preds_2 <- predict(fit, newdata = new_data, interval = "prediction") |>
+  as_tibble() |>
+  mutate(interval = "Prediction interval") |>
+  bind_cols(new_data)
+
+# Joining them both together
+preds_full <- bind_rows(preds_1, preds_2)
+
+# Plotting
+preds_full |>
+  ggplot(aes(x = temp, y = fit)) +
+  geom_line(linewidth = rel(1)) +
+  geom_ribbon(
+    aes(ymin = lwr, ymax = upr, fill = interval, colour = interval),
+    alpha = 0.2
+  ) +
+  ggokabeito::scale_fill_okabe_ito() +
+  ggokabeito::scale_colour_okabe_ito() +
+  labs(
+    x = "Temperature",
+    y = "Predicted fuel use",
+    fill = NULL,
+    colour = NULL
+  ) +
+  theme_st303()
+```
+
+## Doing predictions in R
+
+```{r}
+#| label: predictions
+#| echo: true
+
+# Doing predictions with a confidence interval
+predict(fit, newdata = data.frame(temp = 50), interval = "confidence")
+
+# Doing predictions with a prediction interval
+predict(fit, newdata = data.frame(temp = 50), interval = "prediction")
+```
+
+## Summary: one formula, four intervals {style="font-size: 90%;"}
+
+Every interval we've seen has the form $\text{estimate} \pm t^* \times SE$:
+
+<br>
+<br>
+
+| Quantity | Estimate | Standard error |
+|---|---|---|
+| $\beta_1$ | $\hat{\beta}_1$ | $\hat{\sigma} / \sqrt{S_{xx}}$ |
+| $\beta_0$ | $\hat{\beta}_0$ | $\hat{\sigma}\sqrt{\tfrac{1}{n} + \tfrac{\bar{x}^2}{S_{xx}}}$ |
+| Mean response at $x_0$ | $\hat{y}_0$ | $\hat{\sigma}\sqrt{\tfrac{1}{n} + \tfrac{(x_0-\bar{x})^2}{S_{xx}}}$ |
+| Individual response at $x_0$ | $\hat{y}_0$ | $\hat{\sigma}\sqrt{1 + \tfrac{1}{n} + \tfrac{(x_0-\bar{x})^2}{S_{xx}}}$ |
+
+<br>
+
+::: {.callout-tip}
+## The only difference between a CI and a PI is the extra "$1 +$" under the square root.
+:::
