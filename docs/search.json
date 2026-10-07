@@ -203,5 +203,101 @@
     "title": "Welcome to ST303",
     "section": "Slides",
     "text": "Slides\nAll the slides for this module are created using Quarto. In fact, this entire module website is built using Quarto. Personally, I love Quarto. I do just about everything with it! If you every get a chance, do check it out (ok … mini rant over!)\n\nThere are many little hidden things you can do with these slides.\nYou can click in the slides and navigate through them with ← and →.\nIf you type ? (or shift + /) while viewing the slides you can see a list of slide-specific commands (such as like f for fullscreen mode or additionally s for presenter mode if you want to see my notes).\nFinally, if you want to make a PDF of these slides you can press e, followed by ctrl + p.\n\n  \n    \n       Open slides in New Window"
+  },
+  {
+    "objectID": "content/content_03a.html",
+    "href": "content/content_03a.html",
+    "title": "Inference for simple linear regression",
+    "section": "",
+    "text": "Learn how to build confidence and prediction intervals\nPerform a hypothesis test from a simple linear regression",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "Inference"
+    ]
+  },
+  {
+    "objectID": "content/content_03a.html#learning-objectives",
+    "href": "content/content_03a.html#learning-objectives",
+    "title": "Inference for simple linear regression",
+    "section": "",
+    "text": "Learn how to build confidence and prediction intervals\nPerform a hypothesis test from a simple linear regression",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "Inference"
+    ]
+  },
+  {
+    "objectID": "content/content_03a.html#readings",
+    "href": "content/content_03a.html#readings",
+    "title": "Inference for simple linear regression",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n Predictive Inference for the Simple Linear Mode\n Simple Linear Regression: Inference and Interpretation",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "Inference"
+    ]
+  },
+  {
+    "objectID": "content/content_03a.html#slides",
+    "href": "content/content_03a.html#slides",
+    "title": "Inference for simple linear regression",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "Inference"
+    ]
+  },
+  {
+    "objectID": "content/content_03b.html",
+    "href": "content/content_03b.html",
+    "title": "ANOVA decomposition",
+    "section": "",
+    "text": "Learn how to decomposition a fitted model into explained and unexplained variability\nLearn how to compare two regression models\nUnderstand what the components of an ANOVA table represent",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "ANOVA decomposition"
+    ]
+  },
+  {
+    "objectID": "content/content_03b.html#learning-objectives",
+    "href": "content/content_03b.html#learning-objectives",
+    "title": "ANOVA decomposition",
+    "section": "",
+    "text": "Learn how to decomposition a fitted model into explained and unexplained variability\nLearn how to compare two regression models\nUnderstand what the components of an ANOVA table represent",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "ANOVA decomposition"
+    ]
+  },
+  {
+    "objectID": "content/content_03b.html#readings",
+    "href": "content/content_03b.html#readings",
+    "title": "ANOVA decomposition",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n ANOVA and model fit",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "ANOVA decomposition"
+    ]
+  },
+  {
+    "objectID": "content/content_03b.html#slides",
+    "href": "content/content_03b.html#slides",
+    "title": "ANOVA decomposition",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "ANOVA decomposition"
+    ]
   }
 ]
