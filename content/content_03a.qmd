@@ -18,7 +18,7 @@ purrr::map(list.files(here::here("R"), full.names = TRUE), source)
 
 ### Suggested readings
 
-- {{< fa pdf >}} [Predictive Inference for the Simple Linear Mode](https://www.stat.cmu.edu/~cshalizi/mreg/15/lectures/09/lecture-09.pdf)
+- {{< fa file-pdf >}} [Predictive Inference for the Simple Linear Mode](https://www.stat.cmu.edu/~cshalizi/mreg/15/lectures/09/lecture-09.pdf)
 - {{< fa brands youtube >}} [Simple Linear Regression: Inference and Interpretation](https://www.youtube.com/watch?v=jXeiwt26IFA)
 
 ## Slides
