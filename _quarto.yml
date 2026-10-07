@@ -66,6 +66,12 @@ website:
         contents:
           - text: Simple linear regression
             href: content\content_02.qmd
+      - section: Week 3
+        contents:
+          - text: Inference
+            href: content\content_03a.qmd
+          - text: ANOVA decomposition
+            href: content\content_03b.qmd
 
   page-footer:
     left: |

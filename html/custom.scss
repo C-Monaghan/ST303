@@ -302,6 +302,22 @@ ul, ol,
 }
 
 // Sidebar ---------------------------------------------------------------------
+// Less space between items
+.sidebar-item {
+  line-height: 0.75rem;
+}
+
+// Smaller sidebar text
+.sidebar-item-text {
+  font-size: 0.85em;
+}
+
+// Make the sidebar content bold when it is clicked on
+.sidebar-item-container .active {
+  font-weight: 600;
+}
+
+// TOC -------------------------------------------------------------------------
 #toc-title {
   font-weight: 700;
   color: $gray-900;
