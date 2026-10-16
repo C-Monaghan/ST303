@@ -72,6 +72,12 @@ website:
             href: content\content_03a.qmd
           - text: ANOVA decomposition
             href: content\content_03b.qmd
+      - section: Week 4
+        contents:
+          - text: Correlation
+            href: content\content_04a.qmd
+          - text: Assumptions
+            href: content\content_04b.qmd
 
   page-footer:
     left: |

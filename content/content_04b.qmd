@@ -1,0 +1,36 @@
+---
+title: Assessing model assumptions
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+purrr::map(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+## Learning objectives
+
+- Recap on what the assumptions of simple linear regression are
+- Learn how to assess and diagnose simple linear regression models
+- Understand what to do when model assumptions are violated
+- Learn how transformations can be applied to data
+
+## Readings
+
+### Suggested readings
+
+- {{< fa link >}} [A guide to testing the assumptions of linear regression](https://godatadrive.com/blog/basic-guide-to-test-assumptions-of-linear-regression-in-r)
+- {{< fa file-pdf >}} [Understanding and checking the assumptions of linear regression](https://onlinelibrary.wiley.com/doi/10.1111/ceo.12358)
+- {{< fa podcast >}} [The Dark Art of Regression Diagnostics ](https://quantitude.org/s4e19-regression-diagnostics/)
+
+## Slides
+
+```{r}
+#| label: week-4b
+#| echo: false
+#| eval: true
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_8.html")
+```
