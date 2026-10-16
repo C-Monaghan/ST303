@@ -1,0 +1,732 @@
+---
+title: Assessing the model assumptions
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(54321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+library(rosdata)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(1.1), face = "bold"),
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+linearity_data <- tibble(
+  x = rnorm(n = 500, mean = 0, sd = 1),
+  linear = 3 + (1.5 * x) + rnorm(n = 500, mean = 0, sd = 1),
+  non_linear = 3 + (1.5 * x^2) + (0.5 * x) + rnorm(n = 500, mean = 0, sd = 1)
+) |>
+  tidyr::pivot_longer(cols = !x, names_to = "direction", values_to = "y")
+
+fuel <- readRDS(here::here("data/fuel.RDS"))
+cigarette <- readr::read_csv("data/cigarette.csv") |> janitor::clean_names()
+
+# Linear model -----------------------------------------------------------------
+fit <- lm(fuel ~ temp, data = fuel)
+```
+
+## Today's question
+
+[We can always fit a regression line to a dataset]{.center}
+
+<br>
+
+[**But when should we trust the results?**]{.center}
+
+<br>
+
+:::: {.fragment .fade-up}
+::: {.callout-important}
+## Regression models are only useful when our assumptions are reasonably met
+:::
+::::
+
+:::: {.fragment .fade-up}
+::: {.callout-tip}
+## Today we will learn how to identify potential problems in our regression models
+:::
+::::
+
+## Learning objectives
+
+By the end of this lecture, we should be able to:
+
+- State the main assumptions of simple linear regression.
+- Explain the consequences of violating each assumption.
+- Construct and interpret the main diagnostic plots.
+- Identify unusual observations and assess their influence.
+- Explain when transformations may help and how they affect interpretation.
+
+## The simple linear regression model {style="font-size:90%;"}
+
+We model the relationship between a predictor $X$ and a response $Y$:
+
+$$
+Y_i = \beta_0 + \beta_1 X_i + \varepsilon_i.
+$$
+
+where
+
+- $\beta_0$ is the **population intercept**
+- $\beta_1$ is the **population slope**
+- $\varepsilon_i$ is the **random error** for observation $i$
+
+::: {.fragment .fade-up}
+The conditional mean is
+
+$$
+E(Y_i \mid X_i = x_i)=\beta_0+\beta_1x_i
+$$
+
+:::
+
+## What assumptions are we making {style="font-size:90%;"}
+
+When doing inference from a simple linear regression model we assume
+
+1. **Linearity:** the conditional mean is linear in $x$.
+2. **Constant variance:** the errors have the same variance at each predictor
+   value.
+3. **Independence:** the errors are independent.
+4. **Normality:** the errors are normally distributed, conditional on the
+   predictor values.
+
+In the classical model, we would write
+$\varepsilon_i \overset{\text{ind}}{\sim} \mathcal{N}(0,\sigma^2)$
+
+
+## Why do these assumptions matter?
+
+<br>
+
+```{r}
+#| label: assumption-violations
+tribble(
+  ~Assumption         , ~`Main concern if violated`                                           ,
+  "Linearity"         , "The fitted mean relationship may be systematically wrong"            ,
+  "Constant variance" , "Standard errors and confidence intervals may be unreliable"          ,
+  "Independence"      , "Standard errors and inference may be unreliable"                     ,
+  "Normality"         , "Exact small-sample tests and confidence intervals may be unreliable"
+) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE)
+```
+
+<br>
+
+:::: {.fragment .fade-up}
+::: {.callout-important appearance="minimal"}
+## An important distinction
+
+A linear mode model can describe the data reasonably well while still providing
+unreliable standard errors, tests or confidence intervals.
+:::
+::::
+
+## Assumption 1: Linearity {style="font-size: 80%;"}
+
+We assume that the expected response changes linearly with the predictor:
+
+$$
+E(Y_i \mid X_i = x_i) = \beta_0+\beta_1 x_i
+$$
+
+This means that a one-unit increase in $X$ corresponds to the same change in
+the expected response, regardless of the starting value of $X$
+
+```{r}
+#| label: linear-1a
+linearity_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  labs(x = "X value", y = "Y value") +
+  facet_wrap(
+    ~direction,
+    scales = "free",
+    labeller = labeller(
+      direction = function(x) {
+        x |> stringr::str_replace("_", " ") |> stringr::str_to_sentence()
+      }
+    )
+  ) +
+  theme_st303()
+```
+
+## Assumption 1: Linearity {style="font-size: 80%;"}
+
+We assume that the expected response changes linearly with the predictor:
+
+$$
+E(Y_i \mid X_i = x_i) = \beta_0+\beta_1 x_i
+$$
+
+This means that a one-unit increase in $X$ corresponds to the same change in
+the expected response, regardless of the starting value of $X$
+
+```{r}
+#| label: linear-1b
+linearity_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "X value", y = "Y value") +
+  facet_wrap(
+    ~direction,
+    scales = "free",
+    labeller = labeller(
+      direction = function(x) {
+        x |> stringr::str_replace("_", " ") |> stringr::str_to_sentence()
+      }
+    )
+  ) +
+  theme_st303()
+```
+
+## Assumption 1: Linearity {style="font-size: 70%;"}
+
+### What should we look for
+
+<br>
+<br>
+
+::::: {.columns}
+
+:::: {.column width="40%"}
+- Is a straight line a reasonable summary of the relationship?
+::::
+
+:::: {.column width="60%"}
+
+```{r}
+#| label: linear-1c
+linearity_data |>
+  filter(direction == "linear") |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "X value", y = "Y value") +
+  theme_st303()
+```
+
+::::
+
+:::::
+
+## Assumption 1: Linearity {style="font-size: 70%;"}
+
+### What should we look for
+
+<br>
+<br>
+
+::::: {.columns}
+
+:::: {.column width="40%"}
+
+- Is a straight line a reasonable summary of the relationship?
+- Is there evidence of curvature?
+
+::::
+
+:::: {.column width="60%"}
+
+```{r}
+#| label: linear-1d
+linearity_data |>
+  filter(direction == "non_linear") |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  labs(x = "X value", y = "Y value") +
+  theme_st303()
+```
+
+::::
+
+:::::
+
+## Assumption 1: Linearity {style="font-size: 70%;"}
+
+### What should we look for
+
+<br>
+<br>
+
+::::: {.columns}
+
+:::: {.column width="40%"}
+- Is a straight line a reasonable summary of the relationship?
+- Is there evidence of curvature?
+- Are there observations that look unusual?
+::::
+
+:::: {.column width="60%"}
+
+```{r}
+#| label: linear-1e
+linearity_data |>
+  filter(direction == "linear") |>
+  bind_rows(tibble(x = 2, y = -1)) |>
+  mutate(
+    outlier = case_when(
+      x == 2 & y == -1 ~ TRUE,
+      TRUE ~ FALSE
+    )
+  ) |>
+  ggplot(aes(x = x, y = y, colour = outlier, size = outlier)) +
+  geom_point() +
+  ggokabeito::scale_colour_okabe_ito() +
+  labs(x = "X value", y = "Y value") +
+  guides(colour = "none", size = "none") +
+  theme_st303()
+```
+
+::::
+
+:::::
+
+## Assumption 1: Linearity {style="font-size: 70%;"}
+
+### What should we look for
+
+<br>
+<br>
+
+::::: {.columns}
+
+:::: {.column width="40%"}
+- Is a straight line a reasonable summary of the relationship?
+- Is there evidence of curvature?
+- Are there observations that look unusual?
+- Is the spread of the observations reasonably similar across the range of $X$?
+::::
+
+:::: {.column width="60%"}
+
+```{r}
+#| label: linear-1f
+linearity_data |>
+  filter(direction == "linear") |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  geom_abline(
+    intercept = -0.75,
+    slope = 1.75,
+    colour = "#009E73",
+    linewidth = 1,
+    linetype = "dashed"
+  ) +
+  geom_abline(
+    intercept = 6.5,
+    slope = 1.75,
+    colour = "#009E73",
+    linewidth = 1,
+    linetype = "dashed"
+  ) +
+  labs(x = "X value", y = "Y value") +
+  theme_st303()
+```
+
+::::
+
+:::::
+
+## Assumption 2: Constant variance
+
+We assume that the errors have the same variance for all predictor values:
+
+$$
+\operatorname{Var}(\varepsilon_i \mid X_i = x_i) = \sigma^2
+$$
+
+This is also called [homoscedasticity]{.alert}
+
+:::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## What does this mean
+
+The spread of observations around the regression line should be approximately
+constant across the range of the predictor
+:::
+
+::: {.callout-warning appearance="simple"}
+## What if we violate it?
+
+If the variance changes with the predictor, the ordinary least squares
+estimates can still be unbiased under suitable conditions, but the usual
+standard errors and inference may be unreliable.
+:::
+::::
+
+## Assumption 3: Independence
+
+We assume that the errors from different observations are independent.
+
+For distinct observations $i$ and $j$
+
+$$
+\operatorname{Cov}(\varepsilon_i,\varepsilon_j) = 0
+$$
+
+:::: {.fragment .fade-up}
+::: {.callout-caution appearance="simple"}
+## Independence can be questionable when observations are collected:
+
+- Repeatedly over time.
+- From the same individual or household.
+- From individuals within the same group or organisation.
+- In a spatial or otherwise clustered structure.
+
+:::
+::::
+
+## Assumption 4: Normality
+
+For the exact small-sample inference, we assume
+
+$$
+\varepsilon_i\mid X_i = x_i \sim N(0,\sigma^2).
+$$
+
+
+<br>
+
+::: {.callout-tip}
+## Moderate departures from normality may be less concerning in larger samples
+:::
+
+## Diagnostic plots
+
+We will focus on four graphical checks
+
+1. **Response versus predictor**
+2. **Residuals versus fitted values**
+3. **Normal Q–Q plot**
+4. **Residuals versus time or observation order**
+
+<br>
+
+::: {.callout-important}
+## No single plot establishes that all assumptions hold.
+:::
+
+## Diagnostic plots
+
+### Residuals versus fitted values
+
+<br>
+
+```{r}
+#| label: diagnostic-1a
+plot(fit, which = 1)
+```
+
+## Diagnostic plots {style="font-size: 75%;"}
+
+### Residuals versus fitted values
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+<br>
+
+```{r}
+#| label: diagnostic-1b
+plot(fit, which = 1)
+```
+
+:::
+
+::: {.column width="40%"}
+
+[**What would we like to see?**]{.center}
+
+- Residuals scattered around zero.
+- No systematic curved pattern.
+- No obvious change in the vertical spread.
+- No unexplained extreme residuals.
+
+:::
+
+::::
+
+::: {.callout-tip appearance="simple"}
+## The red smooth curve should be approximately horizontal around zero.
+
+It helps reveal systematic patterns that may be difficult to spot in the individual points.
+:::
+
+## Diagnostic plots
+
+### Reading a residual plot
+
+::::: {.columns}
+
+:::: {.column}
+::: {.callout-tip icon="false"}
+
+## Reasonable pattern
+
+- No clear curvature
+- Similar spread across the fitted values
+- Residuals fluctuate around zero
+
+<br>
+<br>
+
+:::
+::::
+
+:::: {.column}
+
+
+::: {.callout-important icon="false"}
+
+## Potential warning signs
+
+- Curvature: possible nonlinearity.
+- Funnel shape: possible changing variance.
+- Isolated points: possible outliers.
+- Clusters or other structure: investigate the data and model.
+
+:::
+::::
+:::::
+
+[**A residual plot is a diagnostic tool, not a formal pass-or-fail test**]{.center}
+
+## Diagnostic plots
+
+### Normal QQ plots
+
+<br>
+
+```{r}
+#| label: diagnostic-2a
+plot(fit, which = 2)
+```
+
+
+## Diagnostic plots
+
+### Normal QQ plots
+
+The normal quantile–quantile (Q–Q) plot compares the ordered residuals with
+the quantiles expected under a normal distribution.
+
+::: {.callout-tip appearance="minimal"}
+
+## What should we look for?
+
+- Points following an approximately straight line.
+- Large departures at either end.
+- Strong curvature or an S-shaped pattern.
+
+:::
+
+
+::: {.callout-note appearance="minimal"}
+## Small departures are common
+
+We are looking for substantial departures that could undermine the assumptions
+needed for our intended inference.
+:::
+
+## Diagnostic plots
+
+### Residuals versus time
+
+```{r}
+#| label: diagnostic-3
+fuel |>
+  mutate(
+    year = c(2020, 2020, 2020, 2021, 2021, 2022, 2022, 2022),
+    residual = residuals(fit)
+  ) |>
+  mutate(year = factor(year)) |>
+  ggplot(aes(x = year, y = residual)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "#999999") +
+  geom_point() +
+  labs(x = "Year", y = "Residual") +
+  theme_st303()
+```
+
+## Diagnostic plots
+
+### Residuals versus time
+
+When observations are collected over time, their order may matter
+
+::: {.callout-tip appearance="minimal"}
+## Things to look out for
+
+- A sustained upward or downward trend
+- Long runs of positive or negative residuals
+- Repeating patterns or cycles
+- Clusters of observations with similar residuals
+:::
+
+<br>
+
+::: {.callout-warning}
+## A pattern may suggest serial dependence, an omitted time trend or another feature that the model does not capture.
+:::
+
+## What do to if an assumption is violated
+
+<br>
+
+```{r}
+#| label: next-steps
+
+tribble(
+  ~Problem                      , ~`Possible next step`                                                                           ,
+  "Nonlinear mean relationship" , "Consider a transformation of X, polynomial terms or another model"                             ,
+  "Non-constant variance"       , "Consider a transformation of Y, weighted least squares or heteroscedasticity-robust inference" ,
+  "Dependence"                  , "Model the dependence or use an appropriate method for the sampling structure"                  ,
+  "Non-normal errors"           , "Investigate unusual observations, skewness and the adequacy of the model"
+) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE)
+```
+
+
+::: {.callout-warning appearance="minimal"}
+## These are possible next steps, not automatic rules
+
+We should first understand the data and the reason for the diagnostic pattern.
+:::
+
+## Let's do a case study
+
+### Cigarette data - using the RServer
+
+<br>
+
+```{r}
+#| label: cig-plot
+
+cigarette |>
+  ggplot(aes(x = nicotine, y = carbon_monoxide)) +
+  geom_point() +
+  labs(
+    x = "Nicotine",
+    y = "Carbon monoxide"
+  ) +
+  theme_st303()
+```
+
+## Let's do a case study
+
+### Cigarette data - using the RServer
+
+```{r}
+#| label: model-fitting
+#| echo: true
+#| collapse: true
+
+# Fit a simple linear model (carbon monoxide ~ nicotine)
+my_model <- lm(carbon_monoxide ~ nicotine, data = cigarette)
+
+# What is the output of the model
+summary(my_model)
+```
+
+## Let's do a case study
+
+### Cigarette data - using the RServer
+
+```{r}
+#| label: model-diagnostics
+#| echo: true
+#| eval: false
+
+# Let's look at residuals versus fitted values
+plot(my_model, which = 1)
+
+# Let's look at the QQ plot
+plot(my_model, which = 2)
+```
+
+## Let's do a case study
+
+### Cigarette data - using the RServer
+
+```{r}
+#| label: model-outlier
+#| echo: true
+#| eval: false
+
+# Let's refit the model without observation 3 (the outliers)
+my_model_no_outlier <- lm(carbon_monoxide ~ nicotine, data = cigarette[-3, ])
+
+# What is the new output
+summary(my_model_no_outlier)
+
+# And now we can look at our diagnostics again
+plot(my_model_no_outlier, which = 1)
+plot(my_model_no_outlier, which = 2)
+```
+
+## Let's do a case study
+
+### Cigarette data - using the RServer
+
+```{r}
+#| label: model-transform
+#| echo: true
+#| eval: false
+# We can also transform our variables ------------------------------------------
+cigarette_models <- list(
+  "Original scale" = lm(
+    carbon_monoxide ~ nicotine,
+    data = cigarette
+  ),
+  "Square root predictor" = lm(
+    carbon_monoxide ~ sqrt(nicotine),
+    data = cigarette
+  ),
+  "Square root both" = lm(
+    sqrt(carbon_monoxide) ~ sqrt(nicotine),
+    data = cigarette
+  ),
+  "Log both" = lm(
+    log(carbon_monoxide) ~ log(nicotine),
+    data = cigarette
+  )
+)
+
+# Create a 2 × 2 plotting area -------------------------------------------------
+par(mfrow = c(2, 2))
+
+# Let's look at our plots
+purrr::imap(cigarette_models, function(model, name) {
+  plot(model, which = 1)
+  title(main = name)
+})
+```
+
+

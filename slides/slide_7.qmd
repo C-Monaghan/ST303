@@ -1,0 +1,467 @@
+---
+title: Correlation
+subtitle: ST303 - Linear Models
+revealjs-plugins:
+  - tabset
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(54321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+library(rosdata)
+
+# Functions --------------------------------------------------------------------
+source(here::here("R/simulate_correlation.R"))
+source(here::here("R/make_hibbs_plot.R"))
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(1.1), face = "bold"),
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Datasets ---------------------------------------------------------------------
+anscombe_data <- datasets::anscombe |>
+  tidyr::pivot_longer(
+    cols = everything(),
+    names_to = c(".value", "dataset"),
+    names_pattern = "([xy])([1-4])"
+  )
+
+# Father and son heights
+father_son <- read.table(here::here("data/father_son.txt"), header = TRUE)
+```
+
+## Todays lecture {style="font-size:90%;"}
+
+[**We want to understand how two quantitative variables are related**]{.center}
+
+By the end of this lecture, you should be able to:
+
+- Interpret the direction and strength of a correlation
+- Calculate and interpret the sample correlation coefficient
+- Explain why scatterplots are essential when interpreting correlation
+- Connect correlation to simple linear regression and $R^2$
+- Explain regression towards the mean
+- Distinguish correlation from regression and understand why the direction
+  of regression matters
+
+## Let's start with a scatter plot
+
+```{r}
+#| label: example-scatter-plot
+
+# Make up some data
+example_data <- tibble(x = rnorm(n = 100, mean = 0, sd = 1)) |>
+  mutate(y = 1.2 * x + rnorm(n = 100, mean = 0, sd = 0.9))
+
+# Plot that data
+example_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  labs(x = NULL, y = NULL) +
+  theme_st303()
+```
+
+
+::: {.callout-note}
+## Question: What do you notice about the relationship between (X) and (Y)?
+:::
+
+## Describing a relationship {style="font-size: 80%;"}
+
+When examining a scatterplot, we typically consider three things
+
+
+::: {.fragment .fade-down}
+
+**Direction**
+
+- **Positive**: larger values of (X) tend to accompany larger values of (Y)
+- **Negative**: larger values of (X) tend to accompany smaller values of (Y)
+
+:::
+
+
+::: {.fragment .fade-right}
+
+**Strength**
+
+- **Strong**: observations follow a relatively clear pattern
+- **Weak**: observations are more dispersed around the overall pattern
+
+:::
+
+
+::: {.fragment .fade-up}
+
+**Form**
+
+- **Linear**: the relationship follows an approximately straight-line pattern.
+- **Nonlinear**: the relationship follows a curve or another pattern.
+
+:::
+
+---
+
+<br>
+
+```{r}
+#| label: correlation-examples
+#|
+# Different kinds of correlations
+corr_examples <- purrr::map_dfr(
+  c(-0.9, -0.5, 0, 0.5, 0.9),
+  simulate_correlation
+)
+
+# Plot them all out
+corr_examples |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  facet_wrap(~target) +
+  labs(
+    x = NULL,
+    y = NULL,
+    tag = "The correlation defines the <br>strength of the association",
+  ) +
+  theme_st303() +
+  theme(
+    plot.tag = ggtext::element_textbox_simple(
+      hjust = 0,
+      halign = 0,
+      margin = margin(b = 5, t = 5),
+      maxwidth = 0.5,
+      lineheight = 1.15,
+      face = "bold",
+      size = rel(1.5)
+    ),
+    plot.tag.position = c(0.70, 0.25),
+  )
+```
+
+## The correlation coefficient {style="font-size:70%;"}
+
+The sample correlation coefficient measures the strength and direction of the
+linear association between two quantitative variables
+
+$$
+r = \frac{S_{xy}}{\sqrt{S_{xx} \times S_{yy}}}
+$$
+
+:::: {.fragment .fade-up}
+
+- **Bounded**: $-1 \leq r \leq 1$
+- **Direction**:
+  - $r > 0$ indicates positive linear association
+  - $r < 0$ indicates negative linear association
+- **Strength**: Values closer to $-1$ or $1$ indicate stronger linear association.
+- **Symmetry**: $\operatorname{cor}(X,Y)=\operatorname{cor}(Y,X)$
+- **Unit-free**: Correlation is unaffected by changing the measurement units
+
+
+::: {.callout-important appearance="minimal"}
+## A correlation of zero means there is no linear association
+
+It does not rule out a nonlinear relationship
+:::
+::::
+
+---
+
+<br>
+
+```{r}
+#| label: non-linear-correlation
+
+# Create a non-linear data
+nonlinear_data <- tibble(x = seq(-3, 3, length.out = 150)) |>
+  mutate(y = x^2 + rnorm(n(), sd = 0.8))
+
+# Plot it out
+nonlinear_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  labs(x = NULL, y = NULL) +
+  theme_st303()
+```
+
+::: {.notes}
+- The relationship is clearly nonlinear, even though the Pearson correlation
+  can be close to zero.
+- A near-zero correlation does not necessarily mean that the variables
+  are unrelated.
+- **Takeaway**: always inspect the scatterplot before interpreting a
+  correlation coefficient.
+:::
+
+## Correlation values {style="font-size: 70%;"}
+
+### Don't be fooled
+
+::: {.panel-tabset}
+
+## Summary statistics
+
+<br>
+
+```{r}
+#| label: anscombe-table
+anscombe_data |>
+  group_by(dataset) |>
+  summarise(
+    mean_x = mean(x),
+    sd_x = sd(x),
+    mean_y = mean(y),
+    sd_y = sd(y),
+    r = cor(x, y)
+  ) |>
+  mutate(dataset = paste("Dataset", 1:4)) |>
+  tt(digits = 3, width = 0.75, theme = "empty") |>
+  setNames(c("Dataset", "Mean", "SD", "Mean", "SD", "r")) |>
+  group_tt(j = list("X variable" = 2:3, "Y variable" = 4:5)) |>
+  style_tt(i = c(-1, 0), bold = TRUE) |>
+  style_tt(j = 2:6, align = "c")
+```
+
+## Data visualisation
+
+```{r}
+#| label: anscombe-plot-1a
+anscombe_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size = rel(1.2)) +
+  labs(x = NULL, y = NULL) +
+  facet_wrap(
+    ~dataset,
+    labeller = labeller(
+      dataset = function(x) paste("Dataset", x)
+    )
+  ) +
+  theme_st303()
+```
+
+## Summary statistics
+
+```{r}
+#| label: datasaurus-table
+datasauRus::datasaurus_dozen |>
+  group_by(dataset) |>
+  summarise(
+    mean_x = mean(x),
+    sd_x = sd(x),
+    mean_y = mean(y),
+    sd_y = sd(y),
+    r = cor(x, y)
+  ) |>
+    mutate(dataset = paste("Dataset", 1:13)) |>
+    tt(digits = 3, width = 0.75, theme = "empty") |>
+    setNames(c("Dataset", "Mean", "SD", "Mean", "SD", "r")) |>
+    group_tt(j = list("X variable" = 2:3, "Y variable" = 4:5)) |>
+    style_tt(i = c(-1, 0), bold = TRUE) |>
+    style_tt(j = 2:6, align = "c")
+```
+
+## Data visualisation
+
+```{r}
+#| label: datasaurus_dozen-plot
+#| fig-height: 5.5
+datasauRus::datasaurus_dozen |>
+  ggplot(aes(x = x, y = y, colour = dataset)) +
+  geom_point() +
+  labs(x = NULL, y = NULL) +
+  MetBrewer::scale_colour_met_d(name = "Signac") +
+  facet_wrap(
+    ~dataset,
+    labeller = labeller(dataset = function(x) {
+      x |> stringr::str_replace_all("_", " ") |> stringr::str_to_title()
+    }
+  )) +
+  guides(colour = "none") +
+  theme_st303()
+```
+
+:::
+
+## Correlation and $R^2$ {style="font-size:90%;"}
+
+Recall that the formula for $R^2$ is
+
+$$
+R^2 = \frac{SS_R}{SS_T} \qquad \text{OR} \qquad R^2 = 1 - \frac{SS_E}{SS_T}
+$$
+
+It describes the proportion of the observed variation in $Y$ accounted for by
+the fitted linear model
+
+
+::: {.fragment .fade-up}
+
+$$
+R^2 = r^2
+$$
+For example, if we got $r = 0.8$, then we can say that $R^2 = 0.64$
+
+The fitted linear model accounts for 64% of the variation in the response
+around its mean
+
+:::
+
+:::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal"}
+## Two datasets have correlations of 0.8 and −0.8
+
+Do they have the same $R^2$?
+:::
+::::
+
+## Correlation and $R^2$
+
+::: {.callout-important appearance="minimal"}
+## Word of caution
+
+Two $R^2$ values may be similar even when the relationships have different
+structures
+
+A high $R^2$ does not guarantee that a linear model is appropriate
+
+**Always consider the scatterplot and relevant model assumptions**
+:::
+
+```{r}
+#| label: anscombe-plot-1b
+anscombe_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
+  labs(x = NULL, y = NULL) +
+  facet_wrap(
+    ~dataset,
+    labeller = labeller(
+      dataset = function(x) paste("Dataset", x)
+    )
+  ) +
+  theme_st303()
+```
+
+## Let's do an application
+
+### The Hibbs dataset
+
+<br>
+
+```{r}
+#| label: hibbs-plot
+make_hibbs_plot(hibbs = hibbs)
+```
+
+## Let's do an application
+
+### The Hibbs dataset
+
+```{r}
+#| label: modelling-hibbs
+#| echo: true
+#| collapse: true
+
+# Calculate a correlation coefficient between economic growth and voting percentage
+cor(hibbs$growth, hibbs$vote)
+
+# Turn this into an R squared statistic
+cor(hibbs$growth, hibbs$vote)^2
+
+# Fit a simple linear model and verify the statistic
+voting_model <- lm(vote ~ growth, data = hibbs)
+
+summary(voting_model)
+```
+
+## Regression towards the mean
+
+<br>
+
+```{r}
+#| label: father-son-plot-1a
+father_son |>
+  as_tibble() |>
+  janitor::clean_names() |>
+  ggplot(aes(x = father, y = son)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  labs(x = "Height of father", y = "Height of son") +
+  theme_st303()
+```
+
+## Regression towards the mean
+
+<br>
+
+```{r}
+#| label: father-son-plot-1b
+father_son |>
+  as_tibble() |>
+  janitor::clean_names() |>
+  ggplot(aes(x = father, y = son)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+  labs(x = "Height of father", y = "Height of son") +
+  theme_st303()
+```
+
+## Regression towards the mean
+
+<br>
+
+```{r}
+#| label: father-son-plot-1c
+father_son |>
+  as_tibble() |>
+  janitor::clean_names() |>
+  ggplot(aes(x = father, y = son)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+  geom_abline(
+    intercept = 0,
+    slope = 1,
+    linetype = "dashed",
+    linewidth = 0.8,
+    colour = "#009E73"
+  ) +
+  labs(x = "Height of father", y = "Height of son") +
+  theme_st303()
+```
+
+## Regression towards the mean
+
+### What is it
+
+- Suppose a father is substantially taller than the population average
+- His son is expected to be taller than average too, because heights are
+  positively associated
+- However, the predicted son's height is typically closer to the population
+  mean than the father's height is, when both are measured on the same scale
+  and the fitted slope is between zero and one
+
+[**This is regression towards the mean**]{.center}
+
+This helps explain why extreme observations on one variable tend to be
+associated with less extreme expected values of the other variable
