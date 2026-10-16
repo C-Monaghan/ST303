@@ -299,5 +299,101 @@
       "Week 3",
       "ANOVA decomposition"
     ]
+  },
+  {
+    "objectID": "content/content_04a.html",
+    "href": "content/content_04a.html",
+    "title": "Correlation",
+    "section": "",
+    "text": "Learn how to carry out a correlation analysis in R\nUnderstand the connection between \\(R\\) and \\(R^2\\)\nLearn when correlations can be deceiving",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Correlation"
+    ]
+  },
+  {
+    "objectID": "content/content_04a.html#learning-objectives",
+    "href": "content/content_04a.html#learning-objectives",
+    "title": "Correlation",
+    "section": "",
+    "text": "Learn how to carry out a correlation analysis in R\nUnderstand the connection between \\(R\\) and \\(R^2\\)\nLearn when correlations can be deceiving",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Correlation"
+    ]
+  },
+  {
+    "objectID": "content/content_04a.html#readings",
+    "href": "content/content_04a.html#readings",
+    "title": "Correlation",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n Correlation and regression in R\n Correlation - Math is Fun",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Correlation"
+    ]
+  },
+  {
+    "objectID": "content/content_04a.html#slides",
+    "href": "content/content_04a.html#slides",
+    "title": "Correlation",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Correlation"
+    ]
+  },
+  {
+    "objectID": "content/content_04b.html",
+    "href": "content/content_04b.html",
+    "title": "Assessing model assumptions",
+    "section": "",
+    "text": "Recap on what the assumptions of simple linear regression are\nLearn how to assess and diagnose simple linear regression models\nUnderstand what to do when model assumptions are violated\nLearn how transformations can be applied to data",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Assumptions"
+    ]
+  },
+  {
+    "objectID": "content/content_04b.html#learning-objectives",
+    "href": "content/content_04b.html#learning-objectives",
+    "title": "Assessing model assumptions",
+    "section": "",
+    "text": "Recap on what the assumptions of simple linear regression are\nLearn how to assess and diagnose simple linear regression models\nUnderstand what to do when model assumptions are violated\nLearn how transformations can be applied to data",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Assumptions"
+    ]
+  },
+  {
+    "objectID": "content/content_04b.html#readings",
+    "href": "content/content_04b.html#readings",
+    "title": "Assessing model assumptions",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n A guide to testing the assumptions of linear regression\n Understanding and checking the assumptions of linear regression\n The Dark Art of Regression Diagnostics",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Assumptions"
+    ]
+  },
+  {
+    "objectID": "content/content_04b.html#slides",
+    "href": "content/content_04b.html#slides",
+    "title": "Assessing model assumptions",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Assumptions"
+    ]
   }
 ]
