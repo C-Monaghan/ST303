@@ -21,6 +21,7 @@ purrr::map(list.files(here::here("R"), full.names = TRUE), source)
 
 - {{< fa link >}} [Correlation and regression in R](https://medium.com/@saffanahelvina/correlation-and-regression-analysis-with-r-c402149de6c)
 - {{< fa link >}} [Correlation - Math is Fun](https://www.mathsisfun.com/data/correlation.html)
+- {{< fa brands youtube >}} [Regression towards the mean](https://www.youtube.com/watch?v=jHX8Vta3A4I)
 
 ## Slides
 
