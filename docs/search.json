@@ -395,5 +395,101 @@
       "Week 4",
       "Assumptions"
     ]
+  },
+  {
+    "objectID": "content/content_05a.html",
+    "href": "content/content_05a.html",
+    "title": "Multiple linear regression",
+    "section": "",
+    "text": "Learn the fundamentals of multiple linear regression\nLearn how to fit multiple linear regression models of different forms",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Multiple linear regression"
+    ]
+  },
+  {
+    "objectID": "content/content_05a.html#learning-objectives",
+    "href": "content/content_05a.html#learning-objectives",
+    "title": "Multiple linear regression",
+    "section": "",
+    "text": "Learn the fundamentals of multiple linear regression\nLearn how to fit multiple linear regression models of different forms",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Multiple linear regression"
+    ]
+  },
+  {
+    "objectID": "content/content_05a.html#readings",
+    "href": "content/content_05a.html#readings",
+    "title": "Multiple linear regression",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n Linear models in statistics (Chapter 7)\n Multiple linear regression - made simple\n Multiple linear regression - clearly explained",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Multiple linear regression"
+    ]
+  },
+  {
+    "objectID": "content/content_05a.html#slides",
+    "href": "content/content_05a.html#slides",
+    "title": "Multiple linear regression",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Multiple linear regression"
+    ]
+  },
+  {
+    "objectID": "content/content_05b.html",
+    "href": "content/content_05b.html",
+    "title": "Matrix notation",
+    "section": "",
+    "text": "Learn how to represent our regression equation in matrix form\nLearn how to estimate our parameters by hand\nUnderstand why matrix notation is a useful representation for linear models",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Matrix notation"
+    ]
+  },
+  {
+    "objectID": "content/content_05b.html#learning-objectives",
+    "href": "content/content_05b.html#learning-objectives",
+    "title": "Matrix notation",
+    "section": "",
+    "text": "Learn how to represent our regression equation in matrix form\nLearn how to estimate our parameters by hand\nUnderstand why matrix notation is a useful representation for linear models",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Matrix notation"
+    ]
+  },
+  {
+    "objectID": "content/content_05b.html#readings",
+    "href": "content/content_05b.html#readings",
+    "title": "Matrix notation",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n Linear models (Chapter 2)\n Linear models (Chapter 7)\n Introduction to matrices - YouTube playlist",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Matrix notation"
+    ]
+  },
+  {
+    "objectID": "content/content_05b.html#slides",
+    "href": "content/content_05b.html#slides",
+    "title": "Matrix notation",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Matrix notation"
+    ]
   }
 ]

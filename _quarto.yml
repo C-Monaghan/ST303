@@ -78,6 +78,12 @@ website:
             href: content\content_04a.qmd
           - text: Assumptions
             href: content\content_04b.qmd
+      - section: Week 5
+        contents:
+          - text: Multiple linear regression
+            href: content\content_05a.qmd
+          - text: Matrix notation
+            href: content\content_05b.qmd
 
   page-footer:
     left: |

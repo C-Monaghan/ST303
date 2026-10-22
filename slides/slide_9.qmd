@@ -1,0 +1,627 @@
+---
+title: Multiple linear regression
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(54321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+library(rosdata)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(1.1), face = "bold"),
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Fuel data --------------------------------------------------------------------
+fuel_data <- tibble(
+  temp = c(28, 28, 32.5, 39, 45.9, 57.8, 58.1, 62.5),
+  fuel = c(12.4, 11.7, 12.4, 10.8, 9.4, 9.5, 8, 7.5),
+  chill = c(18, 14, 24, 22, 8, 16, 1, 0)
+)
+
+# Car data ---------------------------------------------------------------------
+cars <- tibble(
+  weight = runif(100, 1, 5),
+  transmission = factor(
+    rbinom(100, 1, 0.5),
+    levels = c(0, 1),
+    labels = c("Manual", "Automatic")
+  )
+) |>
+  mutate(
+    consumption = 0.2 +
+      2 * weight +
+      2 * (transmission == "Automatic") +
+      rnorm(n(), 0, 0.8)
+  )
+
+# Polynomial data
+poly_data <- tibble(x = rnorm(500, 0, 1)) |>
+  mutate(y = 0.5 + (1.5 * x^2) + (0.5 * x) + rnorm(n(), 0, 1))
+```
+
+## From simple to multiple regression {style="font-size: 95%;"}
+
+In simple linear regression, we model the mean response using one predictor:
+
+$$
+E(Y \mid X = x) = \beta_0 + \beta_1 x
+$$
+
+But real-world outcomes are rarely associated with just one variable.
+
+For example, fuel use might depend on:
+
+- Temperature.
+- Wind chill.
+- The characteristics of a building.
+
+How can we incorporate several predictors into one model?
+
+## The multiple linear regression model {style="font-size: 70%;"}
+
+Suppose we have a response $Y$ and predictors $X_1, \ldots, X_k$
+
+The model is
+
+$$
+Y_i=\beta_0+\beta_1X_{i1}+ \cdots+ \beta_k X_{ik}+ \varepsilon_i
+$$
+
+Equivalently,
+
+$$
+E(Y_i\mid X_{i1},\ldots,X_{ik}) =\beta_0+\sum_{j=1}^k\beta_jX_{ij}
+$$
+
+
+:::: {.fragment .fade-up}
+Here:
+
+- $\beta_0$ is the intercept.
+- $\beta_j$ is the coefficient for predictor $X_j$.
+- $\varepsilon_i$ represents the unobserved error.
+
+
+::: {.callout-tip title="Key idea"}
+Each coefficient describes a relationship with the response, conditional on the other predictors in the model.
+:::
+::::
+
+## Example 1: Fuel use {style="font-size:90%;"}
+
+Information was recorded on fuel use and weather conditions for eight office
+complexes of similar size.
+
+
+::::: {.columns}
+
+:::: {.column width="30%"}
+
+We want to understand how fuel use is associated with:
+
+1. Temperature
+2. Chill index
+
+::::
+
+:::: {.column width="70%"}
+
+
+::: {.fragment .fade-up}
+
+```{r}
+#| label: fuel-plot-1a
+fuel_data |>
+  tidyr::pivot_longer(
+    cols = c(temp, chill),
+    names_to = "predictor",
+    values_to = "value"
+  ) |>
+  mutate(predictor = factor(predictor, levels = c("temp", "chill"))) |>
+  ggplot(aes(value, fuel)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    x = "Predictor value",
+    y = "Fuel use"
+  ) +
+  facet_wrap(~predictor, scales = "free_x") +
+  theme_st303()
+```
+
+:::
+::::
+:::::
+
+
+:::: {.fragment .fade-up}
+::: {.callout-important}
+## If we already know the temperature, could the chill index still help explain fuel use?
+:::
+::::
+
+## Fitting a multiple regression model
+
+We fit
+
+$$
+Y_i = \beta_0 + \beta_1X_{i1} +\beta_2X_{i2} + \varepsilon_i
+$$
+
+
+::: {.fragment .fade-up}
+
+The fitted model is
+
+$$
+\widehat{Y} = \widehat{\beta}_0+ \widehat{\beta}_1 X_1+ \widehat{\beta}_2 X_2
+$$
+
+The coefficients are estimated simultaneously using least squares.
+
+Unlike simple regression, the fitted relationship is a plane rather
+than a line.
+:::
+
+## Let's fit this model in R
+
+```{r}
+#| label: model-fitting
+#| echo: true
+#| collapse: true
+
+fit <- lm(fuel ~ temp + chill, data = fuel_data)
+
+summary(fit)
+```
+
+## What does the model predict
+
+For a building with temperature 45.9$^\circ$F and chill index 8, the estimated
+mean fuel use is
+
+$$
+\begin{align*}
+E(Y) &= \hat{\beta_0} + \hat{\beta_1}X_1 + \hat{\beta_2}X_2 \\[8pt]
+&= 13.11 - 0.09 (45.9) + 0.082(8) \\[8pt]
+&\approx 9.64
+\end{align*}
+$$
+
+<br>
+
+```{r}
+#| label: predict-fuel
+#| echo: true
+#| collapse: true
+predict(fit, newdata = tibble(temp = 45.9, chill = 8))
+```
+
+## Interpreting the regression coefficients
+
+Consider two buildings with the same chill index but temperatures differing by
+one degree.
+
+
+:::: {.fragment .fade-up}
+
+Their fitted mean fuel-use difference is
+
+$$
+\begin{align*}
+&[\beta_0+\beta_1(t+1)+\beta_2c] -[\beta_0+\beta_1t+\beta_2c] =\beta_1
+\end{align*}
+$$
+
+
+::: {.callout-important appearance="minimal"}
+$\beta_1$ is the expected change in fuel use associated with a one-degree
+increase in temperature, **holding chill index fixed**
+:::
+
+::: {.callout-tip appearance="minimal"}
+Similarly, $\beta_2$ describes the expected change associated with a one-unit
+increase in chill index, **holding temperature fixed**
+:::
+::::
+
+## Why say "holding other predictors fixed"?
+
+Let's compare the following interpretations
+
+<br>
+
+:::: {.fragment .fade-up}
+::: {.callout-warning}
+## Incorrect
+
+A one-degree increase in temperature changes fuel use by $\beta_1$
+:::
+
+::: {.callout-tip}
+## Better
+
+A one-degree increase in temperature is associated with a change of $\beta_1$
+in mean fuel use, for buildings with the same chill index.
+:::
+::::
+
+:::: {.fragment .fade-up}
+::: {.callout-important}
+## Why does this distinction matter?
+
+The first statement ignores the other predictor. The second describes the
+relationship represented by the fitted multiple regression model.
+:::
+::::
+
+## Let's look at our coefficients
+
+The intercept is
+
+$$
+E(Y \mid X_1 = 0, X_2 = 0) = \beta_0
+$$
+
+For the fuel-use example, this corresponds to temperature zero and chill index
+zero
+
+::: {.callout-warning}
+## Not always a practical interpretation
+:::
+
+
+## A three-dimensional representation
+
+<br>
+
+```{r}
+#| label: 3d-plane
+scatterplot3d::scatterplot3d(
+  fuel_data$temp,
+  fuel_data$chill,
+  fuel_data$fuel,
+  pch = 19,
+  color = "steelblue",
+  xlab = "Temperature",
+  ylab = "Chill index",
+  zlab = "Fuel use",
+  main = "Fuel use and two predictors"
+)
+```
+
+::: {.notes}
+- We can no longer visualise this when we go to the 4th dimension and beyond
+:::
+
+## Let's look at another example: Categorical data {style="font-size:90%;"}
+
+Suppose we want to model car fuel efficiency using:
+
+- $Y$: fuel consumption
+- $X_1$: car weight
+- $X_2$: transmission type
+
+$$
+X_2 = \begin{cases}
+  0 & \text{manual}\\
+  1 & \text{automatic}
+\end{cases}
+$$
+
+Consider the additive model
+
+$$
+E(Y \mid X_1, X_2) = \beta_0 + \beta_1 X_1 + \beta_2 X_2
+$$
+
+
+::: {.callout-note appearance="minimal"}
+## What does this model imply about the relationship between weight and fuel consumption for each transmission type?
+:::
+
+## We get two parallel lines
+
+For manual cars, $X_2 = 0$:
+
+$$
+E(Y \mid X_1, \text{manual}) = \beta_0 + \beta_1 X_1
+$$
+
+For automatic cars, $X_2 = 1$
+
+$$
+E(Y \mid X_1, \text{automatic}) = \beta_0 +\beta_1X_1 + \beta_2
+$$
+
+
+:::: {.fragment .fade-up}
+::: {.callout-tip}
+## Same slopes - different intercepts
+:::
+::::
+
+## We get two parallel lines
+
+<br>
+
+```{r}
+#| label: parallel-lines
+cars |>
+  ggplot(aes(weight, consumption, colour = transmission)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+  ggokabeito::scale_colour_okabe_ito() +
+  labs(
+    x = "Car weight",
+    y = "Fuel consumption",
+    colour = "Transmission",
+  ) +
+  theme_st303()
+```
+
+## Interpreting the categorical coefficient
+
+In the additive model,
+
+$$
+E(Y \mid X_1, X_2) = \beta_0 + \beta_1 X_1 + \beta_2 X_2
+$$
+
+the coefficient $\beta_2$ is the expected difference between automatic and
+manual cars **at the same weight**.
+
+Because the model has no interaction, that difference is constant across all weights.
+
+Changing the reference category changes the interpretation of the intercept and
+the sign of the group coefficient, but not the fitted values.
+
+## Now let's consider a scenario
+
+Suppose the relationship between weight and fuel consumption is steeper for automatic cars than for manual cars.
+
+Would the parallel-lines model adequately represent this pattern?
+
+
+::: {.fragment .fade-up}
+
+- Yes, because the model already includes transmission type
+- [No, because transmission type currently changes only the intercept]{.fragment .highlight-blue}
+- No, because regression cannot represent different slopes
+
+:::
+
+:::: {.fragment .fade-up}
+::: {.callout-tip appearance="minimal"}
+## We need an interaction between weight and transmission type to allow the slopes to differ.
+:::
+::::
+
+## Let's allow the slopes to differ
+
+We extend the model by adding an interaction term:
+
+$$
+E(Y\mid X_1,X_2) = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \beta_3 X_1X_2
+$$
+
+```{r}
+#| label: model-fitting-1b
+#| echo: true
+#| eval: false
+
+lm(consumption ~ weight * transmission, data = cars)
+```
+
+Including the main effects alongside the interaction allows both the intercepts
+and slopes to differ
+
+## Interpreting the new coefficients {style="font-size:90%;"}
+
+For manual cars, $X_2 = 0$:
+
+$$E(Y \mid X_1,\text{manual}) = \beta_0 + \beta_1X_1
+$$
+
+For automatic cars, $X_2 = 1$:
+
+$$
+E(Y\mid X_1,\text{automatic}) = (\beta_0+\beta_2)+(\beta_1+\beta_3)X_1.
+$$
+
+Consequently:
+
+- $\beta_2$ is the difference in intercepts
+- $\beta_3$ is the difference in slopes
+- $\beta_1$ is the slope for the reference category, manual
+
+## Visualising the interaction
+
+<br>
+
+```{r}
+#| label: interaction-plot
+
+# Make some interaction predictions
+cars_interaction <- cars |>
+  mutate(
+    consumption = 0.2 +
+      2 * weight +
+      2 * (transmission == "Automatic") +
+      3 * weight * (transmission == "Automatic") +
+      rnorm(n(), 0, 0.8)
+  )
+
+# Plot the interaction
+cars_interaction |>
+  ggplot(aes(weight, consumption, colour = transmission)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+  ggokabeito::scale_colour_okabe_ito() +
+  labs(
+    x = "Car weight",
+    y = "Fuel consumption",
+    colour = "Transmission"
+  ) +
+  theme_st303()
+```
+
+::: {.callout-tip}
+## The effect of weight depends on transmission type.
+:::
+
+## Another example: Polynomial regression
+
+<br>
+
+```{r}
+#| label: curved-data-1a
+poly_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size = 0.8, alpha = 0.5) +
+  theme_st303()
+```
+
+## Another example: Polynomial regression
+
+<br>
+
+```{r}
+#| label: curved-data-1b
+poly_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size = 0.8, alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_st303()
+```
+
+## Another example: Polynomial regression
+
+<br>
+
+```{r}
+#| label: curved-data-1c
+poly_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(size = 0.8, alpha = 0.5) +
+  geom_smooth(method = "lm", formula = y ~ x + I(x^2), se = FALSE) +
+  theme_st303()
+```
+
+## A quadratic regression model
+
+The model becomes
+
+$$
+E(Y \mid X = x) = \beta_0 + \beta_1x + \beta_2x^2
+$$
+
+This is a quadratic regression model
+
+```{r}
+#| label: quad-reg-code
+#| echo: true
+#| eval: false
+
+lm(y ~ x + I(x^2), data = poly_data)
+```
+
+
+::: {.callout-note}
+## The function `I()` tells R to interpret `x^2` as an arithmetic square.
+:::
+
+## Some notes on polynomial regression
+
+$$
+E(Y \mid X = x) = \beta_0 + \beta_1x + \beta_2x^2
+$$
+
+is nonlinear in $x$, but **linear in its parameters**
+
+
+::: {.fragment .fade-up}
+
+We can also fit **higher-order polynomials**, for example:
+
+$$
+E(Y \mid X = x) = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3
+$$
+
+
+Higher-order polynomials provide greater flexibility, but can behave
+erratically, particularly near the boundaries of the observed data
+
+:::
+
+## How does the quadratic coefficient work?
+
+In a quadratic model,
+
+$$
+E(Y \mid X = x) = \beta_0 + \beta_1x + \beta_2x^2
+$$
+
+
+::: {.fragment .fade-up}
+
+The slope of the fitted mean relationship at $x$ is
+
+$$
+\frac{dE(Y \mid X = x)}{dx} =\beta_1 + 2\beta_2x
+$$
+
+:::
+
+
+## Some transformation examples
+
+Let's consider the model
+
+$$
+Y = e^{\beta_0+\beta_1X+\varepsilon}
+$$
+
+
+:::: {.fragment .fade-up}
+
+We can transform this into a linear model via logs
+
+$$
+\log(Y) = \beta_0+\beta_1X+\varepsilon
+$$
+
+::: {.callout-note}
+## The transformed model is linear in its parameters
+
+However, the interpretation changes: the model describes the conditional
+mean of $\log(Y)$, rather than directly modelling $E(Y \mid X)$.
+
+$$
+E[\log(Y) \mid X] \ne \log E[Y \mid X].
+$$
+
+:::
+::::

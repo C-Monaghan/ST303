@@ -1,0 +1,844 @@
+---
+title: "Multiple Regression: Matrix Notation"
+subtitle: "ST303 - Linear Models"
+author: Dr Katarina Domijan
+format:
+  revealjs:
+    slide-number: true
+    transition: fade
+    code-overflow: wrap
+    width: 1280
+    height: 720
+    margin: 0.08
+    incremental: false
+    preview-links: auto
+filters:
+  - code-window
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+set.seed(4321)
+
+knitr::opts_chunk$set(
+  fig.align = "center",
+  out.width = "70%"
+)
+
+library(tidyverse)
+library(knitr)
+```
+
+## Learning outcomes
+
+By the end of this lecture, you should be able to:
+
+- Read and write a regression model in matrix form, **and explain what each piece means**.
+- Explain what the OLS estimator is *trying to do* before you see the formula.
+- Derive the normal equations geometrically (no calculus needed) and with calculus.
+- Compute \(\widehat{\boldsymbol\beta}\) **by hand** for a small example.
+- Estimate the error variance and the coefficient covariance matrix.
+- Construct confidence and prediction intervals.
+- Reproduce all of the above in R.
+
+::: notes
+Tell students up front: the matrix algebra is just bookkeeping. Every formula today has a one-variable version they already know. We will keep pointing back to it.
+:::
+
+## The big idea in four lines
+
+1. **Model:** the response is a weighted mix of predictors, plus noise.
+2. **Goal:** choose the weights \(\boldsymbol\beta\) so the fitted values are as close as possible to the data.
+3. **"Close" means:** smallest sum of squared residuals.
+4. **Matrix notation** lets us write steps 1-3 once, for *any* number of predictors.
+
+. . .
+
+**Roadmap**
+
+| Part | Question |
+|:--|:--|
+| 1 | How do we write the model with matrices? |
+| 2 | What does "best fit" mean? |
+| 3 | How do we find it? (the normal equations) |
+| 4 | How certain are we? (variances and intervals) |
+
+# Part 1: Writing the model with matrices
+
+## Our running example
+
+Four observations, one predictor. Small enough to do **everything by hand**.
+
+```{r}
+#| label: toy-data
+
+toy <- tibble(x = 1:4, y = c(2, 3, 5, 6))
+toy
+```
+
+```{r}
+#| label: toy-plot
+#| echo: false
+#| fig-height: 3.5
+
+ggplot(toy, aes(x, y)) +
+  geom_point(size = 3) +
+  theme_minimal()
+```
+
+We will keep coming back to this example all lecture.
+
+## Step 1: Write out every equation
+
+The model says \(Y_i=\beta_0+\beta_1X_i+\varepsilon_i\). For our four points:
+
+$$
+\begin{aligned}
+2 &= \beta_0 + \beta_1(1) + \varepsilon_1\\
+3 &= \beta_0 + \beta_1(2) + \varepsilon_2\\
+5 &= \beta_0 + \beta_1(3) + \varepsilon_3\\
+6 &= \beta_0 + \beta_1(4) + \varepsilon_4
+\end{aligned}
+$$
+
+Notice:
+
+- The **\(\beta\)'s are the same in every row**: they are the unknowns.
+- The **\(x\) values and \(y\) values change by row**: they are data.
+
+Four equations, same unknowns. Can we stack them into **one** equation?
+
+## Step 2: Stack them into one equation
+
+$$
+\underbrace{\begin{bmatrix}2\\3\\5\\6\end{bmatrix}}_{\mathbf Y}
+=
+\underbrace{\begin{bmatrix}1&1\\1&2\\1&3\\1&4\end{bmatrix}}_{\mathbf X}
+\underbrace{\begin{bmatrix}\beta_0\\\beta_1\end{bmatrix}}_{\boldsymbol\beta}
++
+\underbrace{\begin{bmatrix}\varepsilon_1\\\varepsilon_2\\\varepsilon_3\\\varepsilon_4\end{bmatrix}}_{\boldsymbol\varepsilon}
+$$
+
+$$
+\boxed{\mathbf Y=\mathbf X\boldsymbol\beta+\boldsymbol\varepsilon}
+$$
+
+- \(\mathbf Y\): the responses, one row per observation.
+- \(\mathbf X\): the **design matrix**. One row per observation, one column per model term. The column of 1s is for the intercept.
+- \(\boldsymbol\beta\): the unknown weights.
+- \(\boldsymbol\varepsilon\): the noise.
+
+## How to read \(\mathbf X\boldsymbol\beta\): the row view
+
+Matrix multiplication just does the "write out every equation" step for us.
+
+**Each row of \(\mathbf X\boldsymbol\beta\) is one equation's right-hand side.**
+
+$$
+\mathbf X\boldsymbol\beta=
+\begin{bmatrix}1&1\\1&2\\1&3\\1&4\end{bmatrix}
+\begin{bmatrix}\beta_0\\\beta_1\end{bmatrix}
+=
+\begin{bmatrix}
+1\cdot\beta_0+1\cdot\beta_1\\
+1\cdot\beta_0+2\cdot\beta_1\\
+1\cdot\beta_0+3\cdot\beta_1\\
+1\cdot\beta_0+4\cdot\beta_1
+\end{bmatrix}
+$$
+
+Row \(i\) is \(\beta_0+\beta_1x_i\): the model's prediction for observation \(i\).
+
+**Rule:** row of the left matrix \(\times\) column of the right matrix, multiply pairs and add.
+
+## How to read \(\mathbf X\boldsymbol\beta\): the column view
+
+The same product can be seen as a **recipe**:
+
+$$
+\mathbf X\boldsymbol\beta=
+\beta_0\begin{bmatrix}1\\1\\1\\1\end{bmatrix}
++
+\beta_1\begin{bmatrix}1\\2\\3\\4\end{bmatrix}
+$$
+
+- Each **column of \(\mathbf X\)** is an ingredient.
+- Each **\(\beta_j\)** says how much of that ingredient to use.
+- The set of all possible recipes is called the **column space** of \(\mathbf X\).
+
+. . .
+
+So fitting a regression means: *find the best recipe for approximating \(\mathbf Y\) using the columns of \(\mathbf X\).*
+
+We will use this column view in Part 3.
+
+::: notes
+The column view is the one that makes the geometry work later. Spend a minute here.
+:::
+
+## Multiple regression = more columns
+
+Nothing else changes. Suppose we add a second predictor \(X_2\):
+
+$$
+Y_i=\beta_0+\beta_1X_{i1}+\beta_2X_{i2}+\varepsilon_i
+$$
+
+$$
+\mathbf X=
+\begin{bmatrix}
+1&X_{11}&X_{12}\\
+1&X_{21}&X_{22}\\
+\vdots&\vdots&\vdots\\
+1&X_{n1}&X_{n2}
+\end{bmatrix},
+\qquad
+\boldsymbol\beta=
+\begin{bmatrix}\beta_0\\\beta_1\\\beta_2\end{bmatrix}
+$$
+
+In general with \(k\) predictors: \(\mathbf X\) is \(n\times p\) where \(p=k+1\) (the \(+1\) is the intercept).
+
+**Model:** \(\mathbf Y=\mathbf X\boldsymbol\beta+\boldsymbol\varepsilon\), the same formula as before.
+
+## Shapes: your safety net
+
+| Quantity | Dimension | Meaning |
+|:--|:--:|:--|
+| \(\mathbf Y\) | \(n\times1\) | one response per observation |
+| \(\mathbf X\) | \(n\times p\) | one row per observation, one column per term |
+| \(\boldsymbol\beta\) | \(p\times1\) | one weight per term |
+| \(\boldsymbol\varepsilon\) | \(n\times1\) | one error per observation |
+
+\((n\times p)(p\times1)=(n\times1)\): the inner numbers match and the outer numbers give the answer's shape.
+
+**Habit:** whenever you meet a new matrix formula, write the shape under every symbol. Most algebra mistakes get caught here.
+
+# Part 2: What does "best fit" mean?
+
+## Fitted values and residuals
+
+Pick any candidate weights \(\mathbf b\). Then
+
+- **Fitted values:** \(\widehat{\mathbf Y}=\mathbf X\mathbf b\)
+- **Residuals:** \(\mathbf e=\mathbf Y-\mathbf X\mathbf b\) (data minus prediction)
+
+Try \(\mathbf b=(1,\,1)^\mathsf T\) on our example:
+
+$$
+\mathbf X\mathbf b=\begin{bmatrix}2\\3\\4\\5\end{bmatrix},\qquad
+\mathbf e=\begin{bmatrix}2\\3\\5\\6\end{bmatrix}-\begin{bmatrix}2\\3\\4\\5\end{bmatrix}
+=\begin{bmatrix}0\\0\\1\\1\end{bmatrix}
+$$
+
+How do we turn a vector of residuals into **one number** that says how bad the fit is?
+
+## Sum of squared residuals as \(\mathbf e^\mathsf T\mathbf e\)
+
+Square each residual and add them up:
+
+$$
+S(\mathbf b)=\sum_{i=1}^n e_i^2=\mathbf e^\mathsf T\mathbf e=(\mathbf Y-\mathbf X\mathbf b)^\mathsf T(\mathbf Y-\mathbf X\mathbf b)
+$$
+
+**Why does \(\mathbf e^\mathsf T\mathbf e\) work?** Row vector times column vector: multiply matching entries and add. Multiplying \(\mathbf e\) by itself gives \(e_1^2+e_2^2+\cdots+e_n^2\).
+
+$$
+\mathbf e^\mathsf T\mathbf e=
+\begin{bmatrix}0&0&1&1\end{bmatrix}
+\begin{bmatrix}0\\0\\1\\1\end{bmatrix}
+=0+0+1+1=2
+$$
+
+## Comparing candidate lines
+
+| Candidate \(\mathbf b\) | Fitted values | Residuals | \(S(\mathbf b)\) |
+|:--|:--|:--|:--:|
+| \((1,\ 1)\) | 2, 3, 4, 5 | 0, 0, 1, 1 | **2** |
+| \((0.5,\ 1.4)\) | 1.9, 3.3, 4.7, 6.1 | 0.1, -0.3, 0.3, -0.1 | **0.2** |
+
+The second line is much closer to the data.
+
+. . .
+
+**OLS definition:** \(\widehat{\boldsymbol\beta}\) is the choice of \(\mathbf b\) that makes \(S(\mathbf b)\) as small as possible.
+
+We just need a way to find it without trying every possibility. (Spoiler: \((0.5,\,1.4)\) is the answer for this data.)
+
+# Part 3: Finding the best \(\boldsymbol\beta\)
+
+## The geometric picture
+
+Think of \(\mathbf Y\) as a **single point** in \(n\)-dimensional space (here, 4D).
+
+- The **column space** of \(\mathbf X\) is the set of all recipes \(\mathbf X\mathbf b\). It is a flat surface (a line, plane, or hyperplane) inside that space.
+- \(\mathbf Y\) usually does **not** lie on that surface: the data are noisy.
+- OLS picks the **closest point on the surface** to \(\mathbf Y\). That point is \(\widehat{\mathbf Y}=\mathbf X\widehat{\boldsymbol\beta}\).
+
+**Analogy:** \(\mathbf Y\) is a bird, the column space is the floor, and \(\widehat{\mathbf Y}\) is the bird's shadow when the sun is directly overhead.
+
+The line from shadow to bird is the residual vector \(\mathbf e\). It points **straight up**, perpendicular to the floor.
+
+::: notes
+Draw this on the board: a flat parallelogram for the column space, a point above it, a dropped perpendicular. Label Y, Y-hat, e.
+:::
+
+## The key fact: residuals are perpendicular
+
+The closest point on a floor is where you drop a **perpendicular**. So:
+
+$$
+\mathbf e\ \perp\ \text{every column of }\mathbf X.
+$$
+
+"Perpendicular" for vectors means "dot product is zero". Stacking the dot product of \(\mathbf e\) with each column of \(\mathbf X\):
+
+$$
+\mathbf X^\mathsf T\mathbf e=
+\begin{bmatrix}
+(\text{column 1})\cdot\mathbf e\\
+(\text{column 2})\cdot\mathbf e\\
+\vdots
+\end{bmatrix}
+=\mathbf 0
+$$
+
+**This one equation is all we need.** Next slide: the normal equations fall straight out of it.
+
+## Why is perpendicular the shortest?
+
+Let \(\widehat{\boldsymbol\beta}\) be the weights with \(\mathbf X^\mathsf T\mathbf e=\mathbf 0\), and let \(\mathbf b\) be any other weights. Then
+
+$$
+\mathbf Y-\mathbf X\mathbf b=
+\underbrace{(\mathbf Y-\mathbf X\widehat{\boldsymbol\beta})}_{\mathbf e}+
+\underbrace{\mathbf X(\widehat{\boldsymbol\beta}-\mathbf b)}_{\text{lies in the column space}}.
+$$
+
+These two pieces are perpendicular, so by **Pythagoras**
+
+$$
+S(\mathbf b)=\mathbf e^\mathsf T\mathbf e+\big\|\mathbf X(\widehat{\boldsymbol\beta}-\mathbf b)\big\|^2\ \ge\ \mathbf e^\mathsf T\mathbf e = S(\widehat{\boldsymbol\beta}).
+$$
+
+Every other choice is the same or worse. So "perpendicular residuals" really does mean "smallest sum of squares".
+
+## Deriving the normal equations (no calculus)
+
+Start from perpendicularity and substitute \(\mathbf e=\mathbf Y-\mathbf X\widehat{\boldsymbol\beta}\):
+
+$$
+\begin{aligned}
+\mathbf X^\mathsf T\mathbf e&=\mathbf 0\\
+\mathbf X^\mathsf T(\mathbf Y-\mathbf X\widehat{\boldsymbol\beta})&=\mathbf 0\\
+\mathbf X^\mathsf T\mathbf Y-\mathbf X^\mathsf T\mathbf X\widehat{\boldsymbol\beta}&=\mathbf 0
+\end{aligned}
+$$
+
+Rearranging gives the **normal equations**:
+
+$$
+\boxed{\mathbf X^\mathsf T\mathbf X\,\widehat{\boldsymbol\beta}=\mathbf X^\mathsf T\mathbf Y}
+$$
+
+("Normal" here means "perpendicular", not "bell-curve".)
+
+If \(\mathbf X^\mathsf T\mathbf X\) is invertible, multiply both sides by its inverse:
+
+$$
+\boxed{\widehat{\boldsymbol\beta}=(\mathbf X^\mathsf T\mathbf X)^{-1}\mathbf X^\mathsf T\mathbf Y}
+$$
+
+## The formula is the one-variable formula in disguise
+
+Fit a line through the origin with one predictor: \(Y_i=\beta x_i+\varepsilon_i\).
+
+| | One predictor | Matrix version |
+|:--|:--:|:--:|
+| Model | \(y=\beta x\) | \(\mathbf Y=\mathbf X\boldsymbol\beta\) |
+| Normal equation | \(\left(\sum x_i^2\right)\hat\beta=\sum x_iy_i\) | \(\mathbf X^\mathsf T\mathbf X\,\widehat{\boldsymbol\beta}=\mathbf X^\mathsf T\mathbf Y\) |
+| Solution | \(\hat\beta=\dfrac{\sum x_iy_i}{\sum x_i^2}\) | \(\widehat{\boldsymbol\beta}=(\mathbf X^\mathsf T\mathbf X)^{-1}\mathbf X^\mathsf T\mathbf Y\) |
+
+- \(\mathbf X^\mathsf T\mathbf X\) plays the role of \(\sum x_i^2\) (a "sum of squares of the predictors").
+- \(\mathbf X^\mathsf T\mathbf Y\) plays the role of \(\sum x_iy_i\) (a "sum of cross-products").
+- \((\mathbf X^\mathsf T\mathbf X)^{-1}\) plays the role of **dividing**. Matrices have no division, so we multiply by the inverse.
+
+## What are \(\mathbf X^\mathsf T\mathbf X\) and \(\mathbf X^\mathsf T\mathbf Y\), really?
+
+Both are just **tables of dot products between columns**. Call the columns \(\mathbf 1\) and \(\mathbf x\).
+
+$$
+\mathbf X^\mathsf T\mathbf X=
+\begin{bmatrix}
+\mathbf 1\cdot\mathbf 1&\mathbf 1\cdot\mathbf x\\
+\mathbf x\cdot\mathbf 1&\mathbf x\cdot\mathbf x
+\end{bmatrix}
+=\begin{bmatrix}n&\sum x_i\\\sum x_i&\sum x_i^2\end{bmatrix}
+\qquad
+\mathbf X^\mathsf T\mathbf Y=
+\begin{bmatrix}
+\mathbf 1\cdot\mathbf Y\\\mathbf x\cdot\mathbf Y
+\end{bmatrix}
+=\begin{bmatrix}\sum y_i\\\sum x_iy_i\end{bmatrix}
+$$
+
+For our data (\(x=1,2,3,4\) and \(y=2,3,5,6\)):
+
+$$
+\mathbf X^\mathsf T\mathbf X=\begin{bmatrix}4&10\\10&30\end{bmatrix},\qquad
+\mathbf X^\mathsf T\mathbf Y=\begin{bmatrix}16\\47\end{bmatrix}
+$$
+
+(\(1+2+3+4=10\), \(1+4+9+16=30\), \(2+3+5+6=16\), \(2+6+15+24=47\).)
+
+**In general:** \(\mathbf X^\mathsf T\mathbf X\) is \(p\times p\), \(\mathbf X^\mathsf T\mathbf Y\) is \(p\times1\), whatever \(n\) is. The big data matrix is squashed into a small summary.
+
+## Solving by hand
+
+We need to solve
+
+$$
+\begin{bmatrix}4&10\\10&30\end{bmatrix}\widehat{\boldsymbol\beta}=\begin{bmatrix}16\\47\end{bmatrix}.
+$$
+
+**Inverse of a \(2\times2\) matrix:** swap the diagonal, negate the off-diagonal, divide by the determinant.
+
+$$
+\text{determinant}=4(30)-10(10)=20,
+\qquad
+(\mathbf X^\mathsf T\mathbf X)^{-1}=\frac1{20}\begin{bmatrix}30&-10\\-10&4\end{bmatrix}
+$$
+
+$$
+\widehat{\boldsymbol\beta}=\frac1{20}\begin{bmatrix}30&-10\\-10&4\end{bmatrix}\begin{bmatrix}16\\47\end{bmatrix}
+=\frac1{20}\begin{bmatrix}480-470\\-160+188\end{bmatrix}
+=\frac1{20}\begin{bmatrix}10\\28\end{bmatrix}
+=\boxed{\begin{bmatrix}0.5\\1.4\end{bmatrix}}
+$$
+
+The fitted line is \(\widehat y=0.5+1.4x\), the line we compared earlier.
+
+## Sanity check against simple regression
+
+You already know \(\hat\beta_1=S_{xy}/S_{xx}\) and \(\hat\beta_0=\bar y-\hat\beta_1\bar x\).
+
+With \(\bar x=2.5\) and \(\bar y=4\):
+
+$$
+S_{xx}=30-4(2.5)^2=5,\qquad S_{xy}=47-4(2.5)(4)=7
+$$
+
+$$
+\hat\beta_1=\frac75=1.4,\qquad \hat\beta_0=4-1.4(2.5)=0.5\ \checkmark
+$$
+
+Matrix notation is **not a new method**. It is the same least squares, written so that it works for any number of predictors.
+
+## Verify: residuals are perpendicular to the columns
+
+Fitted values \(\widehat{\mathbf Y}=\mathbf X\widehat{\boldsymbol\beta}\) and residuals:
+
+$$
+\widehat{\mathbf Y}=\begin{bmatrix}1.9\\3.3\\4.7\\6.1\end{bmatrix},\qquad
+\mathbf e=\begin{bmatrix}0.1\\-0.3\\0.3\\-0.1\end{bmatrix}
+$$
+
+$$
+\mathbf X^\mathsf T\mathbf e=
+\begin{bmatrix}
+0.1-0.3+0.3-0.1\\
+1(0.1)+2(-0.3)+3(0.3)+4(-0.1)
+\end{bmatrix}
+=\begin{bmatrix}0\\0\end{bmatrix}\ \checkmark
+$$
+
+- **First entry:** the residuals sum to zero. This is *because* the model has an intercept column of 1s.
+- **Second entry:** the residuals are uncorrelated with \(x\) in this sense. No linear trend in \(x\) is left unexplained.
+
+## Optional: the calculus derivation
+
+*For students who like derivatives.* First the one-variable case, minimising \(S(b)=\sum(y_i-bx_i)^2\):
+
+$$
+\frac{dS}{db}=-2\sum x_i(y_i-bx_i)=0\ \Rightarrow\ b=\frac{\sum x_iy_i}{\sum x_i^2}.
+$$
+
+Matrix version. Expand \(S(\mathbf b)=(\mathbf Y-\mathbf X\mathbf b)^\mathsf T(\mathbf Y-\mathbf X\mathbf b)\):
+
+$$
+S(\mathbf b)=\mathbf Y^\mathsf T\mathbf Y-2\mathbf b^\mathsf T\mathbf X^\mathsf T\mathbf Y+\mathbf b^\mathsf T\mathbf X^\mathsf T\mathbf X\mathbf b.
+$$
+
+(The two middle terms are the same number, since a \(1\times1\) matrix equals its own transpose.)
+
+Differentiate, using the rules \(\partial(\mathbf b^\mathsf T\mathbf a)/\partial\mathbf b=\mathbf a\) and \(\partial(\mathbf b^\mathsf T\mathbf A\mathbf b)/\partial\mathbf b=2\mathbf A\mathbf b\) for symmetric \(\mathbf A\):
+
+$$
+\frac{\partial S}{\partial\mathbf b}=-2\mathbf X^\mathsf T\mathbf Y+2\mathbf X^\mathsf T\mathbf X\mathbf b=\mathbf 0
+\ \Rightarrow\ \mathbf X^\mathsf T\mathbf X\widehat{\boldsymbol\beta}=\mathbf X^\mathsf T\mathbf Y.
+$$
+
+Same normal equations. The second rule is the matrix version of "derivative of \(ab^2\) is \(2ab\)".
+
+## What if \(\mathbf X^\mathsf T\mathbf X\) cannot be inverted?
+
+The inverse exists only if the columns of \(\mathbf X\) are **linearly independent** (full column rank, \(\operatorname{rank}(\mathbf X)=p\)).
+
+**Intuition:** if one ingredient is a mix of the others, there are many recipes that give the *same* result, so the weights are not uniquely determined.
+
+Typical causes:
+
+- Two identical columns, or one predictor a multiple or sum of others.
+- A categorical variable with *all* category dummies **and** an intercept (the dummies add up to the intercept column).
+- More parameters than observations (\(p>n\)).
+
+The **fitted values** are still unique. Only the individual coefficients are not.
+
+Near-dependence (strong collinearity) does not break the formula, but it makes the estimates unstable and their standard errors large.
+
+# Part 4: How certain are we?
+
+## Estimating the error variance
+
+Assume \(E(\boldsymbol\varepsilon)=\mathbf0\) and \(\operatorname{Var}(\boldsymbol\varepsilon)=\sigma^2\mathbf I\) (errors uncorrelated, constant variance).
+
+$$
+\operatorname{SSE}=\mathbf e^\mathsf T\mathbf e,\qquad
+\boxed{\widehat\sigma^2=\frac{\operatorname{SSE}}{n-p}}
+$$
+
+**Why \(n-p\) and not \(n\)?** The residuals are forced to satisfy \(p\) constraints (\(\mathbf X^\mathsf T\mathbf e=\mathbf 0\)), so only \(n-p\) of them are free to vary.
+
+Our example: \(\operatorname{SSE}=0.1^2+0.3^2+0.3^2+0.1^2=0.2\), \(n-p=4-2=2\), so
+
+$$
+\widehat\sigma^2=\frac{0.2}{2}=0.1,\qquad\widehat\sigma\approx0.316.
+$$
+
+## Uncertainty of \(\widehat{\boldsymbol\beta}\)
+
+$$
+\boxed{\operatorname{Var}(\widehat{\boldsymbol\beta}\mid\mathbf X)=\sigma^2(\mathbf X^\mathsf T\mathbf X)^{-1}}
+$$
+
+**One-variable analogy:** \(\operatorname{Var}(\bar Y)=\sigma^2/n\). Here \((\mathbf X^\mathsf T\mathbf X)^{-1}\) plays the role of \(1/n\). *More data, or more spread-out predictors, make \(\mathbf X^\mathsf T\mathbf X\) bigger and the variance smaller.*
+
+For our example, plug in \(\widehat\sigma^2=0.1\):
+
+$$
+\widehat{\operatorname{Var}}(\widehat{\boldsymbol\beta})=0.1\cdot\frac1{20}\begin{bmatrix}30&-10\\-10&4\end{bmatrix}
+=\begin{bmatrix}0.15&-0.05\\-0.05&0.02\end{bmatrix}
+$$
+
+- **Diagonal:** variances. \(SE(\hat\beta_0)=\sqrt{0.15}\approx0.387\), \(SE(\hat\beta_1)=\sqrt{0.02}\approx0.141\).
+- **Off-diagonal:** covariance between \(\hat\beta_0\) and \(\hat\beta_1\) (negative here: if the slope is overestimated, the intercept tends to be underestimated).
+
+Check: \(\operatorname{Var}(\hat\beta_1)=\sigma^2/S_{xx}=0.1/5=0.02\ \checkmark\)
+
+## A note on assumptions
+
+| Result | Needs |
+|:--|:--|
+| \(\widehat{\boldsymbol\beta}=(\mathbf X^\mathsf T\mathbf X)^{-1}\mathbf X^\mathsf T\mathbf Y\) | only that \(\mathbf X\) has full column rank (it is just geometry) |
+| \(E(\widehat{\boldsymbol\beta})=\boldsymbol\beta\) | \(E(\boldsymbol\varepsilon\mid\mathbf X)=\mathbf 0\) |
+| \(\operatorname{Var}(\widehat{\boldsymbol\beta})=\sigma^2(\mathbf X^\mathsf T\mathbf X)^{-1}\) | also \(\operatorname{Var}(\boldsymbol\varepsilon\mid\mathbf X)=\sigma^2\mathbf I\) |
+| Exact \(t\)-based confidence and prediction intervals | also normally distributed errors |
+
+## Predicting at a new point
+
+For a new predictor setting \(\mathbf x_0\) (same terms, same order as the columns of \(\mathbf X\), including the leading 1):
+
+$$
+\boxed{\widehat y_0=\mathbf x_0^\mathsf T\widehat{\boldsymbol\beta}}
+$$
+
+For polynomial or interaction models, \(\mathbf x_0\) must include the squared terms or products too.
+
+Our example at \(x=2.5\): \(\mathbf x_0^\mathsf T=(1,\ 2.5)\), so
+
+$$
+\widehat y_0=1(0.5)+2.5(1.4)=4.0.
+$$
+
+## Confidence interval vs prediction interval
+
+| | Target | Standard error |
+|:--|:--|:--|
+| **Confidence interval** | the *mean* response at \(\mathbf x_0\) | \(\widehat\sigma\sqrt{\mathbf x_0^\mathsf T(\mathbf X^\mathsf T\mathbf X)^{-1}\mathbf x_0}\) |
+| **Prediction interval** | a *single new* observation at \(\mathbf x_0\) | \(\widehat\sigma\sqrt{\mathbf 1+\mathbf x_0^\mathsf T(\mathbf X^\mathsf T\mathbf X)^{-1}\mathbf x_0}\) |
+
+Both intervals have the form \(\ \widehat y_0\pm t_{n-p,\,1-\alpha/2}\times SE\).
+
+The extra **1** is the new observation's own noise. That is why the prediction interval is always wider.
+
+**Example question:** *"What is the average exam score for students like this?"* → confidence interval. *"What score might one new student get?"* → prediction interval.
+
+## Worked example: intervals at \(x=2.5\)
+
+First the key quantity, with \((\mathbf X^\mathsf T\mathbf X)^{-1}=\frac1{20}\begin{bmatrix}30&-10\\-10&4\end{bmatrix}\):
+
+$$
+\mathbf x_0^\mathsf T(\mathbf X^\mathsf T\mathbf X)^{-1}\mathbf x_0
+=\frac1{20}\begin{bmatrix}1&2.5\end{bmatrix}\begin{bmatrix}5\\0\end{bmatrix}=\frac{5}{20}=0.25
+$$
+
+(This equals \(1/n\) because \(x_0=\bar x\). It is the smallest possible value, so intervals are narrowest at the mean of \(x\).)
+
+With \(t_{0.975,\,2}=4.303\):
+
+$$
+\begin{aligned}
+SE_{\text{fit}}&=\sqrt{0.1(0.25)}=0.158, &\text{CI}&=4.0\pm4.303(0.158)\approx(3.32,\ 4.68)\\
+SE_{\text{pred}}&=\sqrt{0.1(1.25)}=0.354, &\text{PI}&=4.0\pm4.303(0.354)\approx(2.48,\ 5.52)
+\end{aligned}
+$$
+
+## Check the hand calculations in R
+
+```{r}
+#| label: toy-verify
+
+fit_toy <- lm(y ~ x, data = toy)
+
+coef(fit_toy)
+vcov(fit_toy)
+
+new_toy <- tibble(x = 2.5)
+predict(fit_toy, new_toy, interval = "confidence")
+predict(fit_toy, new_toy, interval = "prediction")
+```
+
+Everything we did by hand matches `lm()`.
+
+# Part 5: More examples
+
+## Design matters: the two-pan scale
+
+Two objects with unknown weights \(\beta_1,\beta_2\). Each measurement is (weight in pan 1) \(-\) (weight in pan 2) + error. Four measurements:
+
+$$
+\mathbf X=
+\begin{bmatrix}
+1&0\\0&-1\\1&-1\\1&1
+\end{bmatrix}
+\quad\text{(rows: obj 1 alone; obj 2 in pan 2; obj 1 vs obj 2; both in pan 1)}
+$$
+
+$$
+\mathbf X^\mathsf T\mathbf X=3\mathbf I_2,\qquad
+\widehat{\boldsymbol\beta}=\frac13\begin{bmatrix}Y_1+Y_3+Y_4\\-Y_2-Y_3+Y_4\end{bmatrix},\qquad
+\operatorname{Var}(\widehat{\boldsymbol\beta})=\frac{\sigma^2}{3}\mathbf I_2
+$$
+
+There is no intercept: the expected measurement is purely a mix of the two weights. The estimates are uncorrelated, since \(\mathbf X^\mathsf T\mathbf X\) is diagonal.
+
+## Comparing three designs
+
+Same number of measurements, same noise. Only \(\mathbf X\) differs.
+
+| Design | \(\mathbf X^\mathsf T\mathbf X\) | \(\operatorname{Var}(\hat\beta_j)\) |
+|:--|:--:|:--:|
+| Original | \(3\mathbf I_2\) | \(\sigma^2/3\) |
+| A: \(\begin{bmatrix}1&-1\\1&-1\\1&1\\1&1\end{bmatrix}\) | \(4\mathbf I_2\) | \(\sigma^2/4\) |
+| B: \(\begin{bmatrix}1&0\\1&0\\0&1\\0&1\end{bmatrix}\) | \(2\mathbf I_2\) | \(\sigma^2/2\) |
+
+**Take-away:** *you can improve precision just by choosing \(\mathbf X\) well.* The bigger \(\mathbf X^\mathsf T\mathbf X\) is, the smaller the variance. This is the basis of experimental design.
+
+(These are illustrative matrices. A real experiment must also respect how the measurement is physically made.)
+
+## Multiple regression in R: set-up
+
+Six observations, two predictors, one quadratic term:
+
+$$
+Y_i=\beta_0+\beta_1X_{i1}+\beta_2X_{i1}^2+\beta_3X_{i2}+\varepsilon_i
+$$
+
+```{r}
+#| label: matrix-data
+
+y <- c(6.1, 5.4, 7.2, 8.9, 9.1, 11.6)
+
+x1 <- c(1, 2, 3, 1, 2, 3)
+x2 <- c(0, 0, 0, 1, 1, 1)
+
+data <- tibble(y, x1, x2)
+
+data
+```
+
+We will compute everything from the matrix formulas, then verify with `lm()`.
+
+## Build \(\mathbf X\) in R
+
+Columns must be in the order \((1,\ X_1,\ X_1^2,\ X_2)\).
+
+```{r}
+#| label: construct-design-matrix
+
+X <- model.matrix(
+  ~ x1 + I(x1^2) + x2,
+  data = data
+)
+
+X
+```
+
+\(n=6\) rows, \(p=4\) columns. **Note:** a quadratic model is still a *linear* model, since it is linear in the \(\beta\)'s. A squared term is just another column.
+
+## OLS in R
+
+```{r}
+#| label: estimate-coefficients
+
+Y <- matrix(y, ncol = 1)
+
+XtX <- crossprod(X)       # X'X
+XtY <- crossprod(X, Y)    # X'Y
+
+beta_hat <- solve(XtX, XtY)   # solves X'X b = X'Y
+
+beta_hat
+```
+
+`solve(XtX, XtY)` solves the normal equations directly. It is faster and more numerically stable than computing the inverse and then multiplying.
+
+```{r}
+#| label: verify-coefficients
+
+fit <- lm(y ~ x1 + I(x1^2) + x2, data = data)
+
+cbind(Matrix = drop(beta_hat), lm = coef(fit))
+```
+
+## Fitted values, residuals, and the perpendicularity check
+
+```{r}
+#| label: fitted-values-residuals
+
+y_hat <- X %*% beta_hat
+e <- Y - y_hat
+
+tibble(observed = y, fitted = drop(y_hat), residual = drop(e))
+```
+
+```{r}
+#| label: check-normal-equations
+
+crossprod(X, e)    # should be (numerically) all zeros
+```
+
+## Error variance and standard errors
+
+```{r}
+#| label: estimate-error-variance
+
+n <- nrow(X)
+p <- ncol(X)
+
+SSE <- sum(e^2)
+MSE <- SSE / (n - p)
+sigma_hat <- sqrt(MSE)
+
+tibble(n, p, residual_df = n - p, SSE, MSE, residual_standard_error = sigma_hat)
+```
+
+```{r}
+#| label: coefficient-covariance
+
+vcov_beta <- solve(XtX) * MSE
+
+tibble(
+  term = names(coef(fit)),
+  estimate = drop(beta_hat),
+  standard_error = sqrt(diag(vcov_beta)),
+  lm_standard_error = coef(summary(fit))[, "Std. Error"]
+)
+```
+
+The diagonal of \(\widehat\sigma^2(\mathbf X^\mathsf T\mathbf X)^{-1}\) gives the squared standard errors.
+
+## Intervals at \(X_1=1,\ X_2=1\)
+
+The design row is \((1,\ 1,\ 1,\ 1)\), because \(X_1^2=1\).
+
+```{r}
+#| label: intervals-manual
+
+x0 <- model.matrix(~ x1 + I(x1^2) + x2, data = tibble(x1 = 1, x2 = 1))
+
+y0_hat <- drop(x0 %*% beta_hat)
+h0     <- drop(x0 %*% solve(XtX) %*% t(x0))   # x0'(X'X)^{-1} x0
+t_crit <- qt(0.975, df = n - p)
+
+SE_fit  <- sqrt(MSE * h0)
+SE_pred <- sqrt(MSE * (1 + h0))
+
+rbind(
+  CI = y0_hat + c(-1, 1) * t_crit * SE_fit,
+  PI = y0_hat + c(-1, 1) * t_crit * SE_pred
+)
+```
+
+```{r}
+#| label: verify-intervals
+
+new_data <- tibble(x1 = 1, x2 = 1)
+
+predict(fit, new_data, interval = "confidence")
+predict(fit, new_data, interval = "prediction")
+```
+
+Only 2 residual degrees of freedom, so the intervals are very wide. This is a good demonstration of the formulas but not a basis for real conclusions.
+
+# Wrap-up
+
+## One-page summary: scalar vs matrix
+
+| Idea | Matrix form | Plain-English meaning |
+|:--|:--|:--|
+| Model | \(\mathbf Y=\mathbf X\boldsymbol\beta+\boldsymbol\varepsilon\) | response = mix of columns + noise |
+| Fitted values | \(\widehat{\mathbf Y}=\mathbf X\widehat{\boldsymbol\beta}\) | closest point to \(\mathbf Y\) in the column space |
+| Residuals | \(\mathbf e=\mathbf Y-\widehat{\mathbf Y}\) | what is left over |
+| Criterion | minimise \(\mathbf e^\mathsf T\mathbf e\) | smallest sum of squares |
+| Key fact | \(\mathbf X^\mathsf T\mathbf e=\mathbf 0\) | residuals perpendicular to every column |
+| Normal equations | \(\mathbf X^\mathsf T\mathbf X\widehat{\boldsymbol\beta}=\mathbf X^\mathsf T\mathbf Y\) | perpendicularity, rearranged |
+| Estimator | \(\widehat{\boldsymbol\beta}=(\mathbf X^\mathsf T\mathbf X)^{-1}\mathbf X^\mathsf T\mathbf Y\) | "divide" cross-products by sum of squares |
+| Error variance | \(\widehat\sigma^2=\operatorname{SSE}/(n-p)\) | average squared residual, adjusted for \(p\) fitted parameters |
+| Coefficient variance | \(\widehat\sigma^2(\mathbf X^\mathsf T\mathbf X)^{-1}\) | the matrix version of \(\sigma^2/n\) |
+
+## Common misconceptions
+
+- **"Matrix OLS is a different method."** No. It is the same least squares, for any \(p\).
+- **"Normal equations need normal errors."** No. "Normal" means perpendicular. Normality only matters for exact \(t\)-intervals.
+- **"A quadratic model is not linear."** It is linear in the \(\beta\)'s. A squared term is just another column of \(\mathbf X\).
+- **"\(\mathbf X^\mathsf T\mathbf X\) is the data."** It is a \(p\times p\) summary of dot products between columns.
+- **"The confidence interval covers most observations."** It covers the *mean*. Use the prediction interval for individuals.
+
+## Final check
+
+A model has \(n=50\) observations, **three predictors plus an intercept**.
+
+Discuss:
+
+1. What are the dimensions of \(\mathbf X\)?
+2. What are the dimensions of \(\boldsymbol\beta\)?
+3. What are the dimensions of \(\mathbf X^\mathsf T\mathbf X\)?
+4. What are the residual degrees of freedom, assuming full column rank?
+5. What does \(\mathbf X^\mathsf T\mathbf e=\mathbf0\) tell us?
+
+::: {.fragment .fade-up}
+**Answers**
+
+1. \(\mathbf X\) is \(50\times4\).
+2. \(\boldsymbol\beta\) is \(4\times1\).
+3. \(\mathbf X^\mathsf T\mathbf X\) is \(4\times4\).
+4. \(50-4=46\).
+5. The residual vector is perpendicular to every column of the design matrix.
+:::

@@ -1,0 +1,928 @@
+---
+title: |
+  Multiple Regression: Matrix Notation
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(54321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(1.1), face = "bold"),
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Toy data ---------------------------------------------------------------------
+y <- c(6.1, 5.4, 7.2, 8.9, 9.1, 11.6)
+x1 <- c(1, 2, 3, 1, 2, 3)
+x2 <- c(0, 0, 0, 1, 1, 1)
+
+toy_data <- tibble(y, x1, x2)
+
+# Illustration data ------------------------------------------------------------
+small_data <- tibble(x = c(1, 2, 3), y = c(2, 3, 5))
+```
+
+## Learning objectives
+
+By the end of this lecture, we should be able to:
+
+- Read and write a regression model in matrix form,
+  **and explain what each piece means**.
+- Explain what the OLS estimator is *trying to do* before you see the formula.
+- Derive the normal equations geometrically (no calculus needed) and with
+  calculus.
+- Estimate the error variance and the coefficient covariance matrix.
+- Construct confidence and prediction intervals.
+- Reproduce all of the above in R.
+
+## The big picture
+
+We already know how to fit a regression model
+
+Today, we will express the same ideas using matrices
+
+$$
+\boxed{
+\text{Model} \rightarrow \text{Predictions} \rightarrow \text{Residuals} \rightarrow \text{Minimise SSE}
+}
+$$
+
+Matrix notation lets us perform these calculations for many observations
+and many predictors at once
+
+## Why use matrix notation
+
+Let's suppose we have $n$ observations and $k$ predictors
+
+For each observation we can write
+
+$$
+Y_i=\beta_0 + \beta_1X_{i1} + \cdots + \beta_kX_{ik} + \varepsilon_i
+$$
+
+
+::: {.fragment .fade-up}
+
+Writing this equation separately **for every observation** becomes tedious
+
+Matrix notation allows us to represent all $n$ equations simultaneously
+
+It also makes the mathematics easier to generalise to more complicated
+linear models
+
+:::
+
+## Why use matrix notation
+
+### A small example
+
+Suppose we have three observations and two predictors
+
+$$
+\begin{align*}
+Y_1 &= \beta_0+\beta_1X_{11}+\beta_2X_{12}+\varepsilon_1,\\
+Y_2 &= \beta_0+\beta_1X_{21}+\beta_2X_{22}+\varepsilon_2,\\
+Y_3 &= \beta_0+\beta_1X_{31}+\beta_2X_{32}+\varepsilon_3
+\end{align*}
+$$
+
+<br>
+
+::: {.callout-note appearance="minimal"}
+Notice that the coefficients **are the same** across observations
+:::
+
+::: {.callout-note appearance="minimal"}
+While the predictor values and errors **vary**
+:::
+
+::: {.callout-tip appearance="minimal"}
+How could we **collect these equations** into a single expression?
+:::
+
+## Matrix notation
+
+### The response vector
+
+Let $\mathbf Y$ denote the [response vector]{.alert}
+(i.e., a vector of observed responses)
+
+$$
+\mathbf{Y} = \begin{bmatrix}
+Y_1 \\
+Y_2 \\
+\vdots \\
+Y_n
+\end{bmatrix}
+$$
+
+With dimension $\mathbf{Y} \in \mathbb{R}^{n \times 1}$
+
+Within this matrix there is one row for every observation and one
+column containing the response.
+
+## Matrix notation
+
+### The design matrix
+
+Let $\mathbf{X}$ denote the [design matrix]{.alert} such that:
+
+$$
+\mathbf{X}=
+\begin{bmatrix}
+1 & X_{11} & \cdots &X_{1k} \\
+1 & X_{21} & \cdots &X_{2k} \\
+\vdots &\vdots &\ddots &\vdots \\
+1 & X_{n1} & \cdots & X_{nk}
+\end{bmatrix}
+$$
+
+The first column contains ones because the model includes an intercept
+
+There are $n$ rows and $p = k + 1$ columns such that $\mathbf{X} \in \mathbb{R}^{n\times p}$
+
+Each row represents an observation and each column represents a model term.
+
+## Matrix notation
+
+### The parameter and error vectors
+
+We can collect all the unknown parameters and errors into a
+[parameter vector]{.alert} and an [error vector]{.alert}, respectively
+
+:::: {.columns}
+
+::: {.column}
+
+$$
+\boldsymbol{\beta} =
+\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_k
+\end{bmatrix}
+$$
+
+:::
+
+::: {.column}
+
+$$
+\boldsymbol{\varepsilon} = \begin{bmatrix}
+\varepsilon_1 \\
+\varepsilon_2 \\
+\vdots \\
+\varepsilon_n
+\end{bmatrix}
+$$
+
+:::
+
+::::
+
+- Parameter contains $p = k + 1$ parameters
+- Error vector contains $n \times 1$ parameters
+
+## Matrix notation {style="font-size: 90%;"}
+
+### The matrix model
+
+In matrix form, the multiple linear regression model thus becomes
+
+$$
+\boxed{\mathbf{Y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\varepsilon}}
+$$
+
+
+$$
+\mathbf{Y} = \begin{bmatrix}
+Y_1 \\
+Y_2 \\
+\vdots \\
+Y_n
+\end{bmatrix} \quad
+\mathbf{X}=
+\begin{bmatrix}
+1 & X_{11} & \cdots &X_{1k} \\
+1 & X_{21} & \cdots &X_{2k} \\
+\vdots &\vdots &\ddots &\vdots \\
+1 & X_{n1} & \cdots & X_{nk}
+\end{bmatrix} \quad
+\boldsymbol{\beta} =
+\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_k
+\end{bmatrix} \quad
+\boldsymbol{\varepsilon} = \begin{bmatrix}
+\varepsilon_1 \\
+\varepsilon_2 \\
+\vdots \\
+\varepsilon_n
+\end{bmatrix}
+$$
+
+
+
+:::: {.fragment .fade-up}
+where
+
+$$
+\mathbf{e} = \mathbf{Y} - \mathbf{X} \hat{\boldsymbol{\beta}}
+$$
+
+
+::: {.callout-important appearance="minimal"}
+Our objective is to find the coefficient vector that makes these residuals
+collectively as small as possible in <br> the least-squares sense.
+:::
+::::
+
+## Ordinary least squares
+
+Using ordinary least squares we want to minimise
+
+$$
+S(\beta) = \sum^n_{j = 1}(y_i - \beta_0 - \beta_1x_{i1} - \dots - \beta_kx_{ik})^2
+$$
+
+In matrix form we can represent this as
+
+$$
+S(\boldsymbol{\beta}) = (\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^\mathsf{T}(\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})
+$$
+
+::: {.callout-tip}
+## Why does this work?
+
+- $(\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})$ is a **column vector** $(n \times 1)$
+- Transposing it turns it into a **row vector** $(1 \times n)$
+- We can now calculate the sum of all squared residuals
+
+:::
+
+## Ordinary least squares
+
+If we expand out our above equation
+
+$$
+\begin{aligned}
+S(\boldsymbol{\beta}) &= (\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^\mathsf{T}(\mathbf{Y} - \mathbf{X} \boldsymbol{\beta}) \\[4pt]
+&=\mathbf{Y}^\mathsf{T} \mathbf{Y} - \mathbf{Y}^\mathsf{T} \mathbf{X}\boldsymbol{\beta} -\boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{Y} + \boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{X} \boldsymbol{\beta} \\[4pt]
+&=\mathbf{Y}^\mathsf{T} \mathbf{Y} - \underbrace{\mathbf{Y}^\mathsf{T} \mathbf{X}\boldsymbol{\beta} -\boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{Y}}_{\text{These two equations are the same}} + \boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{X} \boldsymbol{\beta} \\[4pt]
+&= \mathbf{Y}^\mathsf{T} \mathbf{Y} - 2 \boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{Y} +\boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{X}\boldsymbol{\beta}
+\end{aligned}
+$$
+
+Hence
+
+$$
+\boxed{S(\boldsymbol{\beta}) =  \mathbf{Y}^\mathsf{T} \mathbf{Y} - 2 \boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{Y} +\boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{X}\boldsymbol{\beta}}
+$$
+
+::: {.notes}
+- This is simply a matrix version of $(a - b)(a - b) = a^2 - 2ab + b^2$
+:::
+
+## Differentiate to minimise {style="font-size: 80%"}
+
+$$
+\boxed{S(\boldsymbol{\beta}) =  \mathbf{Y}^\mathsf{T} \mathbf{Y} - 2 \boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{Y} +\boldsymbol{\beta}^\mathsf{T} \mathbf{X}^\mathsf{T} \mathbf{X}\boldsymbol{\beta}}
+$$
+
+When we differentiate the above equation with respect to $\beta$, we are left
+with
+
+$$
+\frac{\partial S}{\partial\boldsymbol{\beta}} = -2\mathbf{X}^\mathsf{T} \mathbf{Y} + 2 \mathbf{X}^\mathsf{T} \mathbf{X} \boldsymbol{\beta}
+$$
+
+Setting this equal to 0
+
+$$
+-2 \mathbf{X}^\mathsf{T} \mathbf{Y} + 2\mathbf{X}^\mathsf{T}\mathbf{X} \hat{\boldsymbol\beta} = 0
+$$
+
+Which can then be simplified down into
+
+$$
+\boxed{
+\mathbf X^\mathsf T\mathbf X
+\hat{\boldsymbol\beta}
+=\mathbf X^\mathsf T\mathbf Y
+}
+$$
+
+
+::: {.callout-important}
+## This is our normal equation
+:::
+
+## Estimating $\boldsymbol{\beta}$
+
+$$
+\boxed{
+\mathbf X^\mathsf T\mathbf X
+\hat{\boldsymbol\beta}
+=\mathbf X^\mathsf T\mathbf Y
+}
+$$
+
+To get a formula for estimating $\boldsymbol{\beta}$ we can multiply both
+sides of our equation by the inverse of $\mathbf{X}^\mathsf{T} \mathbf{X}$
+such that
+
+$$
+\boxed{
+\hat{\boldsymbol\beta}
+=(\mathbf X^\mathsf T\mathbf X)^{-1}
+\mathbf X^\mathsf T\mathbf Y
+}
+$$
+
+
+::: {.callout-important}
+## The formula requires $\mathbf X$ to have full column rank
+
+This means no column is an exact linear combination of the others
+:::
+
+## What if the matrix is not invertible?
+
+If the columns of $\mathbf{X}$ are linearly dependent, then
+$\mathbf{X}^\mathsf{T} \mathbf{X}$ is singular and the usual inverse formula
+does not apply
+
+::: {.fragment .fade-up}
+
+- A predictor is an exact linear combination of other predictors
+- Two columns are identical
+- A categorical variable is represented by all category indicators alongside
+  an intercept
+
+Near-linear dependence can also make coefficient estimates numerically
+unstable
+:::
+
+## A small example
+
+```{r}
+#| label: small-data-plot
+small_data |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  labs(x = "X", y = "Y") +
+  theme_st303()
+```
+
+## A small example {style="font-size: 80%;"}
+
+$$
+Y = \begin{bmatrix} 2 \\ 3 \\ 5 \end{bmatrix} \qquad
+X = \begin{bmatrix} 1  & 1 \\ 1 & 2 \\ 1 & 3 \end{bmatrix}
+$$
+
+$$
+\boxed{
+\mathbf X^\mathsf T\mathbf X
+\hat{\boldsymbol\beta}
+=\mathbf X^\mathsf T\mathbf Y
+}
+$$
+
+
+::: {.fragment}
+
+$$
+\mathbf{X}^\mathsf{T} \mathbf{X} = \begin{bmatrix} 3 & 6 \\ 6 & 14 \end{bmatrix} \qquad
+\mathbf X^\mathsf T\mathbf Y = \begin{bmatrix} 10 \\ 23\end{bmatrix}
+$$
+
+Hence
+
+$$
+\begin{bmatrix} 3 & 6 \\ 6 & 14 \end{bmatrix} \begin{bmatrix} \hat{\beta_0} \\ \hat{\beta_1} \end{bmatrix} = \begin{bmatrix} 10 \\ 23\end{bmatrix}
+$$
+
+
+$$
+\hat{y} = 0.33 + 1.5x
+$$
+
+:::
+
+## Representing our variance {style="font-size:80%;"}
+
+### The covariance matrix
+
+Under the model assumptions
+
+$$
+E(\widehat{\boldsymbol\beta}\mid\mathbf X)
+=\boldsymbol\beta
+$$
+
+Its covariance matrix is
+
+$$
+\boxed{
+\widehat{\operatorname{Var}}(
+\widehat{\boldsymbol\beta})
+=\widehat{\sigma}^2
+(\mathbf X^\mathsf T\mathbf X)^{-1}
+}
+$$
+
+$$
+\hat{\sigma}^2 = \frac{\sum^n_{i = 1}e^2_i}{n - p}
+$$
+
+- The diagonal entries give the estimated variances of the individual
+  coefficient estimates
+- Taking square roots gives their standard errors
+- The off-diagonal entries describe covariances between coefficient
+  estimates
+
+## Making predictions from a model
+
+$$
+\hat{y}_i = \hat{\beta_0} + \hat{\beta_1}x_{i1} + \dots + \hat{\beta_k}x_{ik}
+$$
+
+Or in matrix form as
+
+$$
+\widehat{\mathbf Y} = \mathbf X\widehat{\boldsymbol\beta}
+$$
+
+
+:::: {.fragment .fade-up}
+
+Hence for any new configuration of predictors, the predicted conditional mean
+becomes
+
+$$
+\boxed{\widehat{y_0} = \mathbf{x_0}^\mathsf{T} \hat{\boldsymbol{\beta}}}
+$$
+
+
+::: {.callout-important appearance="minimal"}
+The row vector $\mathbf x_0^\mathsf T$ must contain the same model terms, in the same order, as the columns of $\mathbf X$
+:::
+::::
+
+## Constructing confidence intervals
+
+Let's suppose we want to estimate $\mu = \mathcal{E}[y]$ at a particular
+value of $\mathbf{x}_0 = (1, x_{01}, x_{02}, \dots x_{0k})^\top$
+
+Our estimate is
+
+$$
+\mu_0 = E(Y_0 \mid \mathbf x_0) = \mathbf x_0^\mathsf T \hat{\boldsymbol \beta}
+$$
+
+with a standard error of
+
+$$
+SE_{\text{fit}}=
+\widehat\sigma
+\sqrt{
+\mathbf x_0^\mathsf T
+(\mathbf X^\mathsf T\mathbf X)^{-1}
+\mathbf x_0
+}
+$$
+
+A $100 (1 - \alpha)\%$ confidence interval is
+
+$$
+\boxed{\widehat y_0 \pm t_{n-p,\,1-\alpha/2}SE_{\text{fit}}}
+$$
+
+This interval quantifies uncertainty about the conditional mean response at
+the specified predictor values
+
+## Constructing prediction intervals
+
+For a new observation: $\mathbf{x}_0 = (1, x_{01}, x_{02}, ..., x_{0k})^T$,
+the estimate is:
+
+$$
+\hat{y_0} = \mathbf x_0^\mathsf T \hat{\boldsymbol \beta}
+$$
+
+with a predicted standard error
+
+$$
+SE_{\text{pred}}=
+\widehat\sigma
+\sqrt{
+1+
+\mathbf x_0^\mathsf T
+(\mathbf X^\mathsf T\mathbf X)^{-1}
+\mathbf x_0
+}
+$$
+
+Thus, a $100 (1 - \alpha)\%$ prediction interval is
+
+$$
+\boxed{\widehat y_0 \pm t_{n-p,\,1-\alpha/2}SE_{\text{pred}}}
+$$
+
+## Simple linear regression (using matrices)
+
+Consider the simple linear regression model
+
+$$
+Y_i = \beta_0 + \beta_1X_i + \varepsilon_i
+$$
+
+The design matrix can be written as
+
+$$
+\mathbf X= \begin{bmatrix} 1 & X_1 \\ 1 & X_2 \\ \vdots & \vdots \\ 1 & X_n \end{bmatrix}
+$$
+
+
+::: {.fragment .fade-up}
+
+The ordinary least squares estimator is
+
+$$
+\widehat{\boldsymbol\beta}
+=(\mathbf X^\mathsf T\mathbf X)^{-1}
+\mathbf X^\mathsf T\mathbf Y
+$$
+
+
+:::
+
+## Simple linear regression (using matrices) {style="font-size: 70%;"}
+
+
+::::: {.columns}
+
+:::: {.column width="33%"}
+
+$$
+\mathbf X= \begin{bmatrix} 1 & X_1 \\ 1 & X_2 \\ \vdots & \vdots \\ 1 & X_n \end{bmatrix}
+$$
+
+::::
+
+:::: {.column width="33%"}
+
+<br>
+
+$$
+\mathbf X^\mathsf T= \begin{bmatrix} 1 & 1 & \cdots & 1 \\ X_1 & X_2 & \cdots & X_n \end{bmatrix}
+$$
+
+::::
+
+:::: {.column width="33%"}
+
+
+::: {.fragment}
+
+<br>
+
+$$
+\mathbf X^\mathsf T\mathbf X= \begin{bmatrix}
+n & \sum X_i \\
+\sum X_i & \sum X_i^2
+\end{bmatrix}
+$$
+
+:::
+::::
+:::::
+
+::: {.fragment .fade-up}
+
+Using the formula for the inverse of a $2 \times 2$ matrix
+
+$$
+(\mathbf X^\mathsf T\mathbf X)^{-1} =
+\frac{1}{\text{det}(\mathbf X^\mathsf T\mathbf X)} \begin{bmatrix}
+\sum X_i^2 & -\sum X_i \\
+-\sum X_i & n
+\end{bmatrix} \qquad \text{ where det}(\mathbf X^\mathsf T\mathbf X) = n\sum X_i^2-\left(\sum X_i\right)^2 = nS_{xx}
+$$
+
+:::
+
+
+::: {.fragment .fade-up}
+
+$$
+\mathbf X^\mathsf T\mathbf Y=
+\begin{bmatrix}
+\sum Y_i\\
+\sum X_iY_i
+\end{bmatrix}
+$$
+
+:::
+
+
+
+::::: {.fragment .fade-up}
+
+Multiplying the matrices and simplifying gives
+
+:::: {.columns}
+
+::: {.column}
+
+$$
+\boxed{\widehat\beta_1 = \frac{S_{xy}}{S_{xx}}}
+$$
+
+:::
+
+::: {.column}
+
+$$
+\boxed{\widehat\beta_0 = \bar Y - \widehat \beta_1 \bar X}
+$$
+
+:::
+::::
+
+::: {.callout-tip}
+## Matrix notation generalises the least-squares procedure
+:::
+
+:::::
+
+## The coefficient covariance matrix in simple linear regression {style="font-size: 80%;"}
+
+Recall that
+
+
+:::: {.columns}
+
+::: {.column}
+
+$$
+\operatorname{Var}(\widehat{\boldsymbol\beta})
+=\sigma^2(\mathbf X^\mathsf T\mathbf X)^{-1}
+$$
+
+:::
+
+::: {.column}
+
+$$
+(\mathbf X^\mathsf T\mathbf X)^{-1} =
+\frac{1}{\text{det}(\mathbf X^\mathsf T\mathbf X)} \begin{bmatrix}
+\sum X_i^2 & -\sum X_i \\[4pt]
+-\sum X_i & n
+\end{bmatrix}
+$$
+
+:::
+::::
+
+Thus
+
+$$
+\operatorname{Var}(\widehat{\boldsymbol\beta}) = \sigma^2 \begin{bmatrix}
+\frac{\sum X_i^2}{nS_{xx}} & - \frac{\sum X_i}{nS_{xx}} \\[4pt]
+-\frac{\sum X_i}{nS_{xx}} & \frac{n}{nS_{xx}}
+\end{bmatrix}
+$$
+
+
+::::: {.fragment .fade-up}
+
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+$$
+\operatorname{Var}(\widehat\beta_0)
+=\sigma^2\left(
+\frac1n+\frac{\bar X^2}{S_{xx}}
+\right)
+$$
+
+:::
+
+::: {.column width="33%"}
+
+$$
+\operatorname{Var}(\widehat\beta_1)
+=\frac{\sigma^2}{S_{xx}}
+$$
+
+:::
+
+::: {.column width="33%"}
+
+$$
+\operatorname{Cov}(\widehat\beta_0,\widehat\beta_1)
+=-\frac{\bar X\sigma^2}{S_{xx}}
+$$
+
+:::
+::::
+
+::: {.callout-tip appearance="minimal"}
+The matrix expression gives the variances and covariance of the two coefficient estimates in one calculation.
+:::
+
+:::::
+
+## Manual matrix calculations in R {style="font-size: 90%;"}
+
+Suppose we observe six responses and two predictors
+
+We want to fit
+
+$$
+Y_i=\beta_0 + \beta_1X_{i1} + \beta_2X_{i1}^2 + \beta_3X_{i2} +\varepsilon_i
+$$
+
+
+```{r}
+#| label: matrix-data
+
+toy_data |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE)
+```
+
+
+## Manual matrix calculations in R {style="font-size: 90%;"}
+
+### Constructing the design matrix
+
+The columns must correspond to the model terms in the order
+
+$$
+(1,\ X_1,\ X_1^2,\ X_2)
+$$
+
+```{r}
+#| label: design-matrix
+#| echo: true
+#| collapse: true
+
+X <- model.matrix(~ x1 + I(x1^2) + x2, data = toy_data)
+
+X
+```
+
+## Manual matrix calculations in R {style="font-size: 90%;"}
+
+### Calculate the OLS estimates
+
+$$
+\boxed{
+\widehat{\boldsymbol\beta}
+=(\mathbf X^\mathsf T\mathbf X)^{-1}
+\mathbf X^\mathsf T\mathbf Y
+}
+$$
+
+```{r}
+#| label: estimate-coefficients
+#| echo: true
+#| collapse: true
+
+# Create the response vector
+Y <- matrix(y, ncol = 1)
+
+# Calculate XtX
+XtX <- crossprod(X)
+
+# Calculate XtY
+XtY <- crossprod(X, Y)
+
+# Calcuate the OLS estimates for the betas
+beta_hats <- solve(XtX, XtY)
+
+beta_hats
+```
+
+
+## Manual matrix calculations in R {style="font-size: 90%;"}
+
+### Verifying our answers
+
+```{r}
+#| label: verify-model
+#| echo: true
+#| collapse: true
+fit <- lm(y ~ x1 + I(x1^2) + x2, data = toy_data)
+
+summary(fit)
+```
+
+
+## Manual matrix calculations in R {style="font-size: 80%;"}
+
+### Calculate fitted values and residuals
+
+:::: {.columns}
+
+::: {.column}
+
+[**Fitted values**]{.center}
+
+$$
+\widehat{\mathbf Y} = \mathbf X \hat{\boldsymbol\beta}
+$$
+
+:::
+
+::: {.column}
+
+[**Residuals**]{.center}
+
+$$
+\mathbf e=\mathbf Y-\widehat{\mathbf Y}
+$$
+
+:::
+::::
+
+```{r}
+#| label: fitted-residuals
+#| echo: true
+#| collapse: true
+
+y_hat <- X %*% beta_hats
+e <- Y - y_hat
+
+tibble(
+  observed = y,
+  fitted = drop(y_hat),
+  residual = drop(e)
+)
+```
+
+## Summary {style="font-size: 75%;"}
+
+The multiple regression model can be expressed as
+
+$$
+\mathbf Y=\mathbf X\boldsymbol\beta+
+\boldsymbol\varepsilon
+$$
+
+The OLS estimator is
+
+$$
+\widehat{\boldsymbol\beta}
+=(\mathbf X^\mathsf T\mathbf X)^{-1}
+\mathbf X^\mathsf T\mathbf Y
+$$
+
+when $\mathbf X$ has full column rank
+
+The residuals satisfy
+
+$$
+\mathbf X^\mathsf T\mathbf e= 0
+$$
+
+The estimated coefficient covariance matrix is
+
+$$
+\widehat{\operatorname{Var}}(
+\widehat{\boldsymbol\beta})
+=\widehat\sigma^2
+(\mathbf X^\mathsf T\mathbf X)^{-1}
+$$
+
+These expressions underpin coefficient estimation, uncertainty quantification,
+confidence intervals and prediction intervals.

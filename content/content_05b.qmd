@@ -1,0 +1,35 @@
+---
+title: Matrix notation
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+purrr::map(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+## Learning objectives
+
+- Learn how to represent our regression equation in matrix form
+- Learn how to estimate our parameters by hand
+- Understand why matrix notation is a useful representation for linear models
+
+## Readings
+
+### Suggested readings
+
+- {{< fa book >}} [Linear models (Chapter 2)](https://utstat.utoronto.ca/~brunner/books/LinearModelsInStatistics.pdf)
+- {{< fa book >}} [Linear models (Chapter 7)](https://utstat.utoronto.ca/~brunner/books/LinearModelsInStatistics.pdf)
+- {{< fa brands youtube >}} [Introduction to matrices - YouTube playlist](https://www.youtube.com/watch?v=Ag1arLzxy2k&list=PLql0qQWQbo6nYjo2aqgiKh_kwm8YoyhEP)
+
+## Slides
+
+```{r}
+#| label: week-5b
+#| echo: false
+#| eval: true
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_10.html")
+```
