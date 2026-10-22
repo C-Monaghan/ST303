@@ -307,44 +307,50 @@ Cormac Monaghan
 \text{Model} \rightarrow \text{Predictions} \rightarrow \text{Residuals} \rightarrow \text{Minimise SSE}
 }
 \]</span></p>
-<p>Matrix notation lets us perform these calculations for many observations and many predictors at once</p>
+<p><br></p>
+<div class="callout callout-tip no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>A matrix is just a tidy way of storing a table of numbers so we can do <strong>many calculations in one go</strong></p>
+</div>
+</div>
+</div>
 </section>
 <section id="why-use-matrix-notation" class="slide level2">
 <h2>Why use matrix notation</h2>
 <p>Let’s suppose we have <span class="math inline">\(n\)</span> observations and <span class="math inline">\(k\)</span> predictors</p>
-<p>For each observation we can write</p>
+<p>For each observation <span class="math inline">\(i = 1, \dots, n\)</span> we can write</p>
 <p><span class="math display">\[
 Y_i=\beta_0 + \beta_1X_{i1} + \cdots + \beta_kX_{ik} + \varepsilon_i
 \]</span></p>
 <div class="fragment fade-up">
-<p>Writing this equation separately <strong>for every observation</strong> becomes tedious</p>
-<p>Matrix notation allows us to represent all <span class="math inline">\(n\)</span> equations simultaneously</p>
-<p>It also makes the mathematics easier to generalise to more complicated linear models</p>
+<p>Writing this out <strong>for every observation</strong> is tedious</p>
+<p>Matrices let us write all <span class="math inline">\(n\)</span> equations as <strong>one</strong> equation</p>
+<p>The same formulas then work for 1 predictor or 100 predictors</p>
 </div>
 </section>
-<section id="why-use-matrix-notation-1" class="slide level2">
-<h2>Why use matrix notation</h2>
-<h3 id="a-small-example">A small example</h3>
-<p>Suppose we have three observations and two predictors</p>
+<section id="a-small-example" class="slide level2">
+<h2>A small example</h2>
+<p>Three observations, two predictors</p>
 <p><span class="math display">\[
-\begin{align*}
+\begin{aligned}
 Y_1 &amp;= \beta_0+\beta_1X_{11}+\beta_2X_{12}+\varepsilon_1,\\
 Y_2 &amp;= \beta_0+\beta_1X_{21}+\beta_2X_{22}+\varepsilon_2,\\
 Y_3 &amp;= \beta_0+\beta_1X_{31}+\beta_2X_{32}+\varepsilon_3
-\end{align*}
+\end{aligned}
 \]</span></p>
 <p><br></p>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
 <div class="callout-content">
-<p>Notice that the coefficients <strong>are the same</strong> across observations</p>
+<p>The coefficients <span class="math inline">\(\beta\)</span> are <strong>the same</strong> in every equation</p>
 </div>
 </div>
 </div>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
 <div class="callout-content">
-<p>While the predictor values and errors <strong>vary</strong></p>
+<p>The predictor values <span class="math inline">\(X\)</span> and the errors <span class="math inline">\(\varepsilon\)</span> <strong>change</strong> from row to row</p>
 </div>
 </div>
 </div>
@@ -356,7 +362,22 @@ Y_3 &amp;= \beta_0+\beta_1X_{31}+\beta_2X_{32}+\varepsilon_3
 </div>
 </div>
 </section>
-<section id="matrix-notation" class="slide level2">
+<section id="the-one-matrix-idea-you-need" class="slide level2" style="font-size: 90%;">
+<h2>The one matrix idea you need</h2>
+<h3 id="matrix-times-vector-a-stack-of-row-times-column-calculations">Matrix times vector = a stack of “row <span class="math inline">\(\times\)</span> column” calculations</h3>
+<p>To multiply a matrix by a vector, take each <strong>row</strong> of the matrix, multiply it entry-by-entry with the vector, and add</p>
+<p><span class="math display">\[
+\begin{bmatrix} 1 &amp; 4 \\ 1 &amp; 5 \\ 1 &amp; 6 \end{bmatrix}
+\begin{bmatrix} 10 \\ 2 \end{bmatrix} =
+\begin{bmatrix} 1(10) + 4(2) \\ 1(10) + 5(2) \\ 1(10) + 6(2) \end{bmatrix} =
+\begin{bmatrix} 18 \\ 20 \\ 22 \end{bmatrix}
+\]</span></p>
+<div class="fragment fade-up">
+<p>Each row of the answer is <strong>one</strong> observation’s prediction</p>
+<p>That is exactly what a regression model does: take each observation’s predictor values, multiply by the coefficients, and add</p>
+</div>
+</section>
+<section id="matrix-notation" class="slide level2" style="font-size: 85%;">
 <h2>Matrix notation</h2>
 <h3 id="the-response-vector">The response vector</h3>
 <p>Let <span class="math inline">\(\mathbf Y\)</span> denote the <span class="alert">response vector</span> (i.e., a vector of observed responses)</p>
@@ -371,7 +392,7 @@ Y_n
 <p>With dimension <span class="math inline">\(\mathbf{Y} \in \mathbb{R}^{n \times 1}\)</span></p>
 <p>Within this matrix there is one row for every observation and one column containing the response.</p>
 </section>
-<section id="matrix-notation-1" class="slide level2">
+<section id="matrix-notation-1" class="slide level2" style="font-size: 85%;">
 <h2>Matrix notation</h2>
 <h3 id="the-design-matrix">The design matrix</h3>
 <p>Let <span class="math inline">\(\mathbf{X}\)</span> denote the <span class="alert">design matrix</span> such that:</p>
@@ -384,11 +405,23 @@ Y_n
 1 &amp; X_{n1} &amp; \cdots &amp; X_{nk}
 \end{bmatrix}
 \]</span></p>
-<p>The first column contains ones because the model includes an intercept</p>
-<p>There are <span class="math inline">\(n\)</span> rows and <span class="math inline">\(p = k + 1\)</span> columns such that <span class="math inline">\(\mathbf{X} \in \mathbb{R}^{n\times p}\)</span></p>
-<p>Each row represents an observation and each column represents a model term.</p>
+<ul>
+<li><strong>Rows</strong> = observations (row <span class="math inline">\(i\)</span> holds the predictor values for observation <span class="math inline">\(i\)</span>)</li>
+<li><strong>Columns</strong> = model terms (the first column of ones is for the intercept)</li>
+<li>There are <span class="math inline">\(n\)</span> rows and <span class="math inline">\(p = k + 1\)</span> columns, so <span class="math inline">\(\mathbf{X} \in \mathbb{R}^{n\times p}\)</span></li>
+</ul>
+<div class="callout callout-tip no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Why a column of ones?</strong></p>
+</div>
+<div class="callout-content">
+<p>So that <span class="math inline">\(\beta_0\)</span> is multiplied by 1 in every row</p>
+</div>
+</div>
+</div>
 </section>
-<section id="matrix-notation-2" class="slide level2">
+<section id="matrix-notation-2" class="slide level2" style="font-size: 85%;">
 <h2>Matrix notation</h2>
 <h3 id="the-parameter-and-error-vectors">The parameter and error vectors</h3>
 <p>We can collect all the unknown parameters and errors into a <span class="alert">parameter vector</span> and an <span class="alert">error vector</span>, respectively</p>
@@ -414,61 +447,124 @@ Y_n
 \]</span></p>
 </div></div>
 <ul>
-<li>Parameter contains <span class="math inline">\(p = k + 1\)</span> parameters</li>
-<li>Error vector contains <span class="math inline">\(n \times 1\)</span> parameters</li>
+<li><span class="math inline">\(\boldsymbol\beta\)</span> has <span class="math inline">\(p = k + 1\)</span> unknown <strong>parameters</strong> (one per column of <span class="math inline">\(\mathbf X\)</span>)</li>
+<li><span class="math inline">\(\boldsymbol\varepsilon\)</span> has <span class="math inline">\(n\)</span> unknown <strong>errors</strong> (one per observation)</li>
 </ul>
 </section>
-<section id="matrix-notation-3" class="slide level2" style="font-size: 90%;">
+<section id="matrix-notation-3" class="slide level2" style="font-size: 85%;">
 <h2>Matrix notation</h2>
 <h3 id="the-matrix-model">The matrix model</h3>
-<p>In matrix form, the multiple linear regression model thus becomes</p>
 <p><span class="math display">\[
 \boxed{\mathbf{Y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\varepsilon}}
 \]</span></p>
-<p><span class="math display">\[
-\mathbf{Y} = \begin{bmatrix}
-Y_1 \\
-Y_2 \\
-\vdots \\
-Y_n
-\end{bmatrix} \quad
-\mathbf{X}=
-\begin{bmatrix}
-1 &amp; X_{11} &amp; \cdots &amp;X_{1k} \\
-1 &amp; X_{21} &amp; \cdots &amp;X_{2k} \\
-\vdots &amp;\vdots &amp;\ddots &amp;\vdots \\
-1 &amp; X_{n1} &amp; \cdots &amp; X_{nk}
-\end{bmatrix} \quad
-\boldsymbol{\beta} =
-\begin{bmatrix}
-\beta_0 \\
-\beta_1 \\
-\vdots \\
-\beta_k
-\end{bmatrix} \quad
-\boldsymbol{\varepsilon} = \begin{bmatrix}
-\varepsilon_1 \\
-\varepsilon_2 \\
-\vdots \\
-\varepsilon_n
-\end{bmatrix}
-\]</span></p>
 <div class="fragment fade-up">
-<p>where</p>
+<p>Written out for our three-observation, two-predictor example:</p>
 <p><span class="math display">\[
-\mathbf{e} = \mathbf{Y} - \mathbf{X} \hat{\boldsymbol{\beta}}
+\underbrace{\begin{bmatrix} Y_1 \\ Y_2 \\ Y_3 \end{bmatrix}}_{\mathbf Y\ (3 \times 1)}
+=
+\underbrace{\begin{bmatrix}
+1 &amp; X_{11} &amp; X_{12} \\
+1 &amp; X_{21} &amp; X_{22} \\
+1 &amp; X_{31} &amp; X_{32}
+\end{bmatrix}}_{\mathbf X\ (3 \times 3)}
+\underbrace{\begin{bmatrix} \beta_0 \\ \beta_1 \\ \beta_2 \end{bmatrix}}_{\boldsymbol\beta\ (3 \times 1)}
++
+\underbrace{\begin{bmatrix} \varepsilon_1 \\ \varepsilon_2 \\ \varepsilon_3 \end{bmatrix}}_{\boldsymbol\varepsilon\ (3 \times 1)}
 \]</span></p>
-<div class="callout callout-important no-icon callout-style-simple">
-<div class="callout-body">
-<div class="callout-content">
-<p>Our objective is to find the coefficient vector that makes these residuals collectively as small as possible in <br> the least-squares sense.</p>
 </div>
+<div class="fragment fade-up">
+<p>Multiply the first row of <span class="math inline">\(\mathbf X\)</span> by <span class="math inline">\(\boldsymbol\beta\)</span> and we recover <span class="math inline">\(Y_1 = \beta_0+\beta_1X_{11}+\beta_2X_{12}+\varepsilon_1\)</span></p>
+<p>The single matrix equation <strong>is</strong> the three equations stacked together</p>
+</div>
+</section>
+<section id="dimension-check" class="slide level2">
+<h2>Dimension check</h2>
+<p>Matrix multiplication only works when the <span class="alert">inner dimensions match</span></p>
+<p><span class="math display">\[
+\underbrace{\mathbf{X}}_{n \; \times \; p} \quad
+\underbrace{\boldsymbol\beta}_{p \; \times \; 1} \quad = \quad
+\underbrace{\mathbf{X}\boldsymbol\beta}_{n \; \times \; 1}
+\]</span></p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 21%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Object</th>
+<th style="text-align: center;">Dimension</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\mathbf Y\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(n \times 1\)</span></td>
+<td style="text-align: left;">observed responses</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\mathbf X\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(n \times p\)</span></td>
+<td style="text-align: left;">predictor values (plus ones)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\boldsymbol\beta\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(p \times 1\)</span></td>
+<td style="text-align: left;">true coefficients (unknown)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\boldsymbol\varepsilon\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(n \times 1\)</span></td>
+<td style="text-align: left;">true errors (unknown)</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<div class="callout callout-tip no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Habit to build: whenever you see a matrix formula, check the dimensions</strong></p>
+</div>
+<div class="callout-content">
+
 </div>
 </div>
 </div>
 </section>
-<section id="ordinary-least-squares" class="slide level2">
+<section id="fitted-values-and-residuals" class="slide level2">
+<h2>Fitted values and residuals</h2>
+<p>We never see <span class="math inline">\(\boldsymbol\beta\)</span> or <span class="math inline">\(\boldsymbol\varepsilon\)</span>, so we estimate them</p>
+<div class="columns">
+<div class="column">
+<p><span class="alert center">Fitted values</span></p>
+<p><span class="math display">\[
+\widehat{\mathbf Y} = \mathbf X \widehat{\boldsymbol\beta}
+\]</span></p>
+<p>What the model <em>predicts</em> for each observation</p>
+</div><div class="column">
+<p><span class="alert center">Residuals</span></p>
+<p><span class="math display">\[
+\mathbf{e} = \mathbf{Y} - \widehat{\mathbf Y} = \mathbf{Y} - \mathbf{X} \widehat{\boldsymbol{\beta}}
+\]</span></p>
+<p>What the model <em>got wrong</em> for each observation</p>
+</div></div>
+<p><br></p>
+<div class="callout callout-important no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Our objective</strong></p>
+</div>
+<div class="callout-content">
+<p>Find the <span class="math inline">\(\widehat{\boldsymbol\beta}\)</span> that makes the residuals collectively as small as possible in the <strong>least-squares</strong> sense</p>
+</div>
+</div>
+</div>
+</section>
+<section id="ordinary-least-squares" class="slide level2" style="font-size:85%;">
 <h2>Ordinary least squares</h2>
+<h3 id="what-are-we-minimising">What are we minimising?</h3>
 <p>Using ordinary least squares we want to minimise</p>
 <p><span class="math display">\[
 S(\beta) = \sum^n_{j = 1}(y_i - \beta_0 - \beta_1x_{i1} - \dots - \beta_kx_{ik})^2
@@ -489,14 +585,16 @@ S(\boldsymbol{\beta}) = (\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^\mathsf{T}(
 <ul>
 <li><span class="math inline">\((\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})\)</span> is a <strong>column vector</strong> <span class="math inline">\((n \times 1)\)</span></li>
 <li>Transposing it turns it into a <strong>row vector</strong> <span class="math inline">\((1 \times n)\)</span></li>
-<li>We can now calculate the sum of all squared residuals</li>
+<li>Row <span class="math inline">\(\times\)</span> column gives a single number: <span class="math inline">\(e_1^2 + e_2^2 + \dots + e_n^2\)</span></li>
 </ul>
+<p>In short: <span class="math inline">\(\mathbf e^\mathsf T\mathbf e\)</span> is the sum of squared residuals</p>
 </div>
 </div>
 </div>
 </section>
 <section id="ordinary-least-squares-1" class="slide level2">
 <h2>Ordinary least squares</h2>
+<h3 id="using-calculus">Using calculus</h3>
 <p>If we expand out our above equation</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -539,6 +637,7 @@ S(\boldsymbol{\beta}) &amp;= (\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^\maths
 <p><span class="math display">\[
 -2 \mathbf{X}^\mathsf{T} \mathbf{Y} + 2\mathbf{X}^\mathsf{T}\mathbf{X} \hat{\boldsymbol\beta} = 0
 \]</span></p>
+<div class="fragment fade-up">
 <p>Which can then be simplified down into</p>
 <p><span class="math display">\[
 \boxed{
@@ -560,9 +659,10 @@ S(\boldsymbol{\beta}) &amp;= (\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^\maths
 </div>
 </div>
 </div>
+</div>
 </section>
-<section id="estimating-boldsymbolbeta" class="slide level2">
-<h2>Estimating <span class="math inline">\(\boldsymbol{\beta}\)</span></h2>
+<section id="solving-for-widehatboldsymbolbeta" class="slide level2">
+<h2>Solving for <span class="math inline">\(\widehat{\boldsymbol\beta}\)</span></h2>
 <p><span class="math display">\[
 \boxed{
 \mathbf X^\mathsf T\mathbf X
@@ -570,7 +670,7 @@ S(\boldsymbol{\beta}) &amp;= (\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^\maths
 =\mathbf X^\mathsf T\mathbf Y
 }
 \]</span></p>
-<p>To get a formula for estimating <span class="math inline">\(\boldsymbol{\beta}\)</span> we can multiply both sides of our equation by the inverse of <span class="math inline">\(\mathbf{X}^\mathsf{T} \mathbf{X}\)</span> such that</p>
+<p>To get a formula for estimating <span class="math inline">\(\boldsymbol{\beta}\)</span> we can multiply both sides of our equation by the inverse of <span class="math inline">\(\mathbf{X}^\mathsf{T} \mathbf{X}\)</span> (the matrix version of dividing) such that</p>
 <p><span class="math display">\[
 \boxed{
 \hat{\boldsymbol\beta}
@@ -578,6 +678,7 @@ S(\boldsymbol{\beta}) &amp;= (\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^\maths
 \mathbf X^\mathsf T\mathbf Y
 }
 \]</span></p>
+<p><br></p>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -592,20 +693,23 @@ S(\boldsymbol{\beta}) &amp;= (\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^\maths
 </div>
 </div>
 </section>
-<section id="what-if-the-matrix-is-not-invertible" class="slide level2">
+<section id="what-if-the-matrix-is-not-invertible" class="slide level2" style="font-size:90%;">
 <h2>What if the matrix is not invertible?</h2>
 <p>If the columns of <span class="math inline">\(\mathbf{X}\)</span> are linearly dependent, then <span class="math inline">\(\mathbf{X}^\mathsf{T} \mathbf{X}\)</span> is singular and the usual inverse formula does not apply</p>
 <div class="fragment fade-up">
+<p>Common causes</p>
 <ul>
 <li>A predictor is an exact linear combination of other predictors</li>
 <li>Two columns are identical</li>
-<li>A categorical variable is represented by all category indicators alongside an intercept</li>
+<li>A categorical variable has an indicator for <strong>every</strong> category <em>and</em> the model has an intercept (the “dummy variable trap”)</li>
+<li>Fewer observations than parameters (<span class="math inline">\(n &lt; p\)</span>)</li>
 </ul>
-<p>Near-linear dependence can also make coefficient estimates numerically unstable</p>
+<p>Near-linear dependence is also a problem: the estimates become numerically unstable</p>
 </div>
 </section>
 <section id="a-small-example-1" class="slide level2">
 <h2>A small example</h2>
+<p><br></p>
 
 <img data-src="slide_10_files/figure-revealjs/small-data-plot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="a-small-example-2" class="slide level2" style="font-size: 80%;">
@@ -614,36 +718,46 @@ S(\boldsymbol{\beta}) &amp;= (\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})^\maths
 Y = \begin{bmatrix} 2 \\ 3 \\ 5 \end{bmatrix} \qquad
 X = \begin{bmatrix} 1  &amp; 1 \\ 1 &amp; 2 \\ 1 &amp; 3 \end{bmatrix}
 \]</span></p>
-<p><span class="math display">\[
-\boxed{
-\mathbf X^\mathsf T\mathbf X
-\hat{\boldsymbol\beta}
-=\mathbf X^\mathsf T\mathbf Y
-}
-\]</span></p>
-<div class="fragment">
+<div class="fragment fade-up">
+<p>Build the two pieces of the normal equations</p>
 <p><span class="math display">\[
 \mathbf{X}^\mathsf{T} \mathbf{X} = \begin{bmatrix} 3 &amp; 6 \\ 6 &amp; 14 \end{bmatrix} \qquad
 \mathbf X^\mathsf T\mathbf Y = \begin{bmatrix} 10 \\ 23\end{bmatrix}
 \]</span></p>
-<p>Hence</p>
+</div>
+<div class="fragment">
+<p>Solve</p>
 <p><span class="math display">\[
-\begin{bmatrix} 3 &amp; 6 \\ 6 &amp; 14 \end{bmatrix} \begin{bmatrix} \hat{\beta_0} \\ \hat{\beta_1} \end{bmatrix} = \begin{bmatrix} 10 \\ 23\end{bmatrix}
+\begin{bmatrix} 3 &amp; 6 \\ 6 &amp; 14 \end{bmatrix} \begin{bmatrix} \widehat{\beta}_0 \\ \widehat{\beta}_1 \end{bmatrix} = \begin{bmatrix} 10 \\ 23\end{bmatrix}
+\quad\Longrightarrow\quad
+\widehat{y} = 0.33 + 1.5x
 \]</span></p>
+</div>
+</section>
+<section id="how-noisy-is-the-error-estimating-sigma2" class="slide level2">
+<h2>How noisy is the error? Estimating <span class="math inline">\(\sigma^2\)</span></h2>
+<p>We assume the errors have constant variance <span class="math inline">\(\sigma^2\)</span></p>
+<p>We estimate it from the residuals</p>
 <p><span class="math display">\[
-\hat{y} = 0.33 + 1.5x
+\widehat{\sigma}^2 = \frac{\sum^n_{i = 1}e^2_i}{n - p} = \frac{\mathbf e^\mathsf T\mathbf e}{n - p}
 \]</span></p>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>We divide by <span class="math inline">\(n - p\)</span> (the <strong>residual degrees of freedom</strong>), not <span class="math inline">\(n\)</span>, because we used up <span class="math inline">\(p\)</span> pieces of information estimating <span class="math inline">\(\boldsymbol\beta\)</span></p>
+</div>
+</div>
 </div>
 </section>
 <section id="representing-our-variance" class="slide level2" style="font-size:80%;">
 <h2>Representing our variance</h2>
 <h3 id="the-covariance-matrix">The covariance matrix</h3>
-<p>Under the model assumptions</p>
+<p>Under the model assumptions, <span class="math inline">\(\widehat{\boldsymbol\beta}\)</span> is unbiased</p>
 <p><span class="math display">\[
 E(\widehat{\boldsymbol\beta}\mid\mathbf X)
 =\boldsymbol\beta
 \]</span></p>
-<p>Its covariance matrix is</p>
+<p>and its (estimated) covariance matrix is</p>
 <p><span class="math display">\[
 \boxed{
 \widehat{\operatorname{Var}}(
@@ -652,44 +766,43 @@ E(\widehat{\boldsymbol\beta}\mid\mathbf X)
 (\mathbf X^\mathsf T\mathbf X)^{-1}
 }
 \]</span></p>
-<p><span class="math display">\[
-\hat{\sigma}^2 = \frac{\sum^n_{i = 1}e^2_i}{n - p}
-\]</span></p>
+<p>How to read it (a <span class="math inline">\(p \times p\)</span> table)</p>
 <ul>
-<li>The diagonal entries give the estimated variances of the individual coefficient estimates</li>
-<li>Taking square roots gives their standard errors</li>
-<li>The off-diagonal entries describe covariances between coefficient estimates</li>
+<li><strong>Diagonal</strong> entries are the estimated variances of each coefficient</li>
+<li>Taking square roots gives the <strong>standard errors</strong></li>
+<li><strong>Off-diagonal</strong> entries are covariances between pairs of coefficients</li>
 </ul>
 </section>
 <section id="making-predictions-from-a-model" class="slide level2">
 <h2>Making predictions from a model</h2>
+<p>For one observation</p>
 <p><span class="math display">\[
 \hat{y}_i = \hat{\beta_0} + \hat{\beta_1}x_{i1} + \dots + \hat{\beta_k}x_{ik}
 \]</span></p>
-<p>Or in matrix form as</p>
+<p>For all observations at once</p>
 <p><span class="math display">\[
 \widehat{\mathbf Y} = \mathbf X\widehat{\boldsymbol\beta}
 \]</span></p>
 <div class="fragment fade-up">
-<p>Hence for any new configuration of predictors, the predicted conditional mean becomes</p>
+<p>For any <strong>new</strong> set of predictor values <span class="math inline">\(\mathbf x_0\)</span>, the predicted mean response is</p>
 <p><span class="math display">\[
-\boxed{\widehat{y_0} = \mathbf{x_0}^\mathsf{T} \hat{\boldsymbol{\beta}}}
+\boxed{\widehat{y}_0 = \mathbf{x}_0^\mathsf{T} \widehat{\boldsymbol{\beta}}}
 \]</span></p>
 <div class="callout callout-important no-icon callout-style-simple">
 <div class="callout-body">
 <div class="callout-content">
-<p>The row vector <span class="math inline">\(\mathbf x_0^\mathsf T\)</span> must contain the same model terms, in the same order, as the columns of <span class="math inline">\(\mathbf X\)</span></p>
+<p><span class="math inline">\(\mathbf x_0\)</span> must contain the same model terms, in the same order, as the columns of <span class="math inline">\(\mathbf X\)</span> (including the leading 1)</p>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="constructing-confidence-intervals" class="slide level2">
-<h2>Constructing confidence intervals</h2>
-<p>Let’s suppose we want to estimate <span class="math inline">\(\mu = \mathcal{E}[y]\)</span> at a particular value of <span class="math inline">\(\mathbf{x}_0 = (1, x_{01}, x_{02}, \dots x_{0k})^\top\)</span></p>
+<section id="confidence-interval-for-the-mean-response" class="slide level2" style="font-size: 85%;">
+<h2>Confidence interval for the mean response</h2>
+<p>We want to estimate the <strong>average</strong> response at <span class="math inline">\(\mathbf{x}_0 = (1, x_{01}, \dots, x_{0k})^\mathsf{T}\)</span></p>
 <p>Our estimate is</p>
 <p><span class="math display">\[
-\mu_0 = E(Y_0 \mid \mathbf x_0) = \mathbf x_0^\mathsf T \hat{\boldsymbol \beta}
+\widehat{\mu}_0 = \widehat{y}_0 = \mathbf x_0^\mathsf T \widehat{\boldsymbol \beta}
 \]</span></p>
 <p>with a standard error of</p>
 <p><span class="math display">\[
@@ -705,20 +818,20 @@ SE_{\text{fit}}=
 <p><span class="math display">\[
 \boxed{\widehat y_0 \pm t_{n-p,\,1-\alpha/2}SE_{\text{fit}}}
 \]</span></p>
-<p>This interval quantifies uncertainty about the conditional mean response at the specified predictor values</p>
+<p>This quantifies uncertainty about the <strong>conditional mean</strong> at those predictor values</p>
 </section>
-<section id="constructing-prediction-intervals" class="slide level2">
-<h2>Constructing prediction intervals</h2>
-<p>For a new observation: <span class="math inline">\(\mathbf{x}_0 = (1, x_{01}, x_{02}, ..., x_{0k})^T\)</span>, the estimate is:</p>
+<section id="prediction-interval-for-a-new-observation" class="slide level2" style="font-size: 85%;">
+<h2>Prediction interval for a new observation</h2>
+<p>For a single <strong>new</strong> observation at <span class="math inline">\(\mathbf{x}_0\)</span>, the estimate is the same</p>
 <p><span class="math display">\[
-\hat{y_0} = \mathbf x_0^\mathsf T \hat{\boldsymbol \beta}
+\widehat{y}_0 = \mathbf x_0^\mathsf T \widehat{\boldsymbol \beta}
 \]</span></p>
-<p>with a predicted standard error</p>
+<p>but the standard error includes the extra noise of an individual outcome</p>
 <p><span class="math display">\[
 SE_{\text{pred}}=
 \widehat\sigma
 \sqrt{
-1+
+\textcolor{blue}{1}+
 \mathbf x_0^\mathsf T
 (\mathbf X^\mathsf T\mathbf X)^{-1}
 \mathbf x_0
@@ -728,6 +841,13 @@ SE_{\text{pred}}=
 <p><span class="math display">\[
 \boxed{\widehat y_0 \pm t_{n-p,\,1-\alpha/2}SE_{\text{pred}}}
 \]</span></p>
+<div class="callout callout-tip no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>The extra <span class="math inline">\(1\)</span> is the new observation’s own error <span class="math inline">\(\varepsilon_0\)</span>, so prediction intervals are always <strong>wider</strong> than confidence intervals</p>
+</div>
+</div>
+</div>
 </section>
 <section id="simple-linear-regression-using-matrices" class="slide level2">
 <h2>Simple linear regression (using matrices)</h2>
@@ -791,7 +911,7 @@ n &amp; \sum X_i \\
 \]</span></p>
 </div>
 <div class="fragment fade-up">
-<p>Multiplying the matrices and simplifying gives</p>
+<p>Multiplying the matrices and simplifying gives the formulas you already know</p>
 <div class="columns">
 <div class="column">
 <p><span class="math display">\[
@@ -978,7 +1098,14 @@ Y_i=\beta_0 + \beta_1X_{i1} + \beta_2X_{i1}^2 + \beta_3X_{i2} +\varepsilon_i
 <span id="cb1-9"><a href="" aria-label="9"></a><span class="do">## 5           1  2       4  1</span></span>
 <span id="cb1-10"><a href="" aria-label="10"></a><span class="do">## 6           1  3       9  1</span></span>
 <span id="cb1-11"><a href="" aria-label="11"></a><span class="do">## attr(,"assign")</span></span>
-<span id="cb1-12"><a href="" aria-label="12"></a><span class="do">## [1] 0 1 2 3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-12"><a href="" aria-label="12"></a><span class="do">## [1] 0 1 2 3</span></span>
+<span id="cb1-13"><a href="" aria-label="13"></a></span>
+<span id="cb1-14"><a href="" aria-label="14"></a><span class="co"># Check the dimensions: n x p</span></span>
+<span id="cb1-15"><a href="" aria-label="15"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(X)</span>
+<span id="cb1-16"><a href="" aria-label="16"></a>p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(X)</span>
+<span id="cb1-17"><a href="" aria-label="17"></a><span class="fu">c</span>(<span class="at">n =</span> n, <span class="at">p =</span> p)</span>
+<span id="cb1-18"><a href="" aria-label="18"></a><span class="do">## n p </span></span>
+<span id="cb1-19"><a href="" aria-label="19"></a><span class="do">## 6 4</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="manual-matrix-calculations-in-r-2" class="slide level2" style="font-size: 90%;">
@@ -1074,6 +1201,64 @@ Y_i=\beta_0 + \beta_1X_{i1} + \beta_2X_{i1}^2 + \beta_3X_{i2} +\varepsilon_i
 <span id="cb4-15"><a href="" aria-label="15"></a><span class="do">## 4      8.9   9.32  -0.417 </span></span>
 <span id="cb4-16"><a href="" aria-label="16"></a><span class="do">## 5      9.1   9.07   0.0333</span></span>
 <span id="cb4-17"><a href="" aria-label="17"></a><span class="do">## 6     11.6  11.2    0.383</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="manual-matrix-calculations-in-r-5" class="slide level2" style="font-size: 90%;">
+<h2>Manual matrix calculations in R</h2>
+<h3 id="estimate-sigma2-and-the-covariance-matrix">Estimate <span class="math inline">\(\sigma^2\)</span> and the covariance matrix</h3>
+<p><span class="math display">\[
+\widehat{\sigma}^2 = \frac{\mathbf e^\mathsf T\mathbf e}{n-p}
+\qquad
+\widehat{\operatorname{Var}}(\widehat{\boldsymbol\beta}) = \widehat{\sigma}^2(\mathbf X^\mathsf T\mathbf X)^{-1}
+\]</span></p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-filename="r"><pre class="sourceCode numberSource r cw-auto number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="" aria-label="1"></a>sigma2_hat <span class="ot">&lt;-</span> <span class="fu">drop</span>(<span class="fu">crossprod</span>(e) <span class="sc">/</span> (n <span class="sc">-</span> p))</span>
+<span id="cb5-2"><a href="" aria-label="2"></a>XtX_inv <span class="ot">&lt;-</span> <span class="fu">solve</span>(XtX)</span>
+<span id="cb5-3"><a href="" aria-label="3"></a></span>
+<span id="cb5-4"><a href="" aria-label="4"></a>var_beta <span class="ot">&lt;-</span> sigma2_hat <span class="sc">*</span> XtX_inv</span>
+<span id="cb5-5"><a href="" aria-label="5"></a>var_beta</span>
+<span id="cb5-6"><a href="" aria-label="6"></a><span class="do">##             (Intercept)        x1    I(x1^2)         x2</span></span>
+<span id="cb5-7"><a href="" aria-label="7"></a><span class="do">## (Intercept)   3.1094444 -3.377500  0.8041667 -0.1072222</span></span>
+<span id="cb5-8"><a href="" aria-label="8"></a><span class="do">## x1           -3.3775000  3.940417 -0.9650000  0.0000000</span></span>
+<span id="cb5-9"><a href="" aria-label="9"></a><span class="do">## I(x1^2)       0.8041667 -0.965000  0.2412500  0.0000000</span></span>
+<span id="cb5-10"><a href="" aria-label="10"></a><span class="do">## x2           -0.1072222  0.000000  0.0000000  0.2144444</span></span>
+<span id="cb5-11"><a href="" aria-label="11"></a></span>
+<span id="cb5-12"><a href="" aria-label="12"></a><span class="co"># Standard errors: square roots of the diagonal</span></span>
+<span id="cb5-13"><a href="" aria-label="13"></a><span class="fu">sqrt</span>(<span class="fu">diag</span>(var_beta))</span>
+<span id="cb5-14"><a href="" aria-label="14"></a><span class="do">## (Intercept)          x1     I(x1^2)          x2 </span></span>
+<span id="cb5-15"><a href="" aria-label="15"></a><span class="do">##   1.7633617   1.9850483   0.4911721   0.4630815</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="manual-matrix-calculations-in-r-6" class="slide level2" style="font-size: 85%;">
+<h2>Manual matrix calculations in R</h2>
+<h3 id="confidence-and-prediction-intervals">Confidence and prediction intervals</h3>
+<p>Predict at <span class="math inline">\(X_1 = 2\)</span> and <span class="math inline">\(X_2 = 1\)</span>, so <span class="math inline">\(\mathbf x_0^\mathsf T = (1,\ 2,\ 2^2,\ 1)\)</span></p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-filename="r"><pre class="sourceCode numberSource r cw-auto number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="" aria-label="1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x1 =</span> <span class="dv">2</span>, <span class="at">x2 =</span> <span class="dv">1</span>)</span>
+<span id="cb6-2"><a href="" aria-label="2"></a></span>
+<span id="cb6-3"><a href="" aria-label="3"></a><span class="co"># Row vector x0' (1 x p), with terms in the same order as X</span></span>
+<span id="cb6-4"><a href="" aria-label="4"></a>x0 <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span> x1 <span class="sc">+</span> <span class="fu">I</span>(x1<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> x2, <span class="at">data =</span> new_data)</span>
+<span id="cb6-5"><a href="" aria-label="5"></a></span>
+<span id="cb6-6"><a href="" aria-label="6"></a>y0_hat <span class="ot">&lt;-</span> <span class="fu">drop</span>(x0 <span class="sc">%*%</span> beta_hats)</span>
+<span id="cb6-7"><a href="" aria-label="7"></a></span>
+<span id="cb6-8"><a href="" aria-label="8"></a><span class="co"># Standard errors</span></span>
+<span id="cb6-9"><a href="" aria-label="9"></a>q <span class="ot">&lt;-</span> <span class="fu">drop</span>(x0 <span class="sc">%*%</span> XtX_inv <span class="sc">%*%</span> <span class="fu">t</span>(x0))</span>
+<span id="cb6-10"><a href="" aria-label="10"></a>se_fit <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(sigma2_hat <span class="sc">*</span> q)</span>
+<span id="cb6-11"><a href="" aria-label="11"></a>se_pred <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(sigma2_hat <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">+</span> q))</span>
+<span id="cb6-12"><a href="" aria-label="12"></a></span>
+<span id="cb6-13"><a href="" aria-label="13"></a>t_crit <span class="ot">&lt;-</span> <span class="fu">qt</span>(<span class="fl">0.975</span>, <span class="at">df =</span> n <span class="sc">-</span> p)</span>
+<span id="cb6-14"><a href="" aria-label="14"></a></span>
+<span id="cb6-15"><a href="" aria-label="15"></a><span class="fu">tibble</span>(</span>
+<span id="cb6-16"><a href="" aria-label="16"></a>  <span class="at">fit =</span> y0_hat,</span>
+<span id="cb6-17"><a href="" aria-label="17"></a>  <span class="at">ci_lower =</span> y0_hat <span class="sc">-</span> t_crit <span class="sc">*</span> se_fit,</span>
+<span id="cb6-18"><a href="" aria-label="18"></a>  <span class="at">ci_upper =</span> y0_hat <span class="sc">+</span> t_crit <span class="sc">*</span> se_fit,</span>
+<span id="cb6-19"><a href="" aria-label="19"></a>  <span class="at">pi_lower =</span> y0_hat <span class="sc">-</span> t_crit <span class="sc">*</span> se_pred,</span>
+<span id="cb6-20"><a href="" aria-label="20"></a>  <span class="at">pi_upper =</span> y0_hat <span class="sc">+</span> t_crit <span class="sc">*</span> se_pred</span>
+<span id="cb6-21"><a href="" aria-label="21"></a>)</span>
+<span id="cb6-22"><a href="" aria-label="22"></a><span class="do">## # A tibble: 1 × 5</span></span>
+<span id="cb6-23"><a href="" aria-label="23"></a><span class="do">##     fit ci_lower ci_upper pi_lower pi_upper</span></span>
+<span id="cb6-24"><a href="" aria-label="24"></a><span class="do">##   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span></span>
+<span id="cb6-25"><a href="" aria-label="25"></a><span class="do">## 1  9.07     7.07     11.1     5.92     12.2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="summary" class="slide level2" style="font-size: 75%;">

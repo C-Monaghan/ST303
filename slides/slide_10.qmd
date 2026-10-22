@@ -68,14 +68,18 @@ $$
 }
 $$
 
-Matrix notation lets us perform these calculations for many observations
-and many predictors at once
+<br>
+
+::: {.callout-tip appearance="minimal"}
+A matrix is just a tidy way of storing a table of numbers so we can do
+**many calculations in one go**
+:::
 
 ## Why use matrix notation
 
 Let's suppose we have $n$ observations and $k$ predictors
 
-For each observation we can write
+For each observation $i = 1, \dots, n$ we can write
 
 $$
 Y_i=\beta_0 + \beta_1X_{i1} + \cdots + \beta_kX_{ik} + \varepsilon_i
@@ -84,44 +88,64 @@ $$
 
 ::: {.fragment .fade-up}
 
-Writing this equation separately **for every observation** becomes tedious
+Writing this out **for every observation** is tedious
 
-Matrix notation allows us to represent all $n$ equations simultaneously
+Matrices let us write all $n$ equations as **one** equation
 
-It also makes the mathematics easier to generalise to more complicated
-linear models
+The same formulas then work for 1 predictor or 100 predictors
 
 :::
 
-## Why use matrix notation
+## A small example
 
-### A small example
-
-Suppose we have three observations and two predictors
+Three observations, two predictors
 
 $$
-\begin{align*}
+\begin{aligned}
 Y_1 &= \beta_0+\beta_1X_{11}+\beta_2X_{12}+\varepsilon_1,\\
 Y_2 &= \beta_0+\beta_1X_{21}+\beta_2X_{22}+\varepsilon_2,\\
 Y_3 &= \beta_0+\beta_1X_{31}+\beta_2X_{32}+\varepsilon_3
-\end{align*}
+\end{aligned}
 $$
 
 <br>
 
 ::: {.callout-note appearance="minimal"}
-Notice that the coefficients **are the same** across observations
+The coefficients $\beta$ are **the same** in every equation
 :::
 
 ::: {.callout-note appearance="minimal"}
-While the predictor values and errors **vary**
+The predictor values $X$ and the errors $\varepsilon$ **change** from row to row
 :::
 
 ::: {.callout-tip appearance="minimal"}
 How could we **collect these equations** into a single expression?
 :::
 
-## Matrix notation
+## The one matrix idea you need {style="font-size: 90%;"}
+
+### Matrix times vector = a stack of "row $\times$ column" calculations
+
+To multiply a matrix by a vector, take each **row** of the matrix, multiply it
+entry-by-entry with the vector, and add
+
+$$
+\begin{bmatrix} 1 & 4 \\ 1 & 5 \\ 1 & 6 \end{bmatrix}
+\begin{bmatrix} 10 \\ 2 \end{bmatrix} =
+\begin{bmatrix} 1(10) + 4(2) \\ 1(10) + 5(2) \\ 1(10) + 6(2) \end{bmatrix} =
+\begin{bmatrix} 18 \\ 20 \\ 22 \end{bmatrix}
+$$
+
+::: {.fragment .fade-up}
+
+Each row of the answer is **one** observation's prediction
+
+That is exactly what a regression model does: take each observation's
+predictor values, multiply by the coefficients, and add
+
+:::
+
+## Matrix notation {style="font-size: 85%;"}
 
 ### The response vector
 
@@ -142,7 +166,7 @@ With dimension $\mathbf{Y} \in \mathbb{R}^{n \times 1}$
 Within this matrix there is one row for every observation and one
 column containing the response.
 
-## Matrix notation
+## Matrix notation {style="font-size: 85%;"}
 
 ### The design matrix
 
@@ -158,13 +182,19 @@ $$
 \end{bmatrix}
 $$
 
-The first column contains ones because the model includes an intercept
+- **Rows** = observations (row $i$ holds the predictor values for
+  observation $i$)
+- **Columns** = model terms (the first column of ones is for the intercept)
+- There are $n$ rows and $p = k + 1$ columns, so
+  $\mathbf{X} \in \mathbb{R}^{n\times p}$
 
-There are $n$ rows and $p = k + 1$ columns such that $\mathbf{X} \in \mathbb{R}^{n\times p}$
+::: {.callout-tip appearance="minimal"}
+## Why a column of ones?
 
-Each row represents an observation and each column represents a model term.
+So that $\beta_0$ is multiplied by 1 in every row
+:::
 
-## Matrix notation
+## Matrix notation {style="font-size: 85%;"}
 
 ### The parameter and error vectors
 
@@ -202,66 +232,112 @@ $$
 
 ::::
 
-- Parameter contains $p = k + 1$ parameters
-- Error vector contains $n \times 1$ parameters
+- $\boldsymbol\beta$ has $p = k + 1$ unknown **parameters** (one per
+  column of $\mathbf X$)
+- $\boldsymbol\varepsilon$ has $n$ unknown **errors** (one per observation)
 
-## Matrix notation {style="font-size: 90%;"}
+## Matrix notation {style="font-size: 85%;"}
 
 ### The matrix model
-
-In matrix form, the multiple linear regression model thus becomes
 
 $$
 \boxed{\mathbf{Y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\varepsilon}}
 $$
 
 
-$$
-\mathbf{Y} = \begin{bmatrix}
-Y_1 \\
-Y_2 \\
-\vdots \\
-Y_n
-\end{bmatrix} \quad
-\mathbf{X}=
-\begin{bmatrix}
-1 & X_{11} & \cdots &X_{1k} \\
-1 & X_{21} & \cdots &X_{2k} \\
-\vdots &\vdots &\ddots &\vdots \\
-1 & X_{n1} & \cdots & X_{nk}
-\end{bmatrix} \quad
-\boldsymbol{\beta} =
-\begin{bmatrix}
-\beta_0 \\
-\beta_1 \\
-\vdots \\
-\beta_k
-\end{bmatrix} \quad
-\boldsymbol{\varepsilon} = \begin{bmatrix}
-\varepsilon_1 \\
-\varepsilon_2 \\
-\vdots \\
-\varepsilon_n
-\end{bmatrix}
-$$
+::: {.fragment .fade-up}
 
-
-
-:::: {.fragment .fade-up}
-where
+Written out for our three-observation, two-predictor example:
 
 $$
-\mathbf{e} = \mathbf{Y} - \mathbf{X} \hat{\boldsymbol{\beta}}
+\underbrace{\begin{bmatrix} Y_1 \\ Y_2 \\ Y_3 \end{bmatrix}}_{\mathbf Y\ (3 \times 1)}
+=
+\underbrace{\begin{bmatrix}
+1 & X_{11} & X_{12} \\
+1 & X_{21} & X_{22} \\
+1 & X_{31} & X_{32}
+\end{bmatrix}}_{\mathbf X\ (3 \times 3)}
+\underbrace{\begin{bmatrix} \beta_0 \\ \beta_1 \\ \beta_2 \end{bmatrix}}_{\boldsymbol\beta\ (3 \times 1)}
++
+\underbrace{\begin{bmatrix} \varepsilon_1 \\ \varepsilon_2 \\ \varepsilon_3 \end{bmatrix}}_{\boldsymbol\varepsilon\ (3 \times 1)}
 $$
 
+:::
 
-::: {.callout-important appearance="minimal"}
-Our objective is to find the coefficient vector that makes these residuals
-collectively as small as possible in <br> the least-squares sense.
+::: {.fragment .fade-up}
+
+Multiply the first row of $\mathbf X$ by $\boldsymbol\beta$ and we recover
+$Y_1 = \beta_0+\beta_1X_{11}+\beta_2X_{12}+\varepsilon_1$
+
+The single matrix equation **is** the three equations stacked together
+
+:::
+
+## Dimension check
+
+Matrix multiplication only works when the [inner dimensions match]{.alert}
+
+$$
+\underbrace{\mathbf{X}}_{n \; \times \; p} \quad
+\underbrace{\boldsymbol\beta}_{p \; \times \; 1} \quad = \quad
+\underbrace{\mathbf{X}\boldsymbol\beta}_{n \; \times \; 1}
+$$
+
+| Object | Dimension | Meaning |
+|:--------------------|:-------------:|:--------------------------------|
+| $\mathbf Y$ | $n \times 1$ | observed responses |
+| $\mathbf X$ | $n \times p$ | predictor values (plus ones) |
+| $\boldsymbol\beta$ | $p \times 1$ | true coefficients (unknown) |
+| $\boldsymbol\varepsilon$ | $n \times 1$ | true errors (unknown) |
+
+<br>
+
+::: {.callout-tip appearance="minimal"}
+## Habit to build: whenever you see a matrix formula, check the dimensions
+:::
+
+## Fitted values and residuals
+
+We never see $\boldsymbol\beta$ or $\boldsymbol\varepsilon$, so we estimate them
+
+:::: {.columns}
+::: {.column}
+
+[Fitted values]{.alert .center}
+
+$$
+\widehat{\mathbf Y} = \mathbf X \widehat{\boldsymbol\beta}
+$$
+
+What the model *predicts* for each observation
+
+:::
+
+::: {.column}
+
+[Residuals]{.alert .center}
+
+$$
+\mathbf{e} = \mathbf{Y} - \widehat{\mathbf Y} = \mathbf{Y} - \mathbf{X} \widehat{\boldsymbol{\beta}}
+$$
+
+What the model *got wrong* for each observation
+
 :::
 ::::
 
-## Ordinary least squares
+<br>
+
+::: {.callout-important appearance="minimal"}
+## Our objective
+
+Find the $\widehat{\boldsymbol\beta}$ that makes the residuals collectively
+as small as possible in the **least-squares** sense
+:::
+
+## Ordinary least squares {style="font-size:85%;"}
+
+### What are we minimising?
 
 Using ordinary least squares we want to minimise
 
@@ -280,11 +356,14 @@ $$
 
 - $(\mathbf{Y} - \mathbf{X} \boldsymbol{\beta})$ is a **column vector** $(n \times 1)$
 - Transposing it turns it into a **row vector** $(1 \times n)$
-- We can now calculate the sum of all squared residuals
+- Row $\times$ column gives a single number: $e_1^2 + e_2^2 + \dots + e_n^2$
 
+In short: $\mathbf e^\mathsf T\mathbf e$ is the sum of squared residuals
 :::
 
 ## Ordinary least squares
+
+### Using calculus
 
 If we expand out our above equation
 
@@ -326,6 +405,9 @@ $$
 -2 \mathbf{X}^\mathsf{T} \mathbf{Y} + 2\mathbf{X}^\mathsf{T}\mathbf{X} \hat{\boldsymbol\beta} = 0
 $$
 
+
+:::: {.fragment .fade-up}
+
 Which can then be simplified down into
 
 $$
@@ -341,7 +423,9 @@ $$
 ## This is our normal equation
 :::
 
-## Estimating $\boldsymbol{\beta}$
+::::
+
+## Solving for $\widehat{\boldsymbol\beta}$
 
 $$
 \boxed{
@@ -353,7 +437,7 @@ $$
 
 To get a formula for estimating $\boldsymbol{\beta}$ we can multiply both
 sides of our equation by the inverse of $\mathbf{X}^\mathsf{T} \mathbf{X}$
-such that
+(the matrix version of dividing) such that
 
 $$
 \boxed{
@@ -364,13 +448,15 @@ $$
 $$
 
 
+<br>
+
 ::: {.callout-important}
 ## The formula requires $\mathbf X$ to have full column rank
 
 This means no column is an exact linear combination of the others
 :::
 
-## What if the matrix is not invertible?
+## What if the matrix is not invertible? {style="font-size:90%;"}
 
 If the columns of $\mathbf{X}$ are linearly dependent, then
 $\mathbf{X}^\mathsf{T} \mathbf{X}$ is singular and the usual inverse formula
@@ -378,16 +464,20 @@ does not apply
 
 ::: {.fragment .fade-up}
 
+Common causes
+
 - A predictor is an exact linear combination of other predictors
 - Two columns are identical
-- A categorical variable is represented by all category indicators alongside
-  an intercept
+- A categorical variable has an indicator for **every** category *and* the model has an intercept (the "dummy variable trap")
+- Fewer observations than parameters ($n < p$)
 
-Near-linear dependence can also make coefficient estimates numerically
+Near-linear dependence is also a problem: the estimates become numerically
 unstable
 :::
 
 ## A small example
+
+<br>
 
 ```{r}
 #| label: small-data-plot
@@ -405,47 +495,57 @@ Y = \begin{bmatrix} 2 \\ 3 \\ 5 \end{bmatrix} \qquad
 X = \begin{bmatrix} 1  & 1 \\ 1 & 2 \\ 1 & 3 \end{bmatrix}
 $$
 
-$$
-\boxed{
-\mathbf X^\mathsf T\mathbf X
-\hat{\boldsymbol\beta}
-=\mathbf X^\mathsf T\mathbf Y
-}
-$$
+::: {.fragment .fade-up}
 
-
-::: {.fragment}
+Build the two pieces of the normal equations
 
 $$
 \mathbf{X}^\mathsf{T} \mathbf{X} = \begin{bmatrix} 3 & 6 \\ 6 & 14 \end{bmatrix} \qquad
 \mathbf X^\mathsf T\mathbf Y = \begin{bmatrix} 10 \\ 23\end{bmatrix}
 $$
 
-Hence
+:::
+
+::: {.fragment}
+
+Solve
 
 $$
-\begin{bmatrix} 3 & 6 \\ 6 & 14 \end{bmatrix} \begin{bmatrix} \hat{\beta_0} \\ \hat{\beta_1} \end{bmatrix} = \begin{bmatrix} 10 \\ 23\end{bmatrix}
+\begin{bmatrix} 3 & 6 \\ 6 & 14 \end{bmatrix} \begin{bmatrix} \widehat{\beta}_0 \\ \widehat{\beta}_1 \end{bmatrix} = \begin{bmatrix} 10 \\ 23\end{bmatrix}
+\quad\Longrightarrow\quad
+\widehat{y} = 0.33 + 1.5x
+$$
+
+:::
+
+## How noisy is the error? Estimating $\sigma^2$
+
+We assume the errors have constant variance $\sigma^2$
+
+We estimate it from the residuals
+
+$$
+\widehat{\sigma}^2 = \frac{\sum^n_{i = 1}e^2_i}{n - p} = \frac{\mathbf e^\mathsf T\mathbf e}{n - p}
 $$
 
 
-$$
-\hat{y} = 0.33 + 1.5x
-$$
-
+::: {.callout-note appearance="minimal"}
+We divide by $n - p$ (the **residual degrees of freedom**), not $n$, because
+we used up $p$ pieces of information estimating $\boldsymbol\beta$
 :::
 
 ## Representing our variance {style="font-size:80%;"}
 
 ### The covariance matrix
 
-Under the model assumptions
+Under the model assumptions, $\widehat{\boldsymbol\beta}$ is unbiased
 
 $$
 E(\widehat{\boldsymbol\beta}\mid\mathbf X)
 =\boldsymbol\beta
 $$
 
-Its covariance matrix is
+and its (estimated) covariance matrix is
 
 $$
 \boxed{
@@ -456,23 +556,21 @@ $$
 }
 $$
 
-$$
-\hat{\sigma}^2 = \frac{\sum^n_{i = 1}e^2_i}{n - p}
-$$
+How to read it (a $p \times p$ table)
 
-- The diagonal entries give the estimated variances of the individual
-  coefficient estimates
-- Taking square roots gives their standard errors
-- The off-diagonal entries describe covariances between coefficient
-  estimates
+- **Diagonal** entries are the estimated variances of each coefficient
+- Taking square roots gives the **standard errors**
+- **Off-diagonal** entries are covariances between pairs of coefficients
 
 ## Making predictions from a model
+
+For one observation
 
 $$
 \hat{y}_i = \hat{\beta_0} + \hat{\beta_1}x_{i1} + \dots + \hat{\beta_k}x_{ik}
 $$
 
-Or in matrix form as
+For all observations at once
 
 $$
 \widehat{\mathbf Y} = \mathbf X\widehat{\boldsymbol\beta}
@@ -481,28 +579,27 @@ $$
 
 :::: {.fragment .fade-up}
 
-Hence for any new configuration of predictors, the predicted conditional mean
-becomes
+For any **new** set of predictor values $\mathbf x_0$, the predicted mean response is
 
 $$
-\boxed{\widehat{y_0} = \mathbf{x_0}^\mathsf{T} \hat{\boldsymbol{\beta}}}
+\boxed{\widehat{y}_0 = \mathbf{x}_0^\mathsf{T} \widehat{\boldsymbol{\beta}}}
 $$
-
 
 ::: {.callout-important appearance="minimal"}
-The row vector $\mathbf x_0^\mathsf T$ must contain the same model terms, in the same order, as the columns of $\mathbf X$
+$\mathbf x_0$ must contain the same model terms, in the same order, as the
+columns of $\mathbf X$ (including the leading 1)
 :::
 ::::
 
-## Constructing confidence intervals
+## Confidence interval for the mean response {style="font-size: 85%;"}
 
-Let's suppose we want to estimate $\mu = \mathcal{E}[y]$ at a particular
-value of $\mathbf{x}_0 = (1, x_{01}, x_{02}, \dots x_{0k})^\top$
+We want to estimate the **average** response at
+$\mathbf{x}_0 = (1, x_{01}, \dots, x_{0k})^\mathsf{T}$
 
 Our estimate is
 
 $$
-\mu_0 = E(Y_0 \mid \mathbf x_0) = \mathbf x_0^\mathsf T \hat{\boldsymbol \beta}
+\widehat{\mu}_0 = \widehat{y}_0 = \mathbf x_0^\mathsf T \widehat{\boldsymbol \beta}
 $$
 
 with a standard error of
@@ -523,25 +620,24 @@ $$
 \boxed{\widehat y_0 \pm t_{n-p,\,1-\alpha/2}SE_{\text{fit}}}
 $$
 
-This interval quantifies uncertainty about the conditional mean response at
-the specified predictor values
+This quantifies uncertainty about the **conditional mean** at those
+predictor values
 
-## Constructing prediction intervals
+## Prediction interval for a new observation {style="font-size: 85%;"}
 
-For a new observation: $\mathbf{x}_0 = (1, x_{01}, x_{02}, ..., x_{0k})^T$,
-the estimate is:
+For a single **new** observation at $\mathbf{x}_0$, the estimate is the same
 
 $$
-\hat{y_0} = \mathbf x_0^\mathsf T \hat{\boldsymbol \beta}
+\widehat{y}_0 = \mathbf x_0^\mathsf T \widehat{\boldsymbol \beta}
 $$
 
-with a predicted standard error
+but the standard error includes the extra noise of an individual outcome
 
 $$
 SE_{\text{pred}}=
 \widehat\sigma
 \sqrt{
-1+
+\textcolor{blue}{1}+
 \mathbf x_0^\mathsf T
 (\mathbf X^\mathsf T\mathbf X)^{-1}
 \mathbf x_0
@@ -553,6 +649,11 @@ Thus, a $100 (1 - \alpha)\%$ prediction interval is
 $$
 \boxed{\widehat y_0 \pm t_{n-p,\,1-\alpha/2}SE_{\text{pred}}}
 $$
+
+::: {.callout-tip appearance="minimal"}
+The extra $1$ is the new observation's own error $\varepsilon_0$, so prediction
+intervals are always **wider** than confidence intervals
+:::
 
 ## Simple linear regression (using matrices)
 
@@ -583,7 +684,6 @@ $$
 :::
 
 ## Simple linear regression (using matrices) {style="font-size: 70%;"}
-
 
 ::::: {.columns}
 
@@ -654,7 +754,7 @@ $$
 
 ::::: {.fragment .fade-up}
 
-Multiplying the matrices and simplifying gives
+Multiplying the matrices and simplifying gives the formulas you already know
 
 :::: {.columns}
 
@@ -684,7 +784,6 @@ $$
 ## The coefficient covariance matrix in simple linear regression {style="font-size: 80%;"}
 
 Recall that
-
 
 :::: {.columns}
 
@@ -756,7 +855,8 @@ $$
 ::::
 
 ::: {.callout-tip appearance="minimal"}
-The matrix expression gives the variances and covariance of the two coefficient estimates in one calculation.
+The matrix expression gives the variances and covariance of the two coefficient
+estimates in one calculation.
 :::
 
 :::::
@@ -799,6 +899,11 @@ $$
 X <- model.matrix(~ x1 + I(x1^2) + x2, data = toy_data)
 
 X
+
+# Check the dimensions: n x p
+n <- nrow(X)
+p <- ncol(X)
+c(n = n, p = p)
 ```
 
 ## Manual matrix calculations in R {style="font-size: 90%;"}
@@ -887,6 +992,65 @@ tibble(
   observed = y,
   fitted = drop(y_hat),
   residual = drop(e)
+)
+```
+
+## Manual matrix calculations in R {style="font-size: 90%;"}
+
+### Estimate $\sigma^2$ and the covariance matrix
+
+$$
+\widehat{\sigma}^2 = \frac{\mathbf e^\mathsf T\mathbf e}{n-p}
+\qquad
+\widehat{\operatorname{Var}}(\widehat{\boldsymbol\beta}) = \widehat{\sigma}^2(\mathbf X^\mathsf T\mathbf X)^{-1}
+$$
+
+```{r}
+#| label: covariance
+#| echo: true
+#| collapse: true
+
+sigma2_hat <- drop(crossprod(e) / (n - p))
+XtX_inv <- solve(XtX)
+
+var_beta <- sigma2_hat * XtX_inv
+var_beta
+
+# Standard errors: square roots of the diagonal
+sqrt(diag(var_beta))
+```
+
+## Manual matrix calculations in R {style="font-size: 85%;"}
+
+### Confidence and prediction intervals
+
+Predict at $X_1 = 2$ and $X_2 = 1$, so $\mathbf x_0^\mathsf T = (1,\ 2,\ 2^2,\ 1)$
+
+```{r}
+#| label: intervals
+#| echo: true
+#| collapse: true
+
+new_data <- tibble(x1 = 2, x2 = 1)
+
+# Row vector x0' (1 x p), with terms in the same order as X
+x0 <- model.matrix(~ x1 + I(x1^2) + x2, data = new_data)
+
+y0_hat <- drop(x0 %*% beta_hats)
+
+# Standard errors
+q <- drop(x0 %*% XtX_inv %*% t(x0))
+se_fit <- sqrt(sigma2_hat * q)
+se_pred <- sqrt(sigma2_hat * (1 + q))
+
+t_crit <- qt(0.975, df = n - p)
+
+tibble(
+  fit = y0_hat,
+  ci_lower = y0_hat - t_crit * se_fit,
+  ci_upper = y0_hat + t_crit * se_fit,
+  pi_lower = y0_hat - t_crit * se_pred,
+  pi_upper = y0_hat + t_crit * se_pred
 )
 ```
 
