@@ -21,6 +21,150 @@
     "text": "Learning the fundamental principles of linear models  using R\n        \n        \n            ST303 - Linear Models  Department of Mathematics and Statistics  Maynooth University\n        \n    \n    \n      \n        \n        \n        \n      \n    \n\n\n\n\n\n\nInstructor\n\n Cormac Monaghan\n cormac.monaghan@mu.ie\n Room 223 Logic House\n Bluesky\n\n\n\nCourse details\n\n Friday\n September - December 2026\n Friday 12pm and 4pm\n Arts Building and Physics Hall\n\n\n\nContacting me\nE-mail is the best way to get in contact with me. I usually try to respond to all e-mails within 24 hours (really), but also remember that life can be busy and chaotic for everyone (including me!), so if I don’t respond right away, don’t worry!"
   },
   {
+    "objectID": "content/content_05b.html",
+    "href": "content/content_05b.html",
+    "title": "Matrix notation",
+    "section": "",
+    "text": "Learn how to represent our regression equation in matrix form\nLearn how to estimate our parameters by hand\nUnderstand why matrix notation is a useful representation for linear models",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Matrix notation"
+    ]
+  },
+  {
+    "objectID": "content/content_05b.html#learning-objectives",
+    "href": "content/content_05b.html#learning-objectives",
+    "title": "Matrix notation",
+    "section": "",
+    "text": "Learn how to represent our regression equation in matrix form\nLearn how to estimate our parameters by hand\nUnderstand why matrix notation is a useful representation for linear models",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Matrix notation"
+    ]
+  },
+  {
+    "objectID": "content/content_05b.html#readings",
+    "href": "content/content_05b.html#readings",
+    "title": "Matrix notation",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n Linear models (Chapter 2)\n Linear models (Chapter 7)\n Introduction to matrices - YouTube playlist",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Matrix notation"
+    ]
+  },
+  {
+    "objectID": "content/content_05b.html#slides",
+    "href": "content/content_05b.html#slides",
+    "title": "Matrix notation",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 5",
+      "Matrix notation"
+    ]
+  },
+  {
+    "objectID": "content/content_04b.html",
+    "href": "content/content_04b.html",
+    "title": "Assessing model assumptions",
+    "section": "",
+    "text": "Recap on what the assumptions of simple linear regression are\nLearn how to assess and diagnose simple linear regression models\nUnderstand what to do when model assumptions are violated\nLearn how transformations can be applied to data",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Assumptions"
+    ]
+  },
+  {
+    "objectID": "content/content_04b.html#learning-objectives",
+    "href": "content/content_04b.html#learning-objectives",
+    "title": "Assessing model assumptions",
+    "section": "",
+    "text": "Recap on what the assumptions of simple linear regression are\nLearn how to assess and diagnose simple linear regression models\nUnderstand what to do when model assumptions are violated\nLearn how transformations can be applied to data",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Assumptions"
+    ]
+  },
+  {
+    "objectID": "content/content_04b.html#readings",
+    "href": "content/content_04b.html#readings",
+    "title": "Assessing model assumptions",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n A guide to testing the assumptions of linear regression\n Understanding and checking the assumptions of linear regression\n The Dark Art of Regression Diagnostics",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Assumptions"
+    ]
+  },
+  {
+    "objectID": "content/content_04b.html#slides",
+    "href": "content/content_04b.html#slides",
+    "title": "Assessing model assumptions",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 4",
+      "Assumptions"
+    ]
+  },
+  {
+    "objectID": "content/content_03b.html",
+    "href": "content/content_03b.html",
+    "title": "ANOVA decomposition",
+    "section": "",
+    "text": "Learn how to decomposition a fitted model into explained and unexplained variability\nLearn how to compare two regression models\nUnderstand what the components of an ANOVA table represent",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "ANOVA decomposition"
+    ]
+  },
+  {
+    "objectID": "content/content_03b.html#learning-objectives",
+    "href": "content/content_03b.html#learning-objectives",
+    "title": "ANOVA decomposition",
+    "section": "",
+    "text": "Learn how to decomposition a fitted model into explained and unexplained variability\nLearn how to compare two regression models\nUnderstand what the components of an ANOVA table represent",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "ANOVA decomposition"
+    ]
+  },
+  {
+    "objectID": "content/content_03b.html#readings",
+    "href": "content/content_03b.html#readings",
+    "title": "ANOVA decomposition",
+    "section": "Readings",
+    "text": "Readings\n\nSuggested readings\n\n ANOVA and model fit",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "ANOVA decomposition"
+    ]
+  },
+  {
+    "objectID": "content/content_03b.html#slides",
+    "href": "content/content_03b.html#slides",
+    "title": "ANOVA decomposition",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 3",
+      "ANOVA decomposition"
+    ]
+  },
+  {
     "objectID": "content/content_02.html",
     "href": "content/content_02.html",
     "title": "The simple linear regression model",
@@ -117,13 +261,6 @@
     ]
   },
   {
-    "objectID": "assignments/assignment_01.html",
-    "href": "assignments/assignment_01.html",
-    "title": "\n    Practice Questions Sheet 1\n  ",
-    "section": "",
-    "text": "ST201 · DATA ANALYSIS\n  \n\n  \n    Practice Questions Sheet 1\n  \n\n    \n    ST303 - Linear Models\n  \n  \n    \n    Lecturer: Cormac Monaghan\n  \n  \n    \n    This sheet provides practice with simple linear regression. You will work with the regression model algebraically, fit and interpret a model in R, and reproduce key regression calculations by hand. These practice questions should be attempted in your own time. These questions are not graded and should not be handed in\n    You should attend the joint ST302/ST303 lab to get help with the questions and have your answers checked.\n  \n  \n\n\n\n\n\nSimple linear regression\nConsider the following simple linear regression model \\[\ny_i = \\beta_0 + \\beta_1x_i + \\epsilon_i, \\qquad i = 1,\\ldots,n.\n\\]\nThe above model may be alternatively written as\n\\[\ny_i = \\alpha_0 + \\alpha_1(x_i-\\bar{x}) + \\epsilon_i, \\qquad i = 1,\\ldots,n.\n\\]\nAnswer the following:\n\nUsing the method of least squares, derive expressions for the estimators \\(\\hat{\\alpha}_0\\) and \\(\\hat{\\alpha}_1\\)\nInterpret the parameters \\(\\alpha_0\\) and \\(\\alpha_1\\).\nExplain why mean-centering the predictor variable can be useful.\n\n\n\n\nSimple linear regression in R\nAs concrete cures, it gains strength overtime. The following data (see Table 1) represent the 7-day and 28-day strength, in pounds per square inch (psi), of a certain type of concrete.\n\n\n\n\nTable 1: Concrete data\n\n\n\n\n\n    \n\n    \n\n    \n    \n    \n      \n        \n        \n              \n                7 Day\n                28 Day\n              \n        \n        \n        \n                \n                  2300\n                  4370\n                \n                \n                  2430\n                  4640\n                \n                \n                  2890\n                  4620\n                \n                \n                  3120\n                  4900\n                \n                \n                  3380\n                  5020\n                \n                \n                  3390\n                  5220\n                \n        \n      \n    \n\n\n\n\n\n\nYou can read the data from the RStudio server using:\n\n# Using the `readr` and the `here` package.\n# TIP: you can press tab when writing the folder path to have all the options\n# folder / file options appear to you\n\nconcrete &lt;- readr::read_csv(here::here(\"Sharedfiles/ST303/data/Concrete.csv\"))\n\nAnswer the following set of questions using R\n\nCreate a scatterplot showing the relationship between 7-day strength on the \\(x\\)-axis and 28-day strength on the \\(y\\)-axis.\nDoes it seem appropriate to assume a linear relationship between the two variables (explain why you think so)?\nSpecify a simple linear regression model for these data algebraically.\nFit this model in R and report what the intercept, slope, and standard error for each term are.\nIn the context of this data, what do these values mean?\nUpdate the scatter plot you made earlier to include a fitted line.\n\n\n\n\nSimple linear regression by hand\nThis time, instead of using R, we will be calculating our linear regression parameters by hand. Using the concrete data we mentioned in Table 1, calculate the following:\n\n\\(\\bar{x}\\), \\(\\sum_{i=1}^n x_i^2\\), and \\(S_{xx}\\).\n\\(\\bar{y}\\), \\(\\sum_{i=1}^n y_i^2\\), and \\(S_{yy}\\).\n\\(\\sum_{i=1}^n x_i y_i\\) and \\(S_{xy}\\).\n\n\n\n\n\n\n\nTipYou may use R to verify your calculations.\n\n\n\nHowever, in an exam setting you may be asked to do calculations by hand (hint, hint, wink, wink!!).\nAs such, please show all of your workings.\n\n\nUse your calculated quantities to:\n\nCalculate the least-squares slope estimate and the least-squares intercept estimate\nIn addition, calculate the estimated error variance."
-  },
-  {
     "objectID": "content/content_01b.html",
     "href": "content/content_01b.html",
     "title": "Ordinary least squares",
@@ -172,39 +309,6 @@
     ]
   },
   {
-    "objectID": "content/index.html",
-    "href": "content/index.html",
-    "title": "Lecture overview",
-    "section": "",
-    "text": "Each class has a set of required readings that should be completed in your own time. For the most part, these readings will mirror what we have covered in the lectures. However, there will be times that I find a cool resource that I believe may be helpful for some of you.\nAll the slides for this module are special HTML files made using both Quarto and Clean Revealjs theme by Grant McDermott. Personally, this is my favourite theme to use for presentations, although I have made a couple of minor tweaks to it myself",
-    "crumbs": [
-      "Content",
-      "Overview",
-      "Lecture overview"
-    ]
-  },
-  {
-    "objectID": "overview/index.html",
-    "href": "overview/index.html",
-    "title": "Welcome to ST303",
-    "section": "",
-    "text": "Welcome to third year and welcome to ST303!\nWe will be covering lots of things related to linear models. This will range from the simple and multiple linear regression, ordinary and weighted least squares, inference, and diagnostics (among other things).\n\n\nOn successful completion of the module, you should be able to\n\nFit and interpret multiple regression models.\nUnderstand the theory of multiple regression.\nAssess model assumptions.\nUse model diagnostics.\n\n\n\n\nThis module is broken down as 25% continuous assessment and 75% official exam.\n\n4 assignments in the form of a Moodle quiz (worth 10%)\n1 mid-term exam (worth 15%)\n\nMid-term exam date: November 6th (12pm - 1pm)\n\n1 university exam (worth 75%)\n\nFinal exam date: TBD\n\n\n\n\n\n\n\n\nImportantDetails for Erasmus students\n\n\n\nIf you are an Erasmus student here for Semester 1 only (September - December), you will not be here for the final exam. With that in mind, your assignments and mid-term will be worth more marks.\nIf you are here for the full academic year (semester 1 AND semester 2), then your grades will follow the same breakdown as listed above.\n\n\n\n\n\n\n\n\nTime\nLocation\nClass Details\n\n\n\n\nFriday (12pm - 1pm)\nArts Building (Room F)\nStandard format (slides)\n\n\nFriday (4pm - 5pm)\nPhysics Hall\nStandard format (slides)\n\n\n\n\n\n\n\nTutorials will run weekly starting from the week of the 5th October (week 3)\nThese tutorials will be in the form of help desks where you get assistance with the assignments and consolidate and apply what you learned in class."
-  },
-  {
-    "objectID": "overview/index.html#module-overview",
-    "href": "overview/index.html#module-overview",
-    "title": "Welcome to ST303",
-    "section": "",
-    "text": "Welcome to third year and welcome to ST303!\nWe will be covering lots of things related to linear models. This will range from the simple and multiple linear regression, ordinary and weighted least squares, inference, and diagnostics (among other things).\n\n\nOn successful completion of the module, you should be able to\n\nFit and interpret multiple regression models.\nUnderstand the theory of multiple regression.\nAssess model assumptions.\nUse model diagnostics.\n\n\n\n\nThis module is broken down as 25% continuous assessment and 75% official exam.\n\n4 assignments in the form of a Moodle quiz (worth 10%)\n1 mid-term exam (worth 15%)\n\nMid-term exam date: November 6th (12pm - 1pm)\n\n1 university exam (worth 75%)\n\nFinal exam date: TBD\n\n\n\n\n\n\n\n\nImportantDetails for Erasmus students\n\n\n\nIf you are an Erasmus student here for Semester 1 only (September - December), you will not be here for the final exam. With that in mind, your assignments and mid-term will be worth more marks.\nIf you are here for the full academic year (semester 1 AND semester 2), then your grades will follow the same breakdown as listed above.\n\n\n\n\n\n\n\n\nTime\nLocation\nClass Details\n\n\n\n\nFriday (12pm - 1pm)\nArts Building (Room F)\nStandard format (slides)\n\n\nFriday (4pm - 5pm)\nPhysics Hall\nStandard format (slides)\n\n\n\n\n\n\n\nTutorials will run weekly starting from the week of the 5th October (week 3)\nThese tutorials will be in the form of help desks where you get assistance with the assignments and consolidate and apply what you learned in class."
-  },
-  {
-    "objectID": "overview/index.html#slides",
-    "href": "overview/index.html#slides",
-    "title": "Welcome to ST303",
-    "section": "Slides",
-    "text": "Slides\nAll the slides for this module are created using Quarto. In fact, this entire module website is built using Quarto. Personally, I love Quarto. I do just about everything with it! If you every get a chance, do check it out (ok … mini rant over!)\n\nThere are many little hidden things you can do with these slides.\nYou can click in the slides and navigate through them with ← and →.\nIf you type ? (or shift + /) while viewing the slides you can see a list of slide-specific commands (such as like f for fullscreen mode or additionally s for presenter mode if you want to see my notes).\nFinally, if you want to make a PDF of these slides you can press e, followed by ctrl + p.\n\n  \n    \n       Open slides in New Window"
-  },
-  {
     "objectID": "content/content_03a.html",
     "href": "content/content_03a.html",
     "title": "Inference for simple linear regression",
@@ -250,54 +354,6 @@
       "Content",
       "Week 3",
       "Inference"
-    ]
-  },
-  {
-    "objectID": "content/content_03b.html",
-    "href": "content/content_03b.html",
-    "title": "ANOVA decomposition",
-    "section": "",
-    "text": "Learn how to decomposition a fitted model into explained and unexplained variability\nLearn how to compare two regression models\nUnderstand what the components of an ANOVA table represent",
-    "crumbs": [
-      "Content",
-      "Week 3",
-      "ANOVA decomposition"
-    ]
-  },
-  {
-    "objectID": "content/content_03b.html#learning-objectives",
-    "href": "content/content_03b.html#learning-objectives",
-    "title": "ANOVA decomposition",
-    "section": "",
-    "text": "Learn how to decomposition a fitted model into explained and unexplained variability\nLearn how to compare two regression models\nUnderstand what the components of an ANOVA table represent",
-    "crumbs": [
-      "Content",
-      "Week 3",
-      "ANOVA decomposition"
-    ]
-  },
-  {
-    "objectID": "content/content_03b.html#readings",
-    "href": "content/content_03b.html#readings",
-    "title": "ANOVA decomposition",
-    "section": "Readings",
-    "text": "Readings\n\nSuggested readings\n\n ANOVA and model fit",
-    "crumbs": [
-      "Content",
-      "Week 3",
-      "ANOVA decomposition"
-    ]
-  },
-  {
-    "objectID": "content/content_03b.html#slides",
-    "href": "content/content_03b.html#slides",
-    "title": "ANOVA decomposition",
-    "section": "Slides",
-    "text": "Slides\n\n  \n    \n       Open slides in New Window",
-    "crumbs": [
-      "Content",
-      "Week 3",
-      "ANOVA decomposition"
     ]
   },
   {
@@ -349,54 +405,6 @@
     ]
   },
   {
-    "objectID": "content/content_04b.html",
-    "href": "content/content_04b.html",
-    "title": "Assessing model assumptions",
-    "section": "",
-    "text": "Recap on what the assumptions of simple linear regression are\nLearn how to assess and diagnose simple linear regression models\nUnderstand what to do when model assumptions are violated\nLearn how transformations can be applied to data",
-    "crumbs": [
-      "Content",
-      "Week 4",
-      "Assumptions"
-    ]
-  },
-  {
-    "objectID": "content/content_04b.html#learning-objectives",
-    "href": "content/content_04b.html#learning-objectives",
-    "title": "Assessing model assumptions",
-    "section": "",
-    "text": "Recap on what the assumptions of simple linear regression are\nLearn how to assess and diagnose simple linear regression models\nUnderstand what to do when model assumptions are violated\nLearn how transformations can be applied to data",
-    "crumbs": [
-      "Content",
-      "Week 4",
-      "Assumptions"
-    ]
-  },
-  {
-    "objectID": "content/content_04b.html#readings",
-    "href": "content/content_04b.html#readings",
-    "title": "Assessing model assumptions",
-    "section": "Readings",
-    "text": "Readings\n\nSuggested readings\n\n A guide to testing the assumptions of linear regression\n Understanding and checking the assumptions of linear regression\n The Dark Art of Regression Diagnostics",
-    "crumbs": [
-      "Content",
-      "Week 4",
-      "Assumptions"
-    ]
-  },
-  {
-    "objectID": "content/content_04b.html#slides",
-    "href": "content/content_04b.html#slides",
-    "title": "Assessing model assumptions",
-    "section": "Slides",
-    "text": "Slides\n\n  \n    \n       Open slides in New Window",
-    "crumbs": [
-      "Content",
-      "Week 4",
-      "Assumptions"
-    ]
-  },
-  {
     "objectID": "content/content_05a.html",
     "href": "content/content_05a.html",
     "title": "Multiple linear regression",
@@ -445,51 +453,36 @@
     ]
   },
   {
-    "objectID": "content/content_05b.html",
-    "href": "content/content_05b.html",
-    "title": "Matrix notation",
+    "objectID": "content/index.html",
+    "href": "content/index.html",
+    "title": "Lecture overview",
     "section": "",
-    "text": "Learn how to represent our regression equation in matrix form\nLearn how to estimate our parameters by hand\nUnderstand why matrix notation is a useful representation for linear models",
+    "text": "Each class has a set of required readings that should be completed in your own time. For the most part, these readings will mirror what we have covered in the lectures. However, there will be times that I find a cool resource that I believe may be helpful for some of you.\nAll the slides for this module are special HTML files made using both Quarto and Clean Revealjs theme by Grant McDermott. Personally, this is my favourite theme to use for presentations, although I have made a couple of minor tweaks to it myself",
     "crumbs": [
       "Content",
-      "Week 5",
-      "Matrix notation"
+      "Overview",
+      "Lecture overview"
     ]
   },
   {
-    "objectID": "content/content_05b.html#learning-objectives",
-    "href": "content/content_05b.html#learning-objectives",
-    "title": "Matrix notation",
+    "objectID": "overview/index.html",
+    "href": "overview/index.html",
+    "title": "Welcome to ST303",
     "section": "",
-    "text": "Learn how to represent our regression equation in matrix form\nLearn how to estimate our parameters by hand\nUnderstand why matrix notation is a useful representation for linear models",
-    "crumbs": [
-      "Content",
-      "Week 5",
-      "Matrix notation"
-    ]
+    "text": "Welcome to third year and welcome to ST303!\nWe will be covering lots of things related to linear models. This will range from the simple and multiple linear regression, ordinary and weighted least squares, inference, and diagnostics (among other things).\n\n\nOn successful completion of the module, you should be able to\n\nFit and interpret multiple regression models.\nUnderstand the theory of multiple regression.\nAssess model assumptions.\nUse model diagnostics.\n\n\n\n\nThis module is broken down as 25% continuous assessment and 75% official exam.\n\n4 assignments in the form of a Moodle quiz (worth 10%)\n1 mid-term exam (worth 15%)\n\nMid-term exam date: November 6th (12pm - 1pm)\n\n1 university exam (worth 75%)\n\nFinal exam date: TBD\n\n\n\n\n\n\n\n\nImportantDetails for Erasmus students\n\n\n\nIf you are an Erasmus student here for Semester 1 only (September - December), you will not be here for the final exam. With that in mind, your assignments and mid-term will be worth more marks.\nIf you are here for the full academic year (semester 1 AND semester 2), then your grades will follow the same breakdown as listed above.\n\n\n\n\n\n\n\n\nTime\nLocation\nClass Details\n\n\n\n\nFriday (12pm - 1pm)\nArts Building (Room F)\nStandard format (slides)\n\n\nFriday (4pm - 5pm)\nPhysics Hall\nStandard format (slides)\n\n\n\n\n\n\n\nTutorials will run weekly starting from the week of the 5th October (week 3)\nThese tutorials will be in the form of help desks where you get assistance with the assignments and consolidate and apply what you learned in class."
   },
   {
-    "objectID": "content/content_05b.html#readings",
-    "href": "content/content_05b.html#readings",
-    "title": "Matrix notation",
-    "section": "Readings",
-    "text": "Readings\n\nSuggested readings\n\n Linear models (Chapter 2)\n Linear models (Chapter 7)\n Introduction to matrices - YouTube playlist",
-    "crumbs": [
-      "Content",
-      "Week 5",
-      "Matrix notation"
-    ]
+    "objectID": "overview/index.html#module-overview",
+    "href": "overview/index.html#module-overview",
+    "title": "Welcome to ST303",
+    "section": "",
+    "text": "Welcome to third year and welcome to ST303!\nWe will be covering lots of things related to linear models. This will range from the simple and multiple linear regression, ordinary and weighted least squares, inference, and diagnostics (among other things).\n\n\nOn successful completion of the module, you should be able to\n\nFit and interpret multiple regression models.\nUnderstand the theory of multiple regression.\nAssess model assumptions.\nUse model diagnostics.\n\n\n\n\nThis module is broken down as 25% continuous assessment and 75% official exam.\n\n4 assignments in the form of a Moodle quiz (worth 10%)\n1 mid-term exam (worth 15%)\n\nMid-term exam date: November 6th (12pm - 1pm)\n\n1 university exam (worth 75%)\n\nFinal exam date: TBD\n\n\n\n\n\n\n\n\nImportantDetails for Erasmus students\n\n\n\nIf you are an Erasmus student here for Semester 1 only (September - December), you will not be here for the final exam. With that in mind, your assignments and mid-term will be worth more marks.\nIf you are here for the full academic year (semester 1 AND semester 2), then your grades will follow the same breakdown as listed above.\n\n\n\n\n\n\n\n\nTime\nLocation\nClass Details\n\n\n\n\nFriday (12pm - 1pm)\nArts Building (Room F)\nStandard format (slides)\n\n\nFriday (4pm - 5pm)\nPhysics Hall\nStandard format (slides)\n\n\n\n\n\n\n\nTutorials will run weekly starting from the week of the 5th October (week 3)\nThese tutorials will be in the form of help desks where you get assistance with the assignments and consolidate and apply what you learned in class."
   },
   {
-    "objectID": "content/content_05b.html#slides",
-    "href": "content/content_05b.html#slides",
-    "title": "Matrix notation",
+    "objectID": "overview/index.html#slides",
+    "href": "overview/index.html#slides",
+    "title": "Welcome to ST303",
     "section": "Slides",
-    "text": "Slides\n\n  \n    \n       Open slides in New Window",
-    "crumbs": [
-      "Content",
-      "Week 5",
-      "Matrix notation"
-    ]
+    "text": "Slides\nAll the slides for this module are created using Quarto. In fact, this entire module website is built using Quarto. Personally, I love Quarto. I do just about everything with it! If you every get a chance, do check it out (ok … mini rant over!)\n\nThere are many little hidden things you can do with these slides.\nYou can click in the slides and navigate through them with ← and →.\nIf you type ? (or shift + /) while viewing the slides you can see a list of slide-specific commands (such as like f for fullscreen mode or additionally s for presenter mode if you want to see my notes).\nFinally, if you want to make a PDF of these slides you can press e, followed by ctrl + p.\n\n  \n    \n       Open slides in New Window"
   }
 ]

@@ -4,6 +4,9 @@ _drafts
 # Exam folder
 _exam
 
+# Assignment folder
+assignments/
+
 # Quarto stuff
 /.quarto/
 **/*.quarto_ipynb

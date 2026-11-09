@@ -6,8 +6,7 @@ project:
   render:
     - "*.qmd"
     - "!slides/"
-    # - "!assignments/"
-    - "!assignments/solutions/"
+    - "!assignments/"
     - "!_drafts/"
 
   resources:
@@ -22,13 +21,12 @@ website:
 
   page-navigation: true
 
-  announcement:
-    icon: info-circle
-    dismissable: false
-    content: |
-      See the assignment tab for your first practice assignment
-    type: info
-    position: below-navbar
+  # announcement:
+  #   icon: info-circle
+  #   dismissable: false
+  #   content: PLACEHOLDER
+  #   type: info
+  #   position: below-navbar
 
   navbar:
     pinned: true
@@ -42,10 +40,6 @@ website:
         href: schedule\index.qmd
       - text: Content
         href: content\index.qmd
-      - text: Assignments
-        menu:
-          - text: Assignment 1
-            href: assignments\assignment_01.qmd
 
   sidebar:
     title: Content

@@ -262,6 +262,7 @@
   show table: set table(
     stroke: (x: none, y: 0.4pt + st303-rule),
     inset: 6pt,
+    
   )
 
   // ----------------------------------------------------------
