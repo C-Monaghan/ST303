@@ -29,7 +29,7 @@ theme_st303 <- function() {
 }
 
 # Data -------------------------------------------------------------------------
-heights <- readRDS(here::here("slides/data/heights.RDS"))
+heights <- readRDS(here::here("data/heights.RDS"))
 bacteria <- readRDS(here::here("data/bacteria.RDS"))
 ```
 
@@ -379,12 +379,12 @@ anim_data |>
 ## The regression equation
 
 $$
-\hat{y_i} = \beta_0 + \beta_1x_i + \epsilon_i
+Y_i = \beta_0 + \beta_1x_i + \epsilon_i
 $$
 
 
 ::: {.fragment}
-- $\hat{Y}$ is our **predicted value**
+- $Y$ is our **predicted value**
 - $X$ is our **observed value**
 - $\beta_0$ is our **intercept**
 - $\beta_1$ is our **slope**

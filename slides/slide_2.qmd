@@ -63,7 +63,7 @@ $$
 Suppose our regression line is
 
 $$
-\hat{y_i} = \beta_0 + \beta_1x_i + \epsilon
+Y_i = \beta_0 + \beta_1x_i + \epsilon
 $$
 
 Find the values of $\beta_0$ and $\beta_1$ that give the smallest possible residual
@@ -460,7 +460,7 @@ fuel |>
 
 ## Some properties of OLS fits
 
-- The residuals sum to zero $\sum^n_{i=1} \epsilon^2_i = 0$
+- The residuals sum to zero $\sum^n_{i=1} \epsilon_i = 0$
 - The OLS line passed through $(\bar{x}, \bar{y})$
 - The observed values and predicted values have the same mean $(\bar{y} = \bar{y_i})$
 - Residuals are uncorrelated with $x$ $(\sum x_i \epsilon_i = 0)$

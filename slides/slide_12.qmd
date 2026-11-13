@@ -1,0 +1,521 @@
+---
+title: |
+  The formal multiple regression model
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(54321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(1.1), face = "bold"),
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+coffee <- readr::read_csv(here::here("data/coffee.csv")) |>
+  mutate(
+    x = factor(
+      x,
+      levels = c(1, 2, 3),
+      labels = c("Control", "Caffeine", "Caffeine + sugar")
+    )
+  )
+```
+
+## Today's plan
+
+Today, we focus on how to quantify uncertainty in the estimates and make
+statistical inferences.
+
+1. **The model:** What assumptions do we make?
+2. **Sampling distributions:** How would estimates vary across repeated samples?
+3. **Inference:** How do we construct confidence intervals and perform tests?
+4. **Model fit:** How do we assess the overall contribution of the predictors?
+
+## The normal linear model {style="font-size: 90%;"}
+
+We can write the multiple regression model in matrix form:
+
+$$
+\mathbf{Y}=\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}.
+$$
+
+Here:
+
+- $\mathbf{Y}$ is the vector of $n$ response values;
+- $\mathbf{X}$ is the design matrix containing the predictor values;
+- $\boldsymbol{\beta}$ is the vector of unknown regression coefficients;
+- $\boldsymbol{\varepsilon}$ is the vector of errors.
+
+We treat the design matrix $\mathbf{X}$ as fixed and the errors as random.
+
+## Some notation {style="font-size: 80%;"}
+
+### Random vectors
+
+In regression, we observe a response variable for each of $n$ individuals
+
+We can collect all these observations into a single **response vector**
+
+$$
+\mathbf{Y} =
+\begin{pmatrix}
+Y_1\\ Y_2\\ \vdots\\ Y_n
+\end{pmatrix}
+$$
+
+Each $Y_i$ is a random variable representing the response for observation $i$.
+
+::: {.callout-important appearance="minimal"}
+
+- Before collecting the data, each observation is uncertain.
+- Together, the observations form a **random vector**.
+- Once we collect the data, we observe one particular value of this vector.
+
+We use this notation to describe the behaviour of all
+observations simultaneously.
+
+:::
+
+## Some notation {style="font-size: 80%;"}
+
+### Mean vectors and covariance matrices
+
+We can describe a random vector using two quantities
+
+<br>
+
+:::: {.columns}
+
+::: {.column}
+
+### Mean vector {.center}
+
+$$
+E(\mathbf{Y}) =
+\begin{pmatrix}
+E(Y_1)\\
+E(Y_2)\\
+\vdots\\
+E(Y_n)
+\end{pmatrix}
+=
+\boldsymbol{\mu}
+$$
+
+:::
+
+::: {.column}
+
+### Covariance matrix {.center}
+
+<br>
+
+$$
+\operatorname{Var}(\mathbf{Y}) = \boldsymbol{\Sigma}
+$$
+
+:::
+::::
+
+Together, the mean vector and covariance matrix describe the expected values and
+variability of the response vector.
+
+## The multivariate normal distribution {style="font-size: 80%;"}
+
+For a single random variable $\longrightarrow Y \sim N(\mu,\sigma^2)$
+
+The **multivariate normal distribution** extends this idea to several random
+variables
+
+For a random vector:
+
+$$
+\mathbf{Y} \sim N_n(\boldsymbol{\mu},\boldsymbol{\Sigma})
+$$
+
+where:
+
+- $\boldsymbol{\mu}$ is the mean vector.
+- $\boldsymbol{\Sigma}$ is the covariance matrix.
+- $n$ is the number of observations.
+
+::: {.callout-important appearance="minimal"}
+In other words, the multivariate normal distribution describes the joint distribution of all observations.
+:::
+
+## The regression model in matrix form {style="font-size: 70%;"}
+
+Recall the multiple linear regression model:
+
+$$
+\mathbf{Y} = \mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}
+$$
+
+We make the following assumptions about the error vector:
+
+$$
+E(\boldsymbol{\varepsilon})=\mathbf{0} \qquad \qquad
+\operatorname{Var}(\boldsymbol{\varepsilon})=\sigma^2\mathbf{I}_n \qquad \qquad
+\boldsymbol{\varepsilon}\sim N_n(\mathbf{0},\sigma^2\mathbf{I}_n)
+$$
+
+These assumptions imply that:
+
+$$
+\boxed{
+\mathbf{Y}\sim
+N_n(\mathbf{X}\boldsymbol{\beta},\sigma^2\mathbf{I}_n)
+}
+$$
+
+Therefore:
+
+- The expected response vector is $\mathbf{X}\boldsymbol{\beta}$.
+- Each observation has error variance $\sigma^2$.
+- Errors from different observations are independent.
+- The response vector follows a multivariate normal distribution.
+
+## The OLS estimator
+
+The OLS estimator chooses the coefficients that minimise the sum of
+squared residuals.
+
+Provided that the columns of $\mathbf{X}$ are linearly independent
+(full column rank),
+
+$$
+\boxed{
+  \hat{\boldsymbol{\beta}}= (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\mathbf{Y}
+  }
+$$
+
+This formula gives the estimated regression coefficients.
+
+## Fitted values and residuals {style="font-size: 90%;"}
+
+Once we have estimated the coefficients, we can calculate the fitted values:
+
+$$
+\widehat{\mathbf{Y}}=\mathbf{X}\widehat{\boldsymbol{\beta}}
+$$
+
+The residuals are the differences between the observed and fitted values:
+
+$$
+\mathbf{e}=\mathbf{Y}-\widehat{\mathbf{Y}}
+$$
+
+The **residual sum of squares** (SSE) measures the variation left
+unexplained by the model:
+
+$$
+\operatorname{SSE} = \mathbf{e}^{T}\mathbf{e} = \sum_{i=1}^{n}(y_i-\widehat{y_i})^2
+$$
+
+## The hat matrix {style="font-size: 90%;"}
+
+Substituting the OLS estimator into the fitted values gives
+
+$$
+\widehat{\mathbf{Y}}=
+\underbrace{\mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}}_{\mathbf{H}}
+\mathbf{Y}
+=\mathbf{H}\mathbf{Y}
+$$
+
+The matrix $\mathbf{H}$ is called the **hat matrix** because it
+transforms $\mathbf{Y}$ into $\widehat{\mathbf{Y}}$.
+
+It is a projection matrix, with two properties:
+
+- $\mathbf{H}^{T}=\mathbf{H}$ (symmetric);
+- $\mathbf{H}^{2}=\mathbf{H}$ (projecting twice has the same result as projecting once).
+
+The hat matrix is useful for deriving results about residuals
+
+## How do estimates vary across samples? {style="font-size: 80%;"}
+
+The OLS estimate depends on the sample we collect.
+If we repeatedly collected new samples, the estimated coefficients would vary.
+
+Under the normal linear model, the sampling distribution is
+
+$$
+\boxed{
+\widehat{\boldsymbol{\beta}}\sim
+N_p\left(\boldsymbol{\beta},\;
+\sigma^2(\mathbf{X}^{T}\mathbf{X})^{-1}\right)
+}
+$$
+
+This tells us two important things:
+
+- The estimates are centred on the true coefficients $\boldsymbol{\beta}$.
+- Their variability depends on the error variance and the design matrix.
+
+For an individual coefficient,
+
+$$
+\widehat{\beta}_j\sim N(\beta_j,\sigma^2c_{jj}),
+$$
+
+where $c_{jj}$ is the $j$th diagonal element of $(\mathbf{X}^{T}\mathbf{X})^{-1}$.
+
+## Estimating the error variance {style="font-size: 80%;"}
+
+The error variance $\sigma^2$ is usually unknown.
+We estimate it such that:
+
+$$
+\boxed{\widehat{\sigma}^{\,2}=\frac{\operatorname{SSE}}{n-p}}
+$$
+
+where:
+
+- $n$ is the number of observations
+- $p$ is the number of estimated regression parameters (including the intercept)
+- $n - p$ is the residual degrees of freedom.
+
+Under the normal linear model,
+
+$$
+\frac{(n-p)\widehat{\sigma}^{\,2}}{\sigma^2}\sim\chi^2_{n-p}
+$$
+
+The estimator $\widehat{\sigma}^{\,2}$ is unbiased, meaning that
+$E(\widehat{\sigma}^{\,2})=\sigma^2$
+
+## Standard errors and $t$-tests {style="font-size: 80%;"}
+
+The standard error measures the estimated uncertainty in a coefficient estimate.
+
+For coefficient $j$,
+
+$$
+\operatorname{SE}(\widehat{\beta}_j)=\widehat{\sigma}\sqrt{c_{jj}}.
+$$
+
+We can use this to test a hypothesis such as
+
+$$H_0:\beta_j=0 \qquad\text{against}\qquad H_A:\beta_j\ne 0.
+$$
+
+The test statistic is
+
+$$
+\boxed{
+t=\frac{\widehat{\beta}_j-\beta_{j,0}}
+{\widehat{\sigma}\sqrt{c_{jj}}}\sim t_{n-p}
+}
+$$
+
+where $\beta_{j,0}$ is the value specified by the null hypothesis (often zero).
+
+## Confidence intervals for coefficients {style="font-size: 80%;"}
+
+A $100(1-\alpha)\%$ confidence interval for coefficient $\beta_j$ is
+
+$$
+\boxed{
+\widehat{\beta}_j\pm t_{n-p,\,1-\alpha/2}
+\operatorname{SE}(\widehat{\beta}_j)
+}
+$$
+
+For a 95% confidence interval, use the 97.5th percentile of the $t$-distribution with $n-p$ degrees of freedom.
+
+The interval combines:
+
+- the estimated coefficient
+- its standard error
+- a critical value from the appropriate $t$-distribution
+
+## Comparing several coefficients {style="font-size: 80%;"}
+
+Sometimes a research question concerns a combination of coefficients rather than one coefficient alone.
+
+A **linear combination** has the form
+
+$$
+\mathbf{c}^{T}\boldsymbol{\beta},
+$$
+
+where $\mathbf{c}$ is a vector of known constants.
+
+Its estimate is
+
+$$
+\mathbf{c}^{T}\widehat{\boldsymbol{\beta}}.
+$$
+
+For example, we might compare the average of two treatment means with a
+control mean.
+
+## Example: comparing caffeine treatments {style="font-size: 80%;"}
+
+Thirty students were randomly assigned to one of three groups:
+
+- control (no caffeine);
+- caffeine;
+- caffeine plus sugar.
+
+Let the three population means be $\mu_1$, $\mu_2$ and $\mu_3$.
+
+Suppose we want to compare the average of the two caffeine-group means with the control mean:
+
+$$
+\frac{\mu_2+\mu_3}{2}-\mu_1.
+$$
+
+This is a linear combination of the three group means.
+
+## Writing the comparison as a contrast {style="font-size: 80%;"}
+
+Write the group means as a coefficient vector:
+
+$$
+\boldsymbol{\beta}=\begin{pmatrix}\mu_1\\\mu_2\\\mu_3\end{pmatrix}.
+$$
+
+The comparison can be written using the contrast vector
+
+$$
+\mathbf{c}^{T}=\begin{pmatrix}-1&1/2&1/2\end{pmatrix}.
+$$
+
+Therefore,
+
+$$
+\mathbf{c}^{T}\boldsymbol{\beta}
+=-\mu_1+\frac{1}{2}\mu_2+\frac{1}{2}\mu_3.
+$$
+
+## Testing the overall regression model {style="font-size: 80%;"}
+
+So far, we have tested individual coefficients or specific comparisons. We can also ask whether the predictors, **taken together**, help explain the response.
+
+The overall regression $F$-test compares:
+
+- the fitted regression model, containing all predictors;
+- an intercept-only model, containing no predictors.
+
+The hypotheses are
+
+$$
+H_0:\beta_1=\beta_2=\cdots=\beta_{p-1}=0
+$$
+
+$$
+H_A:\text{at least one slope coefficient is not zero.}
+$$
+
+Here, $p-1$ is the number of predictors; the intercept is not included in this test.
+
+## Splitting up the variation {style="font-size: 75%;"}
+
+For a regression model that includes an intercept, the total variation can be divided into two parts:
+
+$$
+\boxed{\operatorname{SST}=\operatorname{SSR}+\operatorname{SSE}}
+$$
+
+- **SST:** total variation in the response around its mean;
+- **SSR:** variation explained by the regression model;
+- **SSE:** variation left unexplained (the residual variation).
+
+In formulae,
+
+$$
+\begin{aligned}
+\operatorname{SST}&=\sum_{i=1}^{n}(y_i-\bar y)^2,\\
+\operatorname{SSR}&=\sum_{i=1}^{n}(\widehat y_i-\bar y)^2,\\
+\operatorname{SSE}&=\sum_{i=1}^{n}(y_i-\widehat y_i)^2.
+\end{aligned}
+$$
+
+## The regression ANOVA table
+
+<br>
+
+| Source | Degrees of freedom | Sum of squares | Mean square |
+|:--|--:|--:|--:|
+| Regression | $p-1$ | SSR | $\mathrm{MSR}=\mathrm{SSR}/(p-1)$ |
+| Error | $n-p$ | SSE | $\mathrm{MSE}=\mathrm{SSE}/(n-p)$ |
+| Total | $n-1$ | SST | |
+
+<br>
+
+A mean square is a sum of squares divided by its degrees of freedom.
+
+The overall $F$-statistic compares the explained variation per regression
+degree of freedom with the residual variation per error degree of freedom.
+
+## The overall regression $F$-test
+
+The test statistic is
+
+$$
+\boxed{
+F=\frac{\mathrm{MSR}}{\mathrm{MSE}}
+=\frac{\mathrm{SSR}/(p-1)}{\mathrm{SSE}/(n-p)}
+}
+$$
+
+Under the null hypothesis,
+
+$$F\sim F_{p-1,n-p}.$$
+
+A large $F$-statistic suggests that the predictors explain more variation than we would expect if all slope coefficients were zero.
+
+The p-value is the probability of observing an $F$-statistic at least as large as the one calculated, assuming the null hypothesis is true.
+
+## The coefficient of determination: $R^2$
+
+The coefficient of determination is
+
+$$
+\boxed{R^2=\frac{\operatorname{SSR}}{\operatorname{SST}}
+=1-\frac{\operatorname{SSE}}{\operatorname{SST}}}
+$$
+
+It describes the proportion of the sample variation in the response accounted for by the fitted regression model.
+
+For example, $R^2=0.60$ means that 60% of the observed variation in the response is accounted for by the model.
+
+Adding predictors cannot decrease ordinary $R^2$, even if the additional predictors contribute little useful information.
+
+## Adjusted $R^2$
+
+Adjusted $R^2$ accounts for the number of predictors in the model:
+
+$$
+\boxed{R^2_{\mathrm{adj}}=1-(1-R^2)\frac{n-1}{n-p}}
+$$
+
+Unlike ordinary $R^2$, adjusted $R^2$ can decrease when a predictor is added.
+
+It therefore provides a more cautious measure of fit when comparing models with different numbers of predictors.
+
+Neither $R^2$ nor adjusted $R^2$ tells us whether the model assumptions are satisfied.

@@ -1,0 +1,27 @@
+---
+title: The multiple linear regression model
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+purrr::map(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+## Learning objectives
+
+- Understand the assumptions of a multiple linear regression model
+- Understand how to perform inference and hypothesis test on a multiple
+  linear regression model
+
+## Slides
+
+```{r}
+#| label: week-6b
+#| echo: false
+#| eval: true
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_12.html")
+```

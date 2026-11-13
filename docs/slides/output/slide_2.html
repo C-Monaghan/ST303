@@ -320,15 +320,15 @@ Cormac Monaghan
 \sum_{i=1}^{n}\epsilon_i^2
 \]</span></p>
 <p><br></p>
-<div class="fragment">
-<p><span class="center"><strong>Now, we’ll be asking how do we actually find that line?</strong></span></p>
+<div class="fragment fade-up center">
+<p><span class="alert">Now, we’ll be asking how do we actually find that line?</span></p>
 </div>
 </section>
 <section id="the-goal" class="slide level2">
 <h2>The Goal</h2>
 <p>Suppose our regression line is</p>
 <p><span class="math display">\[
-\hat{y_i} = \beta_0 + \beta_1x_i + \epsilon
+Y_i = \beta_0 + \beta_1x_i + \epsilon
 \]</span></p>
 <p>Find the values of <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> that give the smallest possible residual</p>
 <div class="columns">
@@ -341,9 +341,9 @@ S(\beta_0, \beta_1) &amp;= \sum^n_{i = 1} \epsilon_i^2 \\[4pt]
 \end{align*}
 \]</span></p>
 </div><div class="column">
-<div class="fragment">
+<div class="fragment fade-left center">
 <p><br> <br></p>
-<p><strong>Becomes an optimisation problem</strong></p>
+<p><strong>Optimisation problem</strong></p>
 </div>
 </div></div>
 </section>
@@ -399,6 +399,21 @@ Figure&nbsp;1: Interactive demonstration of how different slopes affect the cand
 \frac{\partial S}{\partial \beta_1}=0
 \]</span></p>
 </div>
+<aside class="notes">
+<ul>
+<li>We can differentiate with respect to <span class="math inline">\(beta_0\)</span> and then again with respect to <span class="math inline">\(beta_1\)</span></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="finding-beta_0-and-beta_1-1" class="slide level2" style="font-size: 75%;">
 <h2>Finding <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span></h2>
@@ -408,10 +423,10 @@ Figure&nbsp;1: Interactive demonstration of how different slopes affect the cand
 \]</span></p>
 <div class="fragment">
 <p><span class="math display">\[
-\frac{\partial S}{\partial \beta_0} = -2 \sum^n_{i = 1} (y_i - \beta_0 - \beta_1x_i) \\[8pt]
-\sum^n_{i = 1} (y_i - \hat{\beta_0} - \hat{\beta_1}x_i) = 0 \\[8pt]
-\sum y_i - n\hat{\beta_0} - \hat{\beta_1}\sum x_i = 0 \\[8pt]
-\bar{y} - \hat{\beta_0} - \hat{\beta_1}\bar{x} = 0 \\[8pt]
+\frac{\partial S}{\partial \beta_0} = -2 \sum^n_{i = 1} (y_i - \beta_0 - \beta_1x_i) \\[10pt]
+\sum^n_{i = 1} (y_i - \hat{\beta_0} - \hat{\beta_1}x_i) = 0 \\[10pt]
+\sum y_i - n\hat{\beta_0} - \hat{\beta_1}\sum x_i = 0 \\[10pt]
+\bar{y} - \hat{\beta_0} - \hat{\beta_1}\bar{x} = 0 \\[10pt]
 \boxed{\hat{\beta_0} = \bar{y} - \hat{\beta_1}\bar{x}}
 \]</span></p>
 </div>
@@ -673,7 +688,7 @@ Figure&nbsp;4: Scatter plot showing the relationship between temperature and fue
 <section id="some-properties-of-ols-fits" class="slide level2">
 <h2>Some properties of OLS fits</h2>
 <ul>
-<li>The residuals sum to zero <span class="math inline">\(\sum^n_{i=1} \epsilon^2_i = 0\)</span></li>
+<li>The residuals sum to zero <span class="math inline">\(\sum^n_{i=1} \epsilon_i = 0\)</span></li>
 <li>The OLS line passed through <span class="math inline">\((\bar{x}, \bar{y})\)</span></li>
 <li>The observed values and predicted values have the same mean <span class="math inline">\((\bar{y} = \bar{y_i})\)</span></li>
 <li>Residuals are uncorrelated with <span class="math inline">\(x\)</span> <span class="math inline">\((\sum x_i \epsilon_i = 0)\)</span></li>

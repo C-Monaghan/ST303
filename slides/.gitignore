@@ -3,6 +3,7 @@ _drafts/
 output/
 data/
 assets/
+pdfs/
 
 # Default Quarto stuff
 /.quarto/

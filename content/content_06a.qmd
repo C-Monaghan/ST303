@@ -1,0 +1,27 @@
+---
+title: One-way ANOVA as Multiple Regression
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+purrr::map(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+## Learning objectives
+
+- Learn how to represent a one-way ANOVA in the form of multiple regression
+- Learn how to perform a linear contrast of parameters
+
+
+## Slides
+
+```{r}
+#| label: week-6a
+#| echo: false
+#| eval: true
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_11.html")
+```
