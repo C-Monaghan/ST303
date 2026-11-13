@@ -28,7 +28,7 @@
     "text": "Understand the assumptions of a multiple linear regression model\nUnderstand how to perform inference and hypothesis test on a multiple linear regression model",
     "crumbs": [
       "Content",
-      "Week 6",
+      "Week 7",
       "MLR model"
     ]
   },
@@ -40,7 +40,7 @@
     "text": "Understand the assumptions of a multiple linear regression model\nUnderstand how to perform inference and hypothesis test on a multiple linear regression model",
     "crumbs": [
       "Content",
-      "Week 6",
+      "Week 7",
       "MLR model"
     ]
   },
@@ -52,7 +52,7 @@
     "text": "Slides\n\n  \n    \n       Open slides in New Window",
     "crumbs": [
       "Content",
-      "Week 6",
+      "Week 7",
       "MLR model"
     ]
   },
@@ -496,7 +496,7 @@
     "text": "Learn how to represent a one-way ANOVA in the form of multiple regression\nLearn how to perform a linear contrast of parameters",
     "crumbs": [
       "Content",
-      "Week 6",
+      "Week 7",
       "One-way ANOVA"
     ]
   },
@@ -508,7 +508,7 @@
     "text": "Learn how to represent a one-way ANOVA in the form of multiple regression\nLearn how to perform a linear contrast of parameters",
     "crumbs": [
       "Content",
-      "Week 6",
+      "Week 7",
       "One-way ANOVA"
     ]
   },
@@ -520,7 +520,7 @@
     "text": "Slides\n\n  \n    \n       Open slides in New Window",
     "crumbs": [
       "Content",
-      "Week 6",
+      "Week 7",
       "One-way ANOVA"
     ]
   },
@@ -556,5 +556,17 @@
     "title": "Welcome to ST303",
     "section": "Slides",
     "text": "Slides\nAll the slides for this module are created using Quarto. In fact, this entire module website is built using Quarto. Personally, I love Quarto. I do just about everything with it! If you every get a chance, do check it out (ok … mini rant over!)\n\nThere are many little hidden things you can do with these slides.\nYou can click in the slides and navigate through them with ← and →.\nIf you type ? (or shift + /) while viewing the slides you can see a list of slide-specific commands (such as like f for fullscreen mode or additionally s for presenter mode if you want to see my notes).\nFinally, if you want to make a PDF of these slides you can press e, followed by ctrl + p.\n\n  \n    \n       Open slides in New Window"
+  },
+  {
+    "objectID": "content/midterm.html",
+    "href": "content/midterm.html",
+    "title": "Mid-term exam",
+    "section": "",
+    "text": "ImportantDon’t forget to come to the mid-term exam\n\n\n\n\n Date: 6th November\n Time: 12pm - 1pm\n Location: Arts building (room F)",
+    "crumbs": [
+      "Content",
+      "Week 6",
+      "Midterm"
+    ]
   }
 ]

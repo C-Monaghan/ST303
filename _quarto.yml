@@ -80,6 +80,10 @@ website:
             href: content\content_05b.qmd
       - section: Week 6
         contents:
+          - text: Midterm
+            href: content\midterm.qmd
+      - section: Week 7
+        contents:
           - text: One-way ANOVA
             href: content\content_06a.qmd
           - text: MLR model

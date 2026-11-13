@@ -1,0 +1,12 @@
+---
+title: Mid-term exam
+---
+
+::: {.callout-important}
+## Don't forget to come to the mid-term exam
+
+- {{< fa calendar >}} Date: 6th November
+- {{< fa clock >}} Time: 12pm - 1pm
+- {{< fa building-columns >}} Location: Arts building (room F)
+
+:::
