@@ -78,6 +78,12 @@ website:
             href: content\content_05a.qmd
           - text: Matrix notation
             href: content\content_05b.qmd
+      - section: Week 6
+        contents:
+          - text: One-way ANOVA
+            href: content\content_06a.qmd
+          - text: MLR model
+            href: content\content_06b.qmd
 
   page-footer:
     left: |

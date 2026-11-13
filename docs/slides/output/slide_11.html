@@ -766,7 +766,7 @@ Y_j=\mu_1X_{1j}+\mu_2X_{2j}+\mu_3X_{3j}+\varepsilon_j
 <p>Or in matrix form</p>
 <p><span class="math display">\[
 \mathbf{Y}=\mathbf{X}\boldsymbol{\beta} +\boldsymbol{\epsilon} \qquad \qquad
-\boldsymbol{\beta}= \begin{bmatrix}
+\boldsymbol{\mu}= \begin{bmatrix}
 \mu_1 \\ \mu_2 \\ \mu_3
 \end{bmatrix} \qquad \qquad
 \boldsymbol{X} = \begin{bmatrix}
@@ -785,7 +785,7 @@ Y_j=\mu_1X_{1j}+\mu_2X_{2j}+\mu_3X_{3j}+\varepsilon_j
 <h2>ANOVA as multiple regression</h2>
 <h3 id="ordinary-least-squares-1">Ordinary least squares</h3>
 <p><span class="math display">\[
-\boxed{\hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\mathbf{Y}}
+\boxed{\hat{\mu} = (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\mathbf{Y}}
 \]</span></p>
 <p>For the means model, each observation belongs to only one group. Therefore:</p>
 <p><span class="math display">\[
@@ -806,7 +806,7 @@ n_1&amp;0&amp;0\\
 \]</span></p>
 <p>Thus</p>
 <p><span class="math display">\[
-\hat{\beta} =
+\boldsymbol{\hat{\mu}} =
 \frac{1}{n_i} \mathbf{I}_3 \begin{bmatrix} Y_1 \\ Y_2 \\ Y_3\end{bmatrix} =
 \begin{bmatrix}
 \bar{Y}_{1}\\
@@ -827,7 +827,7 @@ n_1&amp;0&amp;0\\
 <div class="column">
 <h3 class="center" id="fitted-values">Fitted values</h3>
 <p><span class="math display">\[
-\widehat{\mathbf{Y}} = \mathbf{X}\widehat{\boldsymbol{\beta}}
+\widehat{\mathbf{Y}} = \mathbf{X}\widehat{\boldsymbol{\mu}}
 \]</span></p>
 </div><div class="column">
 <h3 class="center" id="residual">Residual</h3>
@@ -1015,12 +1015,12 @@ L &amp;= \widehat{\mu}_1 - \frac{1}{2}\widehat{\mu}_2 - \frac{1}{2}\widehat{\mu}
 <h3 id="linear-contrasts-standard-errors">Linear contrasts (standard errors)</h3>
 <p>Recall that the variance–covariance matrix of the least-squares estimates is:</p>
 <p><span class="math display">\[
-\operatorname{Var}(\widehat{\boldsymbol{\beta}}) =
+\operatorname{Var}(\widehat{\boldsymbol{\mu}}) =
 \sigma^2(\mathbf{X}^{\mathsf T}\mathbf{X})^{-1}
 \]</span></p>
 <p>A linear contrast can be written in matrix notation as:</p>
 <p><span class="math display">\[
-\widehat{L} = \mathbf{c}^{\mathsf T} \; \widehat{\boldsymbol{\beta}}
+\widehat{L} = \mathbf{c}^{\mathsf T} \; \widehat{\boldsymbol{\mu}}
 \]</span></p>
 <p>Its estimated variance is therefore:</p>
 <p><span class="math display">\[

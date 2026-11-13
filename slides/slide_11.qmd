@@ -479,7 +479,7 @@ Or in matrix form
 
 $$
 \mathbf{Y}=\mathbf{X}\boldsymbol{\beta} +\boldsymbol{\epsilon} \qquad \qquad
-\boldsymbol{\beta}= \begin{bmatrix}
+\boldsymbol{\mu}= \begin{bmatrix}
 \mu_1 \\ \mu_2 \\ \mu_3
 \end{bmatrix} \qquad \qquad
 \boldsymbol{X} = \begin{bmatrix}
@@ -500,7 +500,7 @@ $$
 ### Ordinary least squares
 
 $$
-\boxed{\hat{\beta} = (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\mathbf{Y}}
+\boxed{\hat{\mu} = (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\mathbf{Y}}
 $$
 
 For the means model, each observation belongs to only one group. Therefore:
@@ -525,7 +525,7 @@ $$
 Thus
 
 $$
-\hat{\beta} =
+\boldsymbol{\hat{\mu}} =
 \frac{1}{n_i} \mathbf{I}_3 \begin{bmatrix} Y_1 \\ Y_2 \\ Y_3\end{bmatrix} =
 \begin{bmatrix}
 \bar{Y}_{1}\\
@@ -551,7 +551,7 @@ residuals.
 ### Fitted values {.center}
 
 $$
-\widehat{\mathbf{Y}} = \mathbf{X}\widehat{\boldsymbol{\beta}}
+\widehat{\mathbf{Y}} = \mathbf{X}\widehat{\boldsymbol{\mu}}
 $$
 
 :::
@@ -802,14 +802,14 @@ sugar group
 Recall that the variance–covariance matrix of the least-squares estimates is:
 
 $$
-\operatorname{Var}(\widehat{\boldsymbol{\beta}}) =
+\operatorname{Var}(\widehat{\boldsymbol{\mu}}) =
 \sigma^2(\mathbf{X}^{\mathsf T}\mathbf{X})^{-1}
 $$
 
 A linear contrast can be written in matrix notation as:
 
 $$
-\widehat{L} = \mathbf{c}^{\mathsf T} \; \widehat{\boldsymbol{\beta}}
+\widehat{L} = \mathbf{c}^{\mathsf T} \; \widehat{\boldsymbol{\mu}}
 $$
 
 Its estimated variance is therefore:
