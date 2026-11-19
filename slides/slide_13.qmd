@@ -1,0 +1,1194 @@
+---
+title: |
+  Model comparisons and testing for lack of fit
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(54321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(1.1), face = "bold"),
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+steam <- readr::read_csv(here::here("data/steam.csv")) |>
+  janitor::clean_names()
+
+voltage <- readr::read_csv(here::here("data/voltage.csv")) |>
+  janitor::clean_names()
+```
+
+## Today's plan
+
+In this lecture, we will look at three questions:
+
+<br>
+
+::: {.callout-note}
+## Does adding predictors improve a regression
+:::
+
+<br>
+
+::: {.callout-note}
+## Is a linear model an adequate description of the relationship?
+:::
+
+<br>
+
+::: {.callout-note}
+## What does an individual predictor contribute after accounting for the other predictors?
+:::
+
+# Comparing regression models {background-color="#40666e"}
+
+## Comparing regression models {style="font-size: 65%;"}
+
+### Why compare models
+
+Suppose we are interested in explaining a response variable $Y$.
+
+
+:::: {.columns}
+::: {.column}
+
+### Model A {.center}
+
+$$
+\text{Model A:}\qquad E(Y)=\beta_0+\beta_1X_1
+$$
+
+:::
+::: {.column}
+
+### Model B {.center}
+
+$$
+\text{Model B:}\qquad E(Y)=\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3
+$$
+
+
+:::
+::::
+
+Model B includes all the terms in Model A, plus two additional predictors.
+
+::: {.callout-note}
+## Model A is the reduced model
+:::
+::: {.callout-note}
+## Model B is the full model
+:::
+::: {.callout-note}
+## Model A is nested within Model B
+:::
+
+<br>
+
+[**Do the two additional predictors improve the model enough to justify including them?**]{.center}
+
+## What happens when we add predictors?
+
+Adding predictors cannot increase the residual sum of squares (SSE).
+
+$$
+\operatorname{SSE}(B)\leq \operatorname{SSE}(A)
+$$
+
+- The full model will always fit the observed data at least as well as
+the reduced model.
+- However, a smaller SSE does not automatically mean that the larger model is
+  better. The reduction could simply be due to fitting random variation in the
+  sample.
+- We need to assess whether the reduction in SSE is large relative to the
+  remaining residual variation.
+
+## Comparing the variation explained by two models {style="font-size: 80%;"}
+
+For a regression model containing an intercept,
+
+$$
+\operatorname{SST}=\operatorname{SSR}+\operatorname{SSE}
+$$
+
+For the two models:
+
+$$
+\begin{aligned}
+\operatorname{SST}
+&=\operatorname{SSR}(A)+\operatorname{SSE}(A)\\
+\operatorname{SST}
+&=\operatorname{SSR}(B)+\operatorname{SSE}(B)
+\end{aligned}
+$$
+
+Since the total sum of squares is the same,
+
+$$
+\boxed{
+\operatorname{SSE}(A)-\operatorname{SSE}(B)
+=
+\operatorname{SSR}(B)-\operatorname{SSR}(A)
+}
+$$
+
+So, the reduction in SSE is exactly the additional variation explained by
+the full model.
+
+## The partial $F$-test {style="font-size: 80%;"}
+
+Consider two nested models:
+
+$$
+\begin{aligned}
+\text{Reduced model A:}\quad
+&E(Y)=\beta_0+\beta_1X_1+\cdots+\beta_qX_q,\\
+\text{Full model B:}\quad
+&E(Y)=\beta_0+\beta_1X_1+\cdots+\beta_kX_k,
+\end{aligned}
+$$
+
+where $q<k$.
+
+The full model adds $k-q$ predictors.
+
+
+::: {.fragment .fade-up}
+We test:
+
+$$
+\begin{aligned}
+H_0:\quad &\beta_{q+1}=\cdots=\beta_k=0,\\
+H_A:\quad &\text{at least one added coefficient is non-zero.}
+\end{aligned}
+$$
+
+In words:
+
+- $H_0$: the additional predictors do not improve the model.
+- $H_A$: at least one additional predictor contributes to the model.
+
+:::
+
+## The partial $F$-statistic {style="font-size: 65%;"}
+
+The test statistic compares the reduction in SSE with the residual variation
+remaining in the full model:
+
+$$
+\boxed{
+F= \frac{
+  \{\operatorname{SSE}(A)-\operatorname{SSE}(B)\}/(k-q)}
+  {\operatorname{SSE}(B)/(n-k-1)}
+}
+$$
+
+Under $H_0$,
+
+$$
+F\sim F_{k-q,\,n-k-1}
+$$
+
+Here:
+
+- $n$ is the number of observations.
+- $k-q$ is the number of additional predictors.
+- $n-k-1$ is the residual degrees of freedom in the full model.
+
+
+::: {.callout-tip}
+## We reject $H_0$ when the observed $F$-statistic is sufficiently large.
+:::
+
+::: {.callout-tip appearance="minimal"}
+A large $F$-statistic indicates that the reduction in SSE is large relative
+to the residual variation in the full model.
+:::
+
+## When can we use this test? {style="font-size: 90%;"}
+
+The partial $F$-test is appropriate when:
+
+- The models are **nested**: every term in the reduced model also appears in the full model.
+- Both models are fitted to the same response and the same observations.
+- The usual assumptions of the normal linear model are appropriate for the test.
+
+The test can compare models that differ by one or several terms.
+
+For example, we can test whether two predictors should be added together, or whether one predictor should be removed from a larger model.
+
+## Let's do an example
+
+### The steam data
+
+<br>
+
+```{r}
+#| label: chunk-1a
+tribble(
+  ~Variable , ~Description                        ,
+  "Steam"   , "Pounds of steam used per month"    ,
+  "Temp"    , "Average atmospheric temperature"   ,
+  "Inv"     , "Fatty acid inventory"              ,
+  "Prod"    , "Pounds of crude glycerin produced" ,
+  "Wind"    , "Average wind velocity"             ,
+  "Cday"    , "Calendar days in the month"        ,
+  "Opday"   , "Operating days in the month"       ,
+  "Fday"    , "Days below 32°F"                   ,
+  "Wind2"   , "Average wind velocity squared"     ,
+  "Start"   , "Number of production start-ups"
+) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE)
+```
+
+## Let's do an example
+
+### The steam data
+
+<br>
+
+```{r}
+#| label: chunk-1b
+tribble(
+  ~Variable , ~Description                        ,
+  "Steam"   , "Pounds of steam used per month"    ,
+  "Temp"    , "Average atmospheric temperature"   ,
+  "Inv"     , "Fatty acid inventory"              ,
+  "Prod"    , "Pounds of crude glycerin produced" ,
+  "Wind"    , "Average wind velocity"             ,
+  "Cday"    , "Calendar days in the month"        ,
+  "Opday"   , "Operating days in the month"       ,
+  "Fday"    , "Days below 32°F"                   ,
+  "Wind2"   , "Average wind velocity squared"     ,
+  "Start"   , "Number of production start-ups"
+) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE) |>
+  style_tt(i = 2:4, background = "skyblue")
+```
+
+## Let's do an example
+
+### Comparing two models
+
+We will compare:
+
+$$
+\begin{aligned}
+\text{Model A:}\quad
+&E(\text{Steam})=\beta_0+\beta_1\text{Temp}\\
+\text{Model B:}\quad
+&E(\text{Steam})=\beta_0+\beta_1\text{Temp}
++\beta_2\text{Inv}+\beta_3\text{Prod}.
+\end{aligned}
+$$
+
+Model B adds `Inv` and `Prod` to the model containing `Temp`.
+
+```{r}
+#| label: chunk-2
+#| echo: true
+model_A <- lm(steam ~ temp, data = steam)
+model_B <- lm(steam ~ temp + inv + prod, data = steam)
+```
+
+## Let's do an example
+
+### Comparing two models
+
+```{r}
+#| label: chunk-3a
+#| echo: true
+
+summary(model_A)
+```
+
+## Let's do an example
+
+### Comparing two models
+
+```{r}
+#| label: chunk-3b
+#| echo: true
+
+summary(model_B)
+```
+
+## Let's do an example {style="font-size: 80%;"}
+
+### Comparing two models in R
+
+We can compare the two nested models directly using `anova()`
+
+```{r}
+#| label: chunk-4a
+#| echo: true
+#| eval: false
+
+anova(model_A, model_B)
+```
+
+This performs the partial $F$-test.
+
+<br>
+
+:::: {.columns}
+
+::: {.column}
+
+### Null hypothesis {.center}
+
+$$
+H_0:\quad \beta_2=\beta_3=0
+$$
+
+:::
+
+::: {.column}
+
+### Alternative hypothesis {.center}
+
+$$
+H_A:\quad \text{at least one of }\; \beta_2,\beta_3\ne 0.
+$$
+
+
+:::
+::::
+
+::: {.callout-important appearance="minimal"}
+The test asks whether `inv` and `prod`, considered together,
+improve the model after accounting for `temp`.
+:::
+
+## Calculating the $F$-statistic by hand {style="font-size: 60%;"}
+
+For these models:
+
+- $n=25$ observations.
+- Model A has 2 parameters: an intercept and `temp`.
+- Model B has 4 parameters: an intercept and three predictors.
+- The full model therefore has $25 - 4 = 21$ residual degrees of freedom.
+- Two predictors are added
+
+The residual sums of squares are:
+
+$$
+\operatorname{SSE}(A)=18.223, \qquad \operatorname{SSE}(B)=8.927.
+$$
+
+Therefore,
+
+$$
+F_{\text{obs}} = \frac{(18.223-8.927)/2}{8.927/21} = 10.93
+$$
+
+Under the null hypothesis: $F\sim F_{2,21}$. As such, the p-value is
+less than 0.01
+
+We reject $H_0$: there is evidence that adding `inv` and `prod` improves the
+model.
+
+---
+
+<br>
+
+```{r}
+#| label: chunk-4b
+#| echo: true
+#| collapse: true
+
+anova(model_A, model_B)
+```
+
+
+:::: {.fragment .fade-up}
+::: {.callout-important appearance="minimal"}
+
+The partial $F$-test does not ask whether the full model has a smaller SSE.
+It must have a smaller or equal SSE.
+
+Instead, it asks:
+
+[Is the reduction in SSE large enough to justify the additional parameters?]{.alert}
+
+:::
+::::
+
+# Sequential sum of squares {background-color="#40666e"}
+
+## Sequential sums of squares {style="font-size: 80%;"}
+
+### Adding predictors one at a time
+
+We can also build a regression model by adding predictors sequentially.
+
+For the steam data, consider:
+
+$$
+\begin{aligned}
+\text{Model A:}\quad
+&E(Y)=\beta_0,\\
+\text{Model B:}\quad
+&E(Y)=\beta_0+\beta_1X_1,\\
+\text{Model C:}\quad
+&E(Y)=\beta_0+\beta_1X_1+\beta_2X_2,\\
+\text{Model D:}\quad
+&E(Y)=\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_3.
+\end{aligned}
+$$
+
+where:
+
+- $X_1=\text{temp}$
+- $X_2=\text{inv}$
+- $X_3=\text{prod}$
+
+## What does each predictor add? {style="font-size: 80%;"}
+
+The additional variation explained when moving from Model A to Model B is:
+
+$$
+\operatorname{SSR}(B\mid A) = \operatorname{SSR}(B)-\operatorname{SSR}(A)
+$$
+
+Similarly,
+
+$$
+\begin{aligned}
+\operatorname{SSR}(C\mid B) &=\operatorname{SSR}(C)-\operatorname{SSR}(B)\\
+\operatorname{SSR}(D\mid C) &=\operatorname{SSR}(D)-\operatorname{SSR}(C)
+\end{aligned}
+$$
+
+These are called **sequential sums of squares**
+
+Each value measures the additional variation explained by a predictor when
+it is added to the predictors already in the model.
+
+## Sequential sums of squares for the steam data
+
+<br>
+
+```{r}
+tribble(
+  ~`Predictor added` , ~`Additional df` , ~`Sequential SS` ,
+  "temp"             ,                1 , 45.592           ,
+  "inv"              ,                1 ,  9.292           ,
+  "prod"             ,                1 ,  0.004           ,
+) |>
+  tt() |>
+  style_tt(i = 0, bold = TRUE)
+```
+
+The total regression sum of squares for the full model is approximately:
+
+$$
+\operatorname{SSR}(D) = 45.592+9.292+0.004 = 54.888
+$$
+
+
+::: {.callout-important}
+## `prod` explains very little additional variation after `temp` and `inv` have already been included
+:::
+
+## Obtaining sequential sums of squares in R
+
+The `anova()` function applied to a single `lm` model reports sequential
+sums of squares
+
+```{r}
+#| label: chunk-5
+#| echo: true
+model_B <- lm(steam ~ temp + inv + prod, data = steam)
+
+anova(model_B)
+```
+
+## Obtaining sequential sums of squares in R {style="font-size: 90%;"}
+
+### The order matters
+
+- Suppose `temp` and `inv` are related to one another.
+- If `temp` enters the model first, it receives credit for the variation it explains,
+  including variation that it shares with `inv`.
+- When `inv` enters second, it is only credited with the additional variation it explains
+  after `temp` has been included.
+- If we reverse the order, the allocation of shared variation changes.
+
+::: {.callout-important}
+## Sequential sums of squares depend on the order in which predictors enter the model
+:::
+
+## Testing sequential sums of squares
+
+Each sequential sum of squares can be tested using a partial $F$-test.
+
+For example, to test whether `prod` contributes after `temp` and `inv`, compare:
+
+$$
+\begin{aligned}
+\text{Reduced model C:}\quad
+&E(Y)=\beta_0+\beta_1\text{temp}+\beta_2\text{inv},\\
+\text{Full model D:}\quad
+&E(Y)=\beta_0+\beta_1\text{temp}
++\beta_2\text{inv}+\beta_3\text{prod}
+\end{aligned}
+$$
+
+## Sequential and adjusted sums of squares {style="font-size: 80%;"}
+
+There are [different ways]{.alert} to allocate explained variation among predictors.
+
+- **Type I sums of squares:** sequential (depend on the order of predictors).
+- **Type II sums of squares:** assess each predictor after accounting for the
+  other main effects.
+
+For example, the `car` package provides Type II sums of squares:
+
+```{r}
+#| label: chunk-6
+#| echo: true
+#| collapse: true
+car::Anova(model_B, type = 2)
+```
+
+# Testing for lack of fit {background-color="#40666e"}
+
+## Why check for lack of fit?
+
+A regression model can have statistically significant coefficients and
+still be an inadequate description of the relationship.
+
+For example, a straight line may not describe a curved relationship very well.
+
+We therefore need to distinguish between:
+
+- **A predictor having a relationship with the response.**
+- **The chosen regression model adequately describing that relationship.**
+
+A formal lack-of-fit test can help assess whether a specified regression
+model is appropriate.
+
+## When can we test for lack of fit?
+
+A formal lack-of-fit test requires **replicated observations**.
+
+This means that we have multiple response observations at one or more identical combinations of predictor values.
+
+For simple linear regression, we need repeated observations at the same
+values of $X$.
+
+These replicates allow us to estimate the random variation in the response
+without relying on the fitted regression line.
+
+---
+
+<br>
+
+```{r}
+#| label: chunk-7
+replicated_data <- tibble(
+  x = rep(1:5, each = 5),
+  y = rep(1:5, each = 5) + rnorm(25, 0, 0.5)
+)
+
+replicated_data |>
+  ggplot(aes(x, y)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    x = "Predictor",
+    y = "Response"
+  ) +
+  theme_minimal()
+```
+
+## Some notation
+
+Suppose we have:
+
+- $g$ distinct values of the predictor, $X$.
+- $n_i$ observations at the $i^{\text{th}}$ value of $X$.
+- $n=\sum_{i=1}^{g}n_i$ observations in total.
+
+Let $y_{ij}$ denote the $j$th response observed at the $i$th predictor value.
+
+The average response at the $i$th predictor value is:
+
+$$
+\bar y_{i} = \frac{1}{n_i}\sum_{j=1}^{n_i}y_{ij}
+$$
+
+## Two ways to describe the data
+
+We can fit two different models
+
+<br>
+
+:::: {.columns}
+::: {.column}
+
+### Simple linear regression {.center}
+
+$$
+Y_{ij}=\beta_0+\beta_1x_i+\varepsilon_{ij}
+$$
+
+:::
+
+::: {.column}
+
+### Means model {.center}
+
+$$
+Y_{ij}=\mu_i+\varepsilon_{ij}
+$$
+
+:::
+::::
+
+- Model 1: assumes that the expected response follows a straight line
+- Model 2: gives each distinct value of $X$ its own expected response
+  - it does not require the group means to lie on a straight line
+
+## Pure error {style="font-size: 60%;"}
+
+The means model allows us to measure the variation among observations that
+share the same value of $X$.
+
+The **pure error sum of squares** is:
+
+$$
+\boxed{
+\operatorname{SS}_{PE} = \sum_{i=1}^{g}\sum_{j=1}^{n_i} (y_{ij}-\bar y_{i})^2
+}
+$$
+
+This measures the variation of individual observations around their group means.
+
+Its degrees of freedom are:
+
+$$
+df_{PE} = \sum_{i=1}^{g}(n_i-1) = n-g
+$$
+
+The pure error mean square is:
+
+$$
+\operatorname{MS}_{PE} = \frac{\operatorname{SS}_{PE}}{n-g}
+$$
+
+It provides an estimate of the error variance, $\sigma^2$
+
+## Why is pure error useful?
+
+- The pure error estimate is obtained from variation among [observations
+  with identical predictor values]{.alert}.
+- It [does not depend on]{.alert} whether the regression relationship is linear.
+- This gives us a way to [estimate the random variation]{.alert} in the data
+  [independently]{.alert} of the fitted regression line.
+- In contrast, the residual sum of squares from simple linear regression
+  includes both:
+  - random variation among replicated observations
+  - any systematic lack of fit caused by the straight-line model
+
+## Separating residual variation {style="font-size: 80%;"}
+
+The regression residual sum of squares can be decomposed into:
+
+$$
+\boxed{
+\operatorname{SSE} = \operatorname{SS}_{LOF} + \operatorname{SS}_{PE}
+}
+$$
+
+where:
+
+- $\operatorname{SS}_{PE}$ is pure error
+- $\operatorname{SS}_{LOF}$ is the lack-of-fit sum of squares
+
+Therefore,
+
+$$
+\boxed{
+\operatorname{SS}_{LOF}  =  \operatorname{SSE}-\operatorname{SS}_{PE}
+}
+$$
+
+The lack-of-fit sum of squares measures the additional variation arising
+because the fitted straight line does not pass through all the group means.
+
+## Degrees of freedom {style="font-size: 80%;"}
+
+<br>
+
+:::: {.columns}
+
+::: {.column}
+
+### Simple linear regression {.center}
+
+$$
+df_{SSE}=n-2
+$$
+
+:::
+
+::: {.column}
+
+### Means model {.center}
+
+$$
+df_{PE}=n-g
+$$
+
+:::
+::::
+
+The remaining degrees of freedom are:
+
+$$
+df_{LOF} = (n-2)-(n-g) = g-2
+$$
+
+The decomposition is therefore:
+
+| Source | Sum of squares | Degrees of freedom |
+|:--|:--|--:|
+| Lack of fit | $\operatorname{SS}_{LOF}$ | $g-2$ |
+| Pure error | $\operatorname{SS}_{PE}$ | $n-g$ |
+| Regression residual | $\operatorname{SSE}$ | $n-2$ |
+
+## The lack-of-fit test {style="font-size: 80%;"}
+
+We test whether the straight-line model is adequate.
+
+$$
+\begin{aligned}
+H_0:\quad &\text{The linear regression model is adequate}\\
+H_A:\quad &\text{The linear regression model has lack of fit}
+\end{aligned}
+$$
+
+The test statistic is:
+
+$$
+\boxed{
+F= \frac{ \operatorname{SS}_{LOF}/(g-2) }{ \operatorname{SS}_{PE}/(n-g)
+}
+}
+$$
+
+Under $H_0$, assuming the normal linear model conditions,
+
+$$
+F\sim F_{g-2,\,n-g}
+$$
+
+We reject $H_0$ for large values of $F$
+
+## Interpreting the test
+
+- A **small** $F$-statistic indicates that the lack-of-fit variation is
+small relative to the pure error variation.
+- A **large** $F$-statistic indicates that the fitted line differs
+substantially from the group means, relative to the random variation within groups.
+
+- A small p-value provides evidence that the straight-line model does not adequately
+  describe the relationship.
+- A large p-value means that we do not have sufficient evidence of lack of fit. It does
+  not prove that the model is correct.
+
+## Extending the test to multiple regression {style="font-size: 80%;"}
+
+The same idea extends to multiple regression
+
+Replicates must have the same values for **all predictors**.
+
+If there are $g$ distinct combinations of predictor values and the
+full regression model estimates $p$ parameters, then:
+
+$$
+df_{LOF}=g-p, \qquad df_{PE}=n-g
+$$
+
+The lack-of-fit statistic becomes:
+
+$$
+F= \frac{ \{\operatorname{SSE}-\operatorname{SS}_{PE}\}/(g-p) }{ \operatorname{SS}_{PE}/(n-g) }.
+$$
+
+The test requires sufficient replication to estimate pure error.
+
+## Let's do an example {style="font-size: 60%;"}
+
+### Voltage data
+
+Batches of electrical fluid were subjected to constant voltages until
+their insulating properties broke down.
+
+The variables are:
+
+- $Y$: time until breakdown.
+- $X$: applied voltage.
+
+We want to understand how breakdown time changes with voltage.
+
+```{r}
+#| label: chunk-8a
+
+voltage |>
+  ggplot(aes(x = voltage, y = time)) +
+  geom_point() +
+  labs(
+    x = "Voltage",
+    y = "Time to breakdown"
+  ) +
+  theme_minimal()
+```
+
+## Fitting a model
+
+```{r}
+#| label: chunk-8b
+#| echo: true
+#| collapse: true
+
+fit_1 <- lm(log(time) ~ voltage, data = voltage)
+
+summary(fit_1)
+```
+
+## Checking the fitted relationship
+
+<br>
+
+```{r}
+#| label: chunk-8c
+
+p_1 <- voltage |>
+  mutate(
+    fitted = fitted(fit_1),
+    log_time = log(time)
+  ) |>
+  ggplot(aes(x = voltage, y = log_time)) +
+  geom_point() +
+  geom_line(aes(y = fitted), linewidth = 1, colour = "steelblue") +
+  labs(
+    x = "Voltage",
+    y = "Log time to breakdown"
+  ) +
+  theme_minimal()
+
+p_1
+```
+
+## Let's fit a means model
+
+```{r}
+#| label: chunk-8d
+#| echo: true
+#| collapse: true
+fit_2 <- lm(log(time) ~ factor(voltage), data = voltage)
+
+summary(fit_2)
+```
+
+## Checking the fitted relationship
+
+<br>
+
+```{r}
+#| label: chunk-8e
+
+p_2 <- voltage |>
+  mutate(
+    fitted = fitted(fit_2),
+    log_time = log(time)
+  ) |>
+  ggplot(aes(x = voltage, y = log_time)) +
+  geom_point() +
+  geom_line(aes(y = fitted), linewidth = 1, colour = "steelblue") +
+  labs(
+    x = "Voltage",
+    y = "Log time to breakdown"
+  ) +
+  theme_minimal()
+
+p_2
+```
+
+
+---
+
+<br>
+
+```{r}
+#| label: chunk-8f
+
+ggpubr::ggarrange(plotlist = c(p_1, p_2))
+```
+
+## Comparing both models {style="font-size: 80%;"}
+
+```{r}
+#| label: chunk-8g
+#| echo: true
+#| collapse: true
+
+anova(fit_1, fit_2)
+```
+
+
+:::: {.fragment .fade-up}
+::: {.callout-important}
+
+## What have we learned from the voltage example?
+
+There are two different questions:
+
+1. Is there evidence of a relationship between voltage and log breakdown
+   time?
+2. Is a straight-line relationship an adequate description of that
+  relationship?
+
+The first question is addressed by testing the regression slope.
+
+The second is addressed by the lack-of-fit test.
+
+A significant regression coefficient does not automatically imply that the
+model is adequate.
+
+:::
+::::
+
+## Diagnostic plots
+
+```{r}
+#| label: chunk-9
+
+par(mfrow = c(1, 2))
+plot(fit_1, which = 1)
+plot(fit_1, which = 2)
+par(mfrow = c(1, 1))
+```
+
+# Added variable plots {background-color="#40666e"}
+
+## Assessing predictors in multiple regression {style="font-size: 70%;"}
+
+In simple linear regression, we can assess the relationship between $Y$
+and $X$ using:
+
+- the scatterplot of $Y$ against $X$
+- the estimated slope
+- the $t$-test for the slope
+- the regression sum of squares
+- $R^2$.
+
+::: {.callout-important}
+## In multiple regression, the situation is more complicated.
+
+A predictor may be related to the response simply because it is related
+to another predictor already in the model.
+
+We therefore want to assess the contribution of a predictor
+**after accounting for the other predictors**.
+:::
+
+## What does an added variable plot show?
+
+<br>
+
+::: {.callout-warning}
+## An **added variable plot** displays the relationship between:
+
+- the part of the response not explained by the other predictors;
+- the part of the predictor not explained by the other predictors.
+
+It allows us to visualise the adjusted relationship between the response and one predictor.
+:::
+
+For example, suppose we want to assess whether `prod` should be added to a
+model that already contains `temp` and `inv`.
+
+We need to remove the effects of `temp` and `inv` from both `steam` and `prod`.
+
+## Constructing an added variable plot
+
+To assess `prod` after accounting for `temp` and `inv`, carry out two regressions.
+
+**Step 1: Remove the effects of `temp` and `inv` from the response.**
+
+Fit:
+
+$$
+\text{steam}
+=
+\alpha_0+\alpha_1\text{temp}
++\alpha_2\text{inv}+\text{error}.
+$$
+
+Save the residuals:
+
+$$
+e(\text{steam}\mid\text{temp},\text{inv}).
+$$
+
+These residuals represent the part of `steam` not explained by `temp` and `inv`.
+
+## Constructing an added variable plot
+
+**Step 2: Remove the effects of `temp` and `inv` from `prod`.**
+
+Fit:
+
+$$
+\text{prod}
+=
+\gamma_0+\gamma_1\text{temp}
++\gamma_2\text{inv}+\text{error}.
+$$
+
+Save the residuals:
+
+$$
+e(\text{prod}\mid\text{temp},\text{inv}).
+$$
+
+These residuals represent the part of `prod` not explained by `temp` and `inv`.
+
+**Step 3: Plot the two sets of residuals.**
+
+$$
+\boxed{
+\text{Plot }
+e(\text{steam}\mid\text{temp},\text{inv})
+\text{ against }
+e(\text{prod}\mid\text{temp},\text{inv})
+}
+$$
+
+This is the added variable plot for `prod`.
+
+## Interpreting the added variable plot
+
+The plot shows whether the part of `prod` not explained by `temp` and `inv` is associated with the part of `steam` not explained by those same predictors.
+
+- A clear linear pattern suggests that `prod` contributes information beyond `temp` and `inv`.
+- Little or no pattern suggests that `prod` may add little explanatory information.
+- Unusual points may indicate observations that have substantial influence on the apparent adjusted relationship.
+
+The plot focuses on the contribution of `prod` **after controlling for** the other predictors.
+
+## Added variable plots for the steam data
+
+First, fit the two regressions used to obtain the residuals.
+
+```{r}
+#| label: chunk-10a
+#| echo: true
+fit_steam <- lm(steam ~ temp + inv, data = steam)
+fit_prod <- lm(prod ~ temp + inv, data = steam)
+
+steam_resid <- resid(fit_steam)
+prod_resid <- resid(fit_prod)
+```
+
+---
+
+<br>
+
+```{r}
+#| label: chunk-10b
+tibble(
+  prod_resid = prod_resid,
+  steam_resid = steam_resid
+) |>
+  ggplot(aes(x = prod_resid, y = steam_resid)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    x = "prod residuals after temp and inv",
+    y = "steam residuals after temp and inv",
+    title = "Added variable plot for prod"
+  ) +
+  theme_minimal()
+```
+
+## Partial $R^2$ {style="font-size: 60%;"}
+
+The partial $R^2$ for `prod`, given `temp` and `inv`, measures the
+proportion of the variation remaining after fitting `temp` and `inv`
+that is explained by adding `prod`.
+
+$$
+R^2_{\; \text{PROD}\mid\text{TEMP, INV}} = \frac{ \operatorname{SSR}(B\mid A) }{ \operatorname{SSE}(A)
+},
+$$
+
+where:
+
+- Model A contains `TEMP` and `INV`.
+- Model B contains `TEMP`, `INV` and `PROD`.
+
+
+::: {.fragment .fade-up}
+
+$$
+R^2_{\text{PROD}\mid\text{TEMP, INV}} =
+\frac{0.004}{8.931} \approx 0.00045.
+$$
+
+This is approximately $0.045\%$.
+
+Therefore, `prod` explains very little of the variation remaining after
+`temp` and `inv` have been included.
+
+:::
+
+---
+
+<br>
+
+
+::: {.callout}
+
+## Key messages
+
+- A smaller SSE does not automatically justify a larger model.
+- Sequential sums of squares depend on the order in which predictors are entered.
+- A significant regression relationship does not guarantee that the chosen
+  model fits adequately.
+- Added variable plots help us understand the unique contribution of individual
+  predictors.
+
+The central idea is to assess not only how well a model fits the observed
+data, but also whether its structure is appropriate and whether each predictor
+contributes useful information.
+
+:::

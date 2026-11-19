@@ -568,5 +568,41 @@
       "Week 6",
       "Midterm"
     ]
+  },
+  {
+    "objectID": "content/content_07.html",
+    "href": "content/content_07.html",
+    "title": "Model comparisons and testing for lack of fit",
+    "section": "",
+    "text": "Understand how to compare multiple regression models\nPartial \\(F\\)-tests and sequential sum of squares\nLearn how to assess lack of fit in a model",
+    "crumbs": [
+      "Content",
+      "Week 8",
+      "Model comparison"
+    ]
+  },
+  {
+    "objectID": "content/content_07.html#learning-objectives",
+    "href": "content/content_07.html#learning-objectives",
+    "title": "Model comparisons and testing for lack of fit",
+    "section": "",
+    "text": "Understand how to compare multiple regression models\nPartial \\(F\\)-tests and sequential sum of squares\nLearn how to assess lack of fit in a model",
+    "crumbs": [
+      "Content",
+      "Week 8",
+      "Model comparison"
+    ]
+  },
+  {
+    "objectID": "content/content_07.html#slides",
+    "href": "content/content_07.html#slides",
+    "title": "Model comparisons and testing for lack of fit",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 8",
+      "Model comparison"
+    ]
   }
 ]

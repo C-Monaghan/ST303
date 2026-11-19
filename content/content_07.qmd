@@ -1,0 +1,27 @@
+---
+title: Model comparisons and testing for lack of fit
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+purrr::map(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+## Learning objectives
+
+- Understand how to compare multiple regression models
+- Partial $F$-tests and sequential sum of squares
+- Learn how to assess lack of fit in a model
+
+## Slides
+
+```{r}
+#| label: week-7
+#| echo: false
+#| eval: true
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_13.html")
+```
