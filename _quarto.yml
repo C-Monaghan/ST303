@@ -88,6 +88,14 @@ website:
             href: content\content_06a.qmd
           - text: MLR model
             href: content\content_06b.qmd
+      - section: Week 8
+        contents:
+          - text: Model comparison
+            href: content\content_07.qmd
+      - section: Week 9
+        contents:
+          - text: Model diagnostics
+            href: content\content_08.qmd
 
   page-footer:
     left: |

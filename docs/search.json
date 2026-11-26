@@ -604,5 +604,41 @@
       "Week 8",
       "Model comparison"
     ]
+  },
+  {
+    "objectID": "content/content_08.html",
+    "href": "content/content_08.html",
+    "title": "Model diagnostics",
+    "section": "",
+    "text": "Understand the assumptions of a multiple regression models\nLearn how to test those assumptions\nDistinguish leverage and influence",
+    "crumbs": [
+      "Content",
+      "Week 9",
+      "Model diagnostics"
+    ]
+  },
+  {
+    "objectID": "content/content_08.html#learning-objectives",
+    "href": "content/content_08.html#learning-objectives",
+    "title": "Model diagnostics",
+    "section": "",
+    "text": "Understand the assumptions of a multiple regression models\nLearn how to test those assumptions\nDistinguish leverage and influence",
+    "crumbs": [
+      "Content",
+      "Week 9",
+      "Model diagnostics"
+    ]
+  },
+  {
+    "objectID": "content/content_08.html#slides",
+    "href": "content/content_08.html#slides",
+    "title": "Model diagnostics",
+    "section": "Slides",
+    "text": "Slides\n\n  \n    \n       Open slides in New Window",
+    "crumbs": [
+      "Content",
+      "Week 9",
+      "Model diagnostics"
+    ]
   }
 ]

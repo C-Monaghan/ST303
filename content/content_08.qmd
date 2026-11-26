@@ -1,0 +1,27 @@
+---
+title: Model diagnostics
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+purrr::map(list.files(here::here("R"), full.names = TRUE), source)
+```
+
+## Learning objectives
+
+- Understand the assumptions of a multiple regression models
+- Learn how to test those assumptions
+- Distinguish leverage and influence
+
+## Slides
+
+```{r}
+#| label: week-8
+#| echo: false
+#| eval: true
+#| results: asis
+
+add_slides(slide_id = "/slides/output/slide_14.html")
+```

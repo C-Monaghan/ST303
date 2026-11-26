@@ -1,0 +1,639 @@
+---
+title: Diagnostic methods
+subtitle: ST303 - Linear Models
+filters:
+  - code-window
+---
+
+```{r}
+#| label: setup
+
+set.seed(54321)
+
+# Output -----------------------------------------------------------------------
+knitr::opts_chunk$set(fig.align = "center")
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+library(ggplot2)
+library(tinytable)
+
+# Theme ------------------------------------------------------------------------
+theme_st303 <- function() {
+  theme_bw() +
+    theme(
+      plot.title = element_text(size = rel(1.1), face = "bold"),
+      axis.title = element_text(size = rel(0.8), face = "bold"),
+      legend.title.position = "top",
+      legend.position = "bottom",
+      legend.title = element_text(hjust = 0.5, size = rel(0.8), face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+
+# Data -------------------------------------------------------------------------
+```
+
+## Today's plan
+
+<br>
+
+- Explain why regression assumptions cannot be checked directly.
+- Describe how residuals relate to the unobserved errors.
+- Recognise common patterns in residual diagnostic plots.
+- Explain why standardised residuals are useful.
+- Distinguish unusual response values from unusual predictor values.
+- Explain the basic idea of leverage.
+
+# Residuals and diagnostic tools {background-color="#40666e"}
+
+## Residuals and diagnostic tools {style="font-size: 75%;"}
+
+Recall the multiple linear regression model
+
+$$
+\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}
+$$
+
+The usual model assumptions concern the unobserved errors:
+
+$$
+E(\boldsymbol{\varepsilon})=\mathbf{0}, \qquad
+\operatorname{Var}(\boldsymbol{\varepsilon})=\sigma^2 \; \mathbf{I}_n \qquad
+\boldsymbol{\varepsilon}\sim N_n(\mathbf{0},\sigma^2\mathbf{I}_n)
+$$
+
+
+<br>
+
+::: {.callout-important appearance="minimal"}
+
+- The model captures the systematic relationship between the response and
+  predictors
+- Errors have mean zero, constant variance, and are independent
+- Normality is used for exact $t$- and $F$-based inference
+
+:::
+
+## What do the assumptions mean in practice? {style="font-size: 90%;"}
+
+The assumptions describe the behaviour of the errors
+**around the regression mean function**.
+
+- **Correct mean structure:** the predictors and functional form capture the
+  systematic relationship with the response.
+- **Mean zero:** after accounting for the predictors, errors do not
+  systematically tend to be positive or negative.
+- **Constant variance:** the variability around the regression mean is the
+  same across the predictor space.
+- **Independence:** knowing one error does not provide information about another.
+- **Normality:** the errors are normally distributed, conditional on the predictors.
+
+## Why do the assumptions matter? {style="font-size: 80%;"}
+
+[The assumptions are not simply a checklist]{.center .alert}
+
+They justify the usual properties of least squares estimates and the
+standard inferential procedures.
+
+For example:
+
+:::{.incremental}
+
+- A poorly specified mean function can make coefficient estimates misleading.
+- Unequal error variance can make the usual standard errors unreliable.
+- Dependence can lead to standard errors that are too small or too large.
+- Strong departures from normality can affect small-sample inference.
+
+:::
+
+::: {.fragment .fade-up}
+A diagnostic analysis helps us decide whether the fitted model is a reasonable
+description of the data and whether the usual inferential results can be trusted.
+:::
+
+
+## Can we check the assumptions directly? {style="font-size: 75%;"}
+
+We cannot observe the errors $\varepsilon_i$, because the [true regression
+function is unknown]{.alert}.
+
+Instead, we calculate [residuals]{.alert}: $e_i = y_i - \hat{y}_i$
+
+:::: {.fragment .fade-up}
+
+$$
+\mathbf{e} = \mathbf{Y}-\widehat{\mathbf{Y}} = \mathbf{Y} - \mathbf{H} \mathbf{Y},
+$$
+
+
+where $\mathbf{H}$ is the hat matrix
+
+$$
+\mathbf{H}=\mathbf{X}(\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}
+$$
+
+<br>
+
+::: {.callout-tip}
+## Residuals are our observable evidence about whether the model assumptions are plausible.
+:::
+::::
+
+
+## Why are residuals not errors?
+
+The [error]{.alert} is the unobserved deviation from the true regression mean:
+
+$$
+\varepsilon_i = y_i - E(Y_i \mid \mathbf{x}_i)
+$$
+
+The [residual]{.alert} is the deviation from the estimated regression mean:
+
+$$
+e_i=y_i-\widehat{y}_i
+$$
+
+The distinction matters because the fitted values are estimated from the same data.
+
+Each observation contributes to the fitted model, and this affects the size and dependence of the residuals.
+
+## Residuals versus errors
+
+The main plots used to assess a regression model are
+
+::: {.callout-note}
+## Residuals versus fitted values: looks for non-linearity and changing variance
+:::
+::: {.callout-note}
+## Residuals versus each predictor: looks for patterns not captured by the model
+:::
+::: {.callout-note}
+## Normal Q–Q plot: assesses whether the residual distribution is broadly compatible with normality
+:::
+
+<br>
+
+A useful reference pattern is a random horizontal band around zero.
+
+::: {.callout-important}
+## There should be no obvious curve, systematic trend, funnel shape, or isolated pattern
+:::
+
+## Residual plots
+
+### A good residual plot
+
+<br>
+
+```{r}
+#| label: chunk-1
+
+set.seed(303)
+
+my_data <- tibble(x = runif(100, 0, 1), e = rnorm(100, 0, 1))
+
+my_data |>
+  ggplot(aes(x = x, y = e)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "red") +
+  labs(x = "Fitted value or predictor", y = "Residual") +
+  theme_st303()
+```
+
+## Residual plots
+
+### Non-constant variance
+
+<br>
+
+```{r}
+#| label: chunk-2
+
+set.seed(303)
+
+my_data <- tibble(x = runif(100, 0, 1), e = rnorm(100, 0, sd = 0.15 + 1.2 * x))
+
+my_data |>
+  ggplot(aes(x = x, y = e)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "red") +
+  labs(x = "Fitted value or predictor", y = "Residual") +
+  theme_st303()
+```
+
+## Residual plots
+
+### Non-linearity
+
+<br>
+
+```{r}
+#| label: chunk-3
+
+set.seed(303)
+
+my_data <- tibble(
+  x = runif(100, 0, 1),
+  e = sin(2 * pi * x) + rnorm(100, sd = 0.15)
+)
+
+my_data |>
+  ggplot(aes(x = x, y = e)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "red") +
+  labs(x = "Fitted value or predictor", y = "Residual") +
+  theme_st303()
+```
+
+## Residual plots
+
+### Non-linearity and changing variance
+
+<br>
+
+```{r}
+#| label: chunk-4
+
+set.seed(303)
+
+my_data <- tibble(
+  x = runif(100, 0, 1),
+  e = sin(2 * pi * x) + rnorm(100, sd = 0.15 + 0.7 * x)
+)
+
+my_data |>
+  ggplot(aes(x = x, y = e)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "red") +
+  labs(x = "Fitted value or predictor", y = "Residual") +
+  theme_st303()
+```
+
+## Interpreting residual plots in multiple regression
+
+In simple linear regression, the relationship between a residual pattern
+and a model problem can often be relatively clear.
+
+In [multiple regression, interpretation is harder]{.alert} because:
+
+- predictors may be correlated
+- observations may be concentrated in parts of the predictor space
+- several model problems may occur together
+
+<br>
+
+::: {.callout-tip}
+## Use the full set of diagnostic plots rather than relying on one plot
+:::
+
+## Standardised residuals {style="font-size: 80%;"}
+
+Residuals have different variances:
+
+$$
+\operatorname{Var}(e_i)=(1-h_{ii})\sigma^2
+$$
+
+A residual from a high-leverage observation can therefore have a
+smaller variance than a residual from a typical observation.
+
+
+:::: {.fragment .fade-up}
+To put residuals on a [more comparable scale]{.alert}, define
+
+$$
+r_i = \frac{e_i}{\widehat{\sigma}\sqrt{1-h_{ii}}},
+$$
+
+where $\widehat{\sigma}=\sqrt{\operatorname{SSE}/(n-p)}$, and $p$ is the
+number of fitted regression parameters, including the intercept.
+
+<br>
+
+::: {.callout-important}
+## These are often called **standardised residuals**
+:::
+::::
+
+## Interpreting standardised residuals {style="font-size: 80%;"}
+
+Standardised residuals are approximately on a common scale:
+
+$$
+\mathbb{E}(r_i)\approx 0 \qquad \operatorname{Var}(r_i)\approx 1
+$$
+
+They are useful for identifying observations whose responses are poorly
+predicted by the model.
+
+Rules of thumb:
+
+- $|r_i| > 2$: worth inspecting
+- $|r_i| > 3$: potentially unusual and deserving closer investigation
+
+::: {.callout-caution}
+## These are screening guidelines, not automatic rules for deleting observations.
+
+Residuals are still dependent, and looking at many observations increases the chance of
+seeing an apparently unusual value.
+:::
+
+## Leverage {style="font-size: 90%;"}
+
+### Unusual predictor values
+
+<br>
+
+::: {.callout-note}
+## Residuals describe how far an observed response is from its fitted value
+:::
+
+::: {.callout-note}
+## Leverage describes how unusual an observation's predictor values are
+:::
+
+<br>
+
+The leverage of observation $i$ is the $i^{\text{th}}$ diagonal element of the hat matrix
+
+$$
+h_{ii} = \mathbf{x}_i^T
+(\mathbf{X}^T\mathbf{X})^{-1}\mathbf{x}_i
+$$
+
+Leverage depends on the predictor values, not on the observed response.
+
+## Leverage in simple linear regression {style="font-size: 80%;"}
+
+For simple linear regression with an intercept,
+
+$$
+h_{ii} =
+\frac{1}{n}+
+\frac{(x_i-\bar{x})^2}{S_{xx}},
+\qquad
+S_{xx}=\sum_{i=1}^{n}(x_i-\bar{x})^2.
+$$
+
+
+<br>
+
+::: {.callout-important}
+## An observation has high leverage when its predictor value is far from the predictor mean.
+:::
+
+
+<br>
+
+::: {.callout-tip}
+## In multiple regression, the same idea applies in a multidimensional predictor space:
+
+Leverage is related to the observation's distance from the centre of the
+predictor data, accounting for the scale and correlation of the predictors.
+:::
+
+
+## Leverage in a two-predictor example
+
+<br>
+
+```{r}
+#| label: chunk-5
+
+xdat <- MASS::mvrnorm(n = 300, mu = c(0, 0), Sigma = matrix(c(1, .5, .5, 1), 2))
+
+plot(
+  xdat,
+  xlab = "Predictor 1",
+  ylab = "Predictor 2",
+  pch = 19,
+  col = "grey65",
+  main = "Predictor space and its centre"
+)
+
+points(
+  colMeans(xdat)[1],
+  colMeans(xdat)[2],
+  pch = 4,
+  col = "red",
+  lwd = 3,
+  cex = 2
+)
+```
+
+## Properties of leverage {style="font-size: 80%;"}
+
+<br>
+
+:::: {.columns}
+
+::: {.column}
+
+### Full rank model {.center}
+
+$$
+0\leq h_{ii}\leq 1
+$$
+
+:::
+
+::: {.column}
+
+### Models with intercept {.center}
+
+$$
+\frac{1}{n}\leq h_{ii}\leq 1
+$$
+
+:::
+
+::::
+
+<br>
+
+- The leverages sum to the number of fitted parameters: $\sum_{i=1}^{n}h_{ii}=p$
+- Therefore, the average leverage is $\bar{h}=\frac{p}{n}$
+
+
+::: {.callout-caution}
+## A common screening guideline is to investigate observations with
+
+$$
+h_{ii}>\frac{2p}{n}
+$$
+
+This is a rule of thumb rather than a formal test.
+:::
+
+
+## Why can high leverage matter? {style="font-size: 95%;"}
+
+A high-leverage observation is unusual in the predictor space.
+
+It has the **potential** to influence the fitted regression model because it can pull the fitted relationship towards itself.
+
+However:
+
+- High leverage does not automatically mean high influence;
+- An observation may have unusual predictor values but still lie close to the fitted regression surface;
+- Influence depends on both predictor position and response value.
+
+We therefore need to distinguish potential influence from actual influence.
+
+# Influence and worked examples {background-color="#40666e"}
+
+## Potential influence versus actual influence {style="font-size: 80%;"}
+
+Consider two questions:
+
+1. **Is this observation unusual in predictor space?**
+   - Use leverage $h_{ii}$.
+
+2. **Does this observation substantially affect the fitted model?**
+   - Use influence diagnostics.
+
+An observation can have:
+
+- high leverage and a small residual
+- a large residual and ordinary leverage
+- both high leverage and a large residual
+
+The [third situation is particularly likely]{.alert} to produce an influential
+observation.
+
+## Cook's distance {style="font-size: 70%;"}
+
+### Overview
+
+One way to measure influence is to compare the fitted values from:
+
+- the model fitted using all observations
+- the model fitted after removing observation $i$
+
+Let $\widehat{y}_j$ be the fitted value using all observations and
+$\widehat{y}_{j(i)}$ the fitted value when observation $i$ is omitted.
+
+Cook's distance is
+
+$$
+D_i =
+\frac{1}{p\widehat{\sigma}^{2}}
+\sum_{j=1}^{n}
+\left(\widehat{y}_{j}-\widehat{y}_{j(i)}\right)^2
+$$
+
+<br>
+
+::: {.callout-tip}
+## It measures the overall change in fitted values when observation $i$ is removed.
+
+A large value indicates that the observation has a substantial effect on the fitted model.
+:::
+
+## Cook's distance {style="font-size: 70%;"}
+
+### Computing
+
+It may seem that we need to fit the model $n$ additional times,
+omitting one observation at a time.
+
+Fortunately, there is a shortcut:
+
+$$
+D_i = \frac{r_i^2h_{ii}}{p(1-h_{ii})}
+$$
+
+where:
+
+- $r_i$ is the internally standardised residual
+- $h_{ii}$ is the leverage
+- $p$ is the number of fitted parameters, including the intercept
+
+[Thus, Cook's distance can be calculated from a single fitted model]{.alert .center}
+
+
+::: {.fragment .fade-up}
+
+```{r}
+#| label: chunk-6
+#| echo: true
+#| eval: false
+
+hatvalues(fit)       # leverage
+rstandard(fit)       # standardised residuals
+cooks.distance(fit)  # Cook's distance
+```
+
+:::
+
+## Cook's distance {style="font-size: 80%;"}
+
+### Interpreting
+
+Cook's distance is best used to rank observations and identify cases for further investigation.
+
+A commonly used screening guideline is
+
+$$
+D_i > \frac{4}{n-p}
+$$
+
+
+::: {.callout-important}
+## This is not a universal cut-off
+
+The size of Cook's distance should be considered alongside:
+
+- the sample size
+- leverage
+- residual size
+- the substantive context
+- how much the conclusions change when the observation is investigated.
+
+:::
+
+## Other influence measures {style="font-size: 80%;"}
+
+Other useful quantities include:
+
+- changes in individual regression coefficients when a case is omitted
+- changes in the residual standard deviation
+- externally standardised residuals residuals
+
+An externally standardised residual uses an estimate of $\sigma$ calculated with observation $i$ omitted:
+
+$$
+t_i =
+\frac{e_i}{\widehat{\sigma}_{(i)}\sqrt{1-h_{ii}}}
+$$
+
+
+::: {.callout-warning}
+## These diagnostics provide complementary information.
+
+No single statistic gives a complete account of an unusual observation.
+:::
+
+---
+
+<br>
+
+
+::: {.callout-note}
+
+## Workflow
+
+1. Examine residuals versus fitted values.
+2. Examine residuals versus each predictor.
+3. Inspect a normal Q–Q plot.
+4. Identify large standardised or studentised residuals.
+5. Examine leverage values.
+6. Examine Cook's distance.
+7. Investigate the observations flagged by these plots and measures.
+8. Reconsider the model specification where appropriate.
+
+:::
+
+# Coding examples {background-color="#40666e"}
