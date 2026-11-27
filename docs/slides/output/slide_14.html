@@ -74,7 +74,11 @@
       }
     }
   });
-});</script><meta charset="utf-8">
+});</script>
+<script src="slide_14_files/libs/quarto-contrib/more-fragments-0.1.0/more-fragments.js"></script>
+<link href="slide_14_files/libs/quarto-contrib/more-fragments-0.1.0/animate.min.css" rel="stylesheet">
+<link href="slide_14_files/libs/quarto-contrib/more-fragments-0.1.0/magic.min.css" rel="stylesheet">
+<link href="slide_14_files/libs/quarto-contrib/more-fragments-0.1.0/more-fragments.css" rel="stylesheet"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.10.18">
 
   <meta name="author" content="Cormac Monaghan">
@@ -303,7 +307,7 @@ Cormac Monaghan
 <h1>Residuals and diagnostic tools</h1>
 
 </section>
-<section id="residuals-and-diagnostic-tools-1" class="slide level2" style="font-size: 75%;">
+<section id="residuals-and-diagnostic-tools-1" class="slide level2" style="font-size: 85%;">
 <h2>Residuals and diagnostic tools</h2>
 <p>Recall the multiple linear regression model</p>
 <p><span class="math display">\[
@@ -311,8 +315,8 @@ Cormac Monaghan
 \]</span></p>
 <p>The usual model assumptions concern the unobserved errors:</p>
 <p><span class="math display">\[
-E(\boldsymbol{\varepsilon})=\mathbf{0}, \qquad
-\operatorname{Var}(\boldsymbol{\varepsilon})=\sigma^2 \; \mathbf{I}_n \qquad
+\mathbb{E}(\boldsymbol{\varepsilon})=\mathbf{0}, \qquad
+\operatorname{Var}(\boldsymbol{\varepsilon})=\sigma^2 \; \mathbf{I}_n, \qquad
 \boldsymbol{\varepsilon}\sim N_n(\mathbf{0},\sigma^2\mathbf{I}_n)
 \]</span></p>
 <p><br></p>
@@ -350,7 +354,7 @@ E(\boldsymbol{\varepsilon})=\mathbf{0}, \qquad
 <li class="fragment">Dependence can lead to standard errors that are too small or too large.</li>
 <li class="fragment">Strong departures from normality can affect small-sample inference.</li>
 </ul>
-<div class="fragment fade-up">
+<div class="fragment rollIn">
 <p>A diagnostic analysis helps us decide whether the fitted model is a reasonable description of the data and whether the usual inferential results can be trusted.</p>
 </div>
 </section>
@@ -397,43 +401,26 @@ e_i=y_i-\widehat{y}_i
 </section>
 <section id="residuals-versus-errors" class="slide level2">
 <h2>Residuals versus errors</h2>
-<p>The main plots used to assess a regression model are</p>
-<div class="callout callout-note callout-titled callout-style-default">
+<p><span class="center">The main plots used to assess a regression model are</span></p>
+<p><br></p>
+<div class="callout callout-warning no-icon callout-style-simple">
 <div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Residuals versus fitted values: looks for non-linearity and changing variance</strong></p>
-</div>
 <div class="callout-content">
-
+<p><span class="alert">Residuals versus fitted values</span>: looks for non-linearity and changing variance</p>
 </div>
 </div>
 </div>
-<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout callout-warning no-icon callout-style-simple">
 <div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Residuals versus each predictor: looks for patterns not captured by the model</strong></p>
-</div>
 <div class="callout-content">
-
+<p><span class="alert">Residuals versus each predictor</span>: looks for patterns not captured by the model</p>
 </div>
 </div>
 </div>
-<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout callout-warning no-icon callout-style-simple">
 <div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Normal Q–Q plot: assesses whether the residual distribution is broadly compatible with normality</strong></p>
-</div>
 <div class="callout-content">
-
+<p><span class="alert">Normal Q–Q plot</span>: assesses whether the residual distribution is broadly compatible with normality</p>
 </div>
 </div>
 </div>
@@ -482,11 +469,12 @@ e_i=y_i-\widehat{y}_i
 <p>In simple linear regression, the relationship between a residual pattern and a model problem can often be relatively clear.</p>
 <p>In <span class="alert">multiple regression, interpretation is harder</span> because:</p>
 <ul>
-<li>predictors may be correlated</li>
-<li>observations may be concentrated in parts of the predictor space</li>
-<li>several model problems may occur together</li>
+<li class="fragment">predictors may be correlated</li>
+<li class="fragment">observations may be concentrated in parts of the predictor space</li>
+<li class="fragment">several model problems may occur together</li>
 </ul>
 <p><br></p>
+<div class="fragment zoomIn">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -500,6 +488,7 @@ e_i=y_i-\widehat{y}_i
 </div>
 </div>
 </div>
+</div>
 </section>
 <section id="standardised-residuals" class="slide level2" style="font-size: 80%;">
 <h2>Standardised residuals</h2>
@@ -508,6 +497,15 @@ e_i=y_i-\widehat{y}_i
 \operatorname{Var}(e_i)=(1-h_{ii})\sigma^2
 \]</span></p>
 <p>A residual from a high-leverage observation can therefore have a smaller variance than a residual from a typical observation.</p>
+
+<img data-src="slide_14_files/figure-revealjs/sup-chunk-1-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section class="slide level2">
+
+<p><br></p>
+
+<img data-src="slide_14_files/figure-revealjs/sup-chunk-2-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="standardised-residuals-1" class="slide level2" style="font-size: 80%;">
+<h2>Standardised residuals</h2>
 <div class="fragment fade-up">
 <p>To put residuals on a <span class="alert">more comparable scale</span>, define</p>
 <p><span class="math display">\[
@@ -761,9 +759,9 @@ D_i = \frac{r_i^2h_{ii}}{p(1-h_{ii})}
 <p><span class="alert center">Thus, Cook’s distance can be calculated from a single fitted model</span></p>
 <div class="fragment fade-up">
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-filename="r"><pre class="sourceCode numberSource r cw-auto number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="" aria-label="1"></a><span class="fu">hatvalues</span>(fit)       <span class="co"># leverage</span></span>
-<span id="cb1-2"><a href="" aria-label="2"></a><span class="fu">rstandard</span>(fit)       <span class="co"># standardised residuals</span></span>
-<span id="cb1-3"><a href="" aria-label="3"></a><span class="fu">cooks.distance</span>(fit)  <span class="co"># Cook's distance</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" data-filename="r"><pre class="sourceCode numberSource r cw-auto number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="" aria-label="1"></a><span class="fu">hatvalues</span>(fit) <span class="co"># leverage</span></span>
+<span id="cb1-2"><a href="" aria-label="2"></a><span class="fu">rstandard</span>(fit) <span class="co"># standardised residuals</span></span>
+<span id="cb1-3"><a href="" aria-label="3"></a><span class="fu">cooks.distance</span>(fit) <span class="co"># Cook's distance</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </section>

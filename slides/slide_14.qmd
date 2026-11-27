@@ -3,6 +3,7 @@ title: Diagnostic methods
 subtitle: ST303 - Linear Models
 filters:
   - code-window
+  - more-fragments
 ---
 
 ```{r}
@@ -47,7 +48,7 @@ theme_st303 <- function() {
 
 # Residuals and diagnostic tools {background-color="#40666e"}
 
-## Residuals and diagnostic tools {style="font-size: 75%;"}
+## Residuals and diagnostic tools {style="font-size: 85%;"}
 
 Recall the multiple linear regression model
 
@@ -58,8 +59,8 @@ $$
 The usual model assumptions concern the unobserved errors:
 
 $$
-E(\boldsymbol{\varepsilon})=\mathbf{0}, \qquad
-\operatorname{Var}(\boldsymbol{\varepsilon})=\sigma^2 \; \mathbf{I}_n \qquad
+\mathbb{E}(\boldsymbol{\varepsilon})=\mathbf{0}, \qquad
+\operatorname{Var}(\boldsymbol{\varepsilon})=\sigma^2 \; \mathbf{I}_n, \qquad
 \boldsymbol{\varepsilon}\sim N_n(\mathbf{0},\sigma^2\mathbf{I}_n)
 $$
 
@@ -107,7 +108,7 @@ For example:
 
 :::
 
-::: {.fragment .fade-up}
+::: {.fragment .rollIn}
 A diagnostic analysis helps us decide whether the fitted model is a reasonable
 description of the data and whether the usual inferential results can be trusted.
 :::
@@ -161,16 +162,18 @@ Each observation contributes to the fitted model, and this affects the size and 
 
 ## Residuals versus errors
 
-The main plots used to assess a regression model are
+[The main plots used to assess a regression model are]{.center}
 
-::: {.callout-note}
-## Residuals versus fitted values: looks for non-linearity and changing variance
+<br>
+
+::: {.callout-warning appearance="minimal"}
+[Residuals versus fitted values]{.alert}: looks for non-linearity and changing variance
 :::
-::: {.callout-note}
-## Residuals versus each predictor: looks for patterns not captured by the model
+::: {.callout-warning appearance="minimal"}
+[Residuals versus each predictor]{.alert}: looks for patterns not captured by the model
 :::
-::: {.callout-note}
-## Normal Q–Q plot: assesses whether the residual distribution is broadly compatible with normality
+::: {.callout-warning appearance="minimal"}
+[Normal Q–Q plot]{.alert}: assesses whether the residual distribution is broadly compatible with normality
 :::
 
 <br>
@@ -278,15 +281,19 @@ and a model problem can often be relatively clear.
 
 In [multiple regression, interpretation is harder]{.alert} because:
 
+:::{.incremental}
 - predictors may be correlated
 - observations may be concentrated in parts of the predictor space
 - several model problems may occur together
-
+:::
 <br>
 
+
+:::: {.fragment .zoomIn}
 ::: {.callout-tip}
 ## Use the full set of diagnostic plots rather than relying on one plot
 :::
+::::
 
 ## Standardised residuals {style="font-size: 80%;"}
 
@@ -299,6 +306,40 @@ $$
 A residual from a high-leverage observation can therefore have a
 smaller variance than a residual from a typical observation.
 
+```{r}
+#| label: sup-chunk-1
+
+tibble(
+  leverage = runif(1000, 0, 0.95),
+  residuals = rnorm(1000, mean = 0, sd = sqrt(1 - leverage))
+) |>
+  ggplot(aes(x = leverage, y = residuals)) +
+  geom_point(alpha = 0.35) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(x = expression("Leverage (" * h[i * i] * ")"), y = "Residual") +
+  theme_minimal()
+```
+
+---
+
+<br>
+
+```{r}
+#| label: sup-chunk-2
+
+tibble(
+  x = runif(1000, 0, 1),
+  y = 0.5 + 0.9 * x + rnorm(1000, 0, 0.25)
+) |>
+  ggplot(aes(x = x, y = y)) +
+  geom_point(alpha = 0.35, size = 0.8) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Predictor", y = "Response") +
+  theme_minimal()
+```
+
+
+## Standardised residuals {style="font-size: 80%;"}
 
 :::: {.fragment .fade-up}
 To put residuals on a [more comparable scale]{.alert}, define
@@ -561,9 +602,9 @@ where:
 #| echo: true
 #| eval: false
 
-hatvalues(fit)       # leverage
-rstandard(fit)       # standardised residuals
-cooks.distance(fit)  # Cook's distance
+hatvalues(fit) # leverage
+rstandard(fit) # standardised residuals
+cooks.distance(fit) # Cook's distance
 ```
 
 :::

@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="slide_15_files/libs/clipboard/clipboard.min.js"></script>
+<script src="slide_15_files/libs/quarto-html/tabby.min.js"></script>
+<script src="slide_15_files/libs/quarto-html/popper.min.js"></script>
+<script src="slide_15_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="slide_15_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="slide_15_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="slide_15_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="slide_15_files/libs/quarto-contrib/code-window-0.1.0/style.css" rel="stylesheet">
+<script>document.addEventListener("DOMContentLoaded",function(){
+  var DEFAULT_COLLAPSE=null;
+  document.querySelectorAll("pre.cw-auto").forEach(function(pre){
+    var fn=pre.closest("[data-filename]");
+    if(!fn)return;
+    var name=fn.getAttribute("data-filename");
+    if(!name)return;
+    var scaffold=pre.closest(".code-copy-outer-scaffold")||pre.closest(".sourceCode");
+    if(!scaffold)return;
+    var w=document.createElement("div");
+    w.className="code-with-filename code-window-auto";
+    var tb=document.createElement("div");
+    tb.className="code-with-filename-file";
+    var tp=document.createElement("pre");
+    var ts=document.createElement("strong");
+    ts.textContent=name;
+    tp.appendChild(ts);tb.appendChild(tp);
+    scaffold.parentNode.insertBefore(w,scaffold);
+    w.appendChild(tb);w.appendChild(scaffold);
+    pre.classList.remove("cw-auto");
+  });
+  function findMarkerSource(el){
+    return el.querySelector('pre[class*="cw-style-"],pre[class*="cw-collapse-"],pre[data-code-window-lines-label]')
+      ||el.querySelector('[class*="cw-style-"],[class*="cw-collapse-"],[data-code-window-lines-label]');
+  }
+  document.querySelectorAll(".code-with-filename").forEach(function(el){
+    var marker=findMarkerSource(el);
+    var styleApplied=/\bcode-window-(macos|windows|default)\b/.test(el.className);
+    if(!styleApplied){
+      var sm=marker&&marker.className.match(/cw-style-(\w+)/);
+      if(sm){el.classList.add("code-window-"+sm[1]);marker.classList.remove(sm[0]);}
+      else{el.classList.add("code-window-macos");}
+    }
+    var collapse=null;
+    if(marker){
+      var cm=marker.className.match(/cw-collapse-(open|closed)/);
+      if(cm){collapse=cm[1];marker.classList.remove(cm[0]);}
+    }
+    if(collapse===null&&DEFAULT_COLLAPSE){collapse=DEFAULT_COLLAPSE;}
+    if(marker&&marker.hasAttribute("data-code-window-lines-label")){
+      var spec=marker.getAttribute("data-code-window-lines-label");
+      marker.removeAttribute("data-code-window-lines-label");
+      var titleBar=el.querySelector(".code-with-filename-file");
+      if(titleBar&&!titleBar.querySelector(".code-with-filename-lines")){
+        var chip=document.createElement("span");
+        chip.className="code-with-filename-lines";
+        chip.textContent="L"+spec;
+        titleBar.appendChild(chip);
+      }
+    }
+    if(collapse&&!el.classList.contains("code-window-collapsible")){
+      var titleBar=el.querySelector(".code-with-filename-file");
+      if(titleBar){
+        var details=document.createElement("details");
+        details.className=el.className+" code-window-collapsible";
+        if(collapse==="open"){details.open=true;}
+        var summaryEl=document.createElement("summary");
+        summaryEl.className="code-with-filename-file";
+        while(titleBar.firstChild){summaryEl.appendChild(titleBar.firstChild);}
+        titleBar.parentNode.removeChild(titleBar);
+        details.appendChild(summaryEl);
+        while(el.firstChild){details.appendChild(el.firstChild);}
+        el.parentNode.replaceChild(details,el);
+      }
+    }
+  });
+});</script>
+<script src="slide_15_files/libs/quarto-contrib/more-fragments-0.1.0/more-fragments.js"></script>
+<link href="slide_15_files/libs/quarto-contrib/more-fragments-0.1.0/animate.min.css" rel="stylesheet">
+<link href="slide_15_files/libs/quarto-contrib/more-fragments-0.1.0/magic.min.css" rel="stylesheet">
+<link href="slide_15_files/libs/quarto-contrib/more-fragments-0.1.0/more-fragments.css" rel="stylesheet"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.10.18">
+
+  <meta name="author" content="Cormac Monaghan">
+  <title>Weighted least squares</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="slide_15_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="slide_15_files/libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="slide_15_files/libs/revealjs/dist/theme/quarto-0bd1083bdf8466ccf673bdd24851817d.css">
+  <link href="slide_15_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="slide_15_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="slide_15_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="slide_15_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+<script src="mathjax-config.js"></script>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Weighted least squares</h1>
+  <p class="subtitle">ST303 - Linear Models</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Cormac Monaghan
+</div>
+<div class="quarto-title-author-email">
+<a href="mailto:cormac.monaghan@mu.ie">cormac.monaghan@mu.ie</a>
+</div>
+        <p class="quarto-title-affiliation">
+            Department of Mathematics and Statistics, Maynooth University
+          </p>
+    </div>
+</div>
+
+</section>
+<section id="todays-plan" class="slide level2" style="font-size: 80%;">
+<h2>Today’s plan</h2>
+<ul>
+<li>Explain the difference between homoscedasticity and heteroscedasticity.</li>
+<li>Explain why heteroscedasticity can be problematic for ordinary least squares.</li>
+<li>Derive the weighted least squares criterion and estimator.</li>
+<li>Interpret the role of weights in regression.</li>
+<li>Explain how weights can be specified or estimated.</li>
+<li>Fit and interpret a weighted least squares model in R.</li>
+<li>Assess the adequacy of a weighted regression model using standardised residuals.</li>
+</ul>
+</section>
+<section id="weighted-least-squares" class="slide level2">
+<h2>Weighted least squares</h2>
+<p>In previous lectures, we considered the assumptions underlying ordinary least squares regression and how to assess them using diagnostic plots.</p>
+<p>One important assumption is that the <span class="alert">errors have constant variance</span>.</p>
+<p><br></p>
+<div class="fragment jackInTheBox">
+<p><span class="center">But what happens when this assumption is violated?</span></p>
+</div>
+<p><br></p>
+<div class="fragment jackInTheBox">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>We will introduce weighted least squares</strong></p>
+</div>
+<div class="callout-content">
+<p>An alternative estimation method that allows observations to have different error variances.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<section id="heteroscedasticity" class="title-slide slide level1 center" data-background-color="#40666e">
+<h1>Heteroscedasticity</h1>
+
+</section>
+<section id="recap-ordinary-least-squares" class="slide level2" style="font-size: 90%;">
+<h2>Recap: Ordinary least squares</h2>
+<p><span class="math display">\[
+\mathbf{Y}=\mathbf{X}\boldsymbol{\beta} +\boldsymbol{\varepsilon}
+\]</span></p>
+<p>One of the standard assumptions of linear regression is that the errors have constant variance:</p>
+<p><span class="math display">\[
+\boxed{\operatorname{Var}(\epsilon_i)=\sigma^2}
+\]</span></p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>This assumption is called homoscedasticity</strong></p>
+</div>
+<div class="callout-content">
+<p>In other words, the variability around the regression mean is assumed to be the same for all observations.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="homoscedasticity" class="slide level2" style="font-size: 90%;">
+<h2>Homoscedasticity</h2>
+<p>Imagine fitting a regression model to predict household expenditure from household income.</p>
+<p>Under homoscedasticity, we assume that the variability in expenditure around the regression line is <span class="alert">approximately the same for low-income and high-income households</span>.</p>
+<p><span class="math display">\[
+E(Y_i\mid X_i) = \beta_0+\beta_1X_i
+\]</span></p>
+<div class="fragment bounce">
+<p><span class="center">The variance around this line remains constant as income changes</span></p>
+</div>
+</section>
+<section class="slide level2">
+
+<p><br></p>
+
+<img data-src="slide_15_files/figure-revealjs/chunk-1-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="heteroscedasticity-1" class="slide level2" style="font-size: 80%;">
+<h2>Heteroscedasticity</h2>
+<p>Now suppose that the variability around the regression line changes with the predictor.</p>
+<ul>
+<li>Higher-income households may have more flexibility in their spending decisions.</li>
+<li>Some may spend substantially more than expected, while others may save a large proportion of their income.</li>
+<li>Consequently, expenditure may become more variable as income increases.</li>
+</ul>
+<p><span class="alert center">This is called heteroscedasticity</span></p>
+<p><br></p>
+<div class="fragment zoomIn">
+<div class="columns">
+<div class="column">
+<h3 class="center" id="homoscedasticity-1">Homoscedasticity</h3>
+<p><span class="math display">\[
+\boxed{\operatorname{Var}(\epsilon_i)=\sigma^2}
+\]</span></p>
+</div><div class="column">
+<h3 class="center" id="heteroscedasticity-2">Heteroscedasticity</h3>
+<p><span class="math display">\[
+\boxed{\operatorname{Var}(\epsilon_i)=\sigma_i^2}
+\]</span></p>
+</div></div>
+</div>
+</section>
+<section class="slide level2">
+
+<p><br></p>
+
+<img data-src="slide_15_files/figure-revealjs/chunk-2-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
+<section id="recognising-heteroscedasticity" class="slide level2" style="font-size: 90%;">
+<h2>Recognising heteroscedasticity</h2>
+<p>A common way to identify heteroscedasticity is through a <span class="alert">residual-versus-fitted plot</span>.</p>
+<p>Under constant variance, we expect the residuals to have approximately equal vertical spread across the range of fitted values.</p>
+<p>Under heteroscedasticity, the spread may increase or decrease.</p>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Common patterns include:</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>A funnel or megaphone shape.</li>
+<li>Increasing residual variability with fitted values.</li>
+<li>Decreasing residual variability with fitted values.</li>
+<li>Different levels of variability across groups.</li>
+</ul>
+<p>The important feature is that the variance changes systematically.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="why-might-heteroscedasticity-occur" class="slide level2" style="font-size: 80%;">
+<h2>Why might heteroscedasticity occur?</h2>
+<p>Heteroscedasticity is common in real-world data.</p>
+<p>For example:</p>
+<ul>
+<li>Household expenditure may become more variable as income increases.</li>
+<li>Larger companies may have greater variation in annual profits.</li>
+<li>Measurements of larger objects may have greater measurement error.</li>
+<li>Average outcomes based on different sample sizes may have different precision.</li>
+</ul>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The key idea is that some observations may be measured or predicted more precisely than others</strong></p>
+</div>
+<div class="callout-content">
+
+</div>
+</div>
+</div>
+</section>
+<section id="why-is-heteroscedasticity-a-problem" class="slide level2" style="font-size: 70%;">
+<h2>Why is heteroscedasticity a problem?</h2>
+<p>OLS estimates the regression coefficients by minimising the residual sum of squares:</p>
+<p><span class="math display">\[
+\operatorname{SSE} =\sum_{i=1}^{n}(y_i-\widehat y_i)^2
+\]</span></p>
+<p><span class="alert center">Every squared residual contributes equally to this criterion</span></p>
+<div class="fragment jackInTheBox">
+<p>However, if some observations have much greater variability than others, <strong>treating every observation equally may not be the most efficient approach</strong>.</p>
+<p>Under the standard linear model assumptions, OLS is the best linear unbiased estimator.</p>
+<p>When the error variances differ, OLS is generally no longer the most efficient linear unbiased estimator.</p>
+<div class="callout callout-caution callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Furthermore, the usual OLS standard errors may be incorrect</strong></p>
+</div>
+<div class="callout-content">
+<p>This can affect:</p>
+<ul>
+<li>Affects confidence intervals</li>
+<li>Affects hypothesis tests</li>
+<li>Affects p-values</li>
+<li>Affects measures of uncertainty around regression coefficients</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="what-can-we-do-about-heteroscedasticity" class="slide level2">
+<h2>What can we do about heteroscedasticity?</h2>
+<p>There are several possible approaches.</p>
+<ol type="1">
+<li><strong>Transform the response:</strong> for example, use a logarithmic transformation.</li>
+<li><strong>Use robust standard errors:</strong> retain the OLS estimates but adjust the estimated uncertainty.</li>
+<li><strong>Use weighted least squares:</strong> give observations different weights according to their estimated precision.</li>
+<li><strong>Model the variance directly:</strong> specify a model for how the variance changes across observations.</li>
+</ol>
+<p><span class="fragment tada alert">In this lecture, we focus on weighted least squares</span></p>
+</section></section>
+<section>
+<section id="weighted-least-squares-1" class="title-slide slide level1 center" data-background-color="#40666e">
+<h1>Weighted least squares</h1>
+
+</section>
+<section id="weighted-least-squares-2" class="slide level2" style="font-size: 80%;">
+<h2>Weighted least squares</h2>
+<h3 id="overview">Overview</h3>
+<p><br></p>
+<div class="columns">
+<div class="column">
+<h3 class="center" id="ordinary-least-squares">Ordinary least squares</h3>
+<p><span class="math display">\[
+\operatorname{SSE}= \sum_{i=1}^{n} (y_i-\mathbf{x}_i^T\boldsymbol{\beta})^2
+\]</span></p>
+</div><div class="column">
+<h3 class="center" id="weighted-least-squares-3">Weighted least squares</h3>
+<p><span class="math display">\[
+\operatorname{WSS} = \sum_{i=1}^{n} w_i(y_i-\mathbf{x}_i^T\boldsymbol{\beta})^2
+\]</span></p>
+<p>where <span class="math inline">\(w_i\)</span> is the weight assigned to observation <span class="math inline">\(i\)</span></p>
+</div></div>
+<p><br></p>
+<div class="callout callout-important no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>The weights determine how much each observation contributes to the estimation of the regression coefficients.</p>
+<ul>
+<li>Large weights give observations greater influence in the fitting criterion.</li>
+<li>Small weights give observations less influence.</li>
+</ul>
+<p>The choice of weights is important.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="weighted-least-squares-4" class="slide level2" style="font-size: 75%;">
+<h2>Weighted least squares</h2>
+<h3 id="why-use-weights">Why use weights</h3>
+<p>Suppose two observations have the same residual:</p>
+<p><span class="math display">\[
+e_1=5,\qquad e_2=5
+\]</span></p>
+<p><span class="center">However, suppose the first observation is measured much more precisely than the second</span></p>
+<p><span class="center">It may be more appropriate to penalise the residual for the second observation more heavily</span></p>
+<div class="fragment zoomIn">
+<p><span class="math display">\[
+w_1=4,\qquad w_2=0.25
+\]</span></p>
+<p>Their contributions to the weighted sum of squares are:</p>
+<div class="columns">
+<div class="column">
+<p><span class="math display">\[
+w_1 \; e_1^2=4(25)=100
+\]</span></p>
+</div><div class="column">
+<p><span class="math display">\[
+w_2 \; e_2^2=0.25(25)=6.25
+\]</span></p>
+</div></div>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The first observation contributes much more to the fitting criterion</strong></p>
+</div>
+<div class="callout-content">
+<p>This is because it has been assigned a higher weight</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="weighted-least-squares-5" class="slide level2" style="font-size: 85%;">
+<h2>Weighted least squares</h2>
+<h3 id="why-use-weights-1">Why use weights</h3>
+<p>In weighted least squares, weights are typically chosen to be inversely proportional to the error variance:</p>
+<p><span class="math display">\[
+\boxed{w_i\propto\frac{1}{\sigma_i^2}}
+\]</span></p>
+<div class="fragment fadeInLeft">
+<p>Therefore:</p>
+<ul>
+<li>Observations with <span class="alert">small error variance</span> receive <span class="alert">large weights</span>.</li>
+<li>Observations with <span class="alert">large error variance</span> receive <span class="alert">small weights</span>.</li>
+</ul>
+<p>In other words, observations that provide more precise information about the regression relationship receive greater weight.</p>
+<p><span class="center alert">This is the central idea behind weighted least squares.</span></p>
+</div>
+</section>
+<section id="weighted-least-squares-6" class="slide level2" style="font-size: 70%;">
+<h2>Weighted least squares</h2>
+<h3 id="an-example">An example</h3>
+<p>Consider a regression model for household consumption <span class="math inline">\(Y\)</span> and household income <span class="math inline">\(X\)</span></p>
+<p><span class="math display">\[
+Y_i = \beta_0 + \beta_1X_i + \varepsilon_i
+\]</span></p>
+<p><span class="center">Imagine two households</span></p>
+<div class="columns">
+<div class="column">
+<div class="fragment fadeInLeft">
+<h3 class="center" id="household-a-low-income"><strong>Household A: low income</strong></h3>
+<ul>
+<li>Has relatively little discretionary income</li>
+<li>Spending is largely determined by necessities</li>
+<li>Consumption may be relatively predictable</li>
+</ul>
+</div>
+</div><div class="column">
+<div class="fragment fadeInRight">
+<h3 class="center" id="household-b-high-income"><strong>Household B: high income</strong></h3>
+<ul>
+<li>Has more discretionary income</li>
+<li>Spending may vary considerably depending on preferences and circumstances</li>
+<li>Consumption may be less predictable</li>
+</ul>
+</div>
+</div></div>
+<div class="fragment fadeIn">
+<p>The variability of consumption may therefore increase with income.</p>
+<p>A weighted least squares model could account for this by assigning lower weights to observations with greater error variance.</p>
+</div>
+</section>
+<section id="weighted-least-squares-7" class="slide level2">
+<h2>Weighted least squares</h2>
+<h3 id="the-variance-structure">The variance structure</h3>
+<p>Suppose the regression errors are independent but do not have constant variance.</p>
+<p>Instead, we will assume:</p>
+<p><span class="math display">\[
+\operatorname{Var}(\epsilon_i)
+=\frac{\sigma^2}{w_i}
+\]</span></p>
+<p>where <span class="math inline">\(w_i &gt; 0\)</span> is known.</p>
+<p>The weights describe the relative precision of the observations.</p>
+<p>A larger <span class="math inline">\(w_i\)</span> corresponds to a smaller error variance.</p>
+</section>
+<section id="weighted-least-squares-8" class="slide level2" style="font-size: 80%;">
+<h2>Weighted least squares</h2>
+<h3 id="transforming-the-regression-model">Transforming the regression model</h3>
+<p>Starting with:</p>
+<p><span class="math display">\[
+Y_i = \mathbf{x}_i^T \boldsymbol{\beta} + \varepsilon_i \quad \longrightarrow \quad
+\text{multiple by } \sqrt{w_i} \quad \longrightarrow \quad
+\sqrt{w_i}Y_i = \sqrt{w_i}\mathbf{x}_i^T\boldsymbol{\beta} + \sqrt{w_i}\varepsilon_i
+\]</span></p>
+<p>The transformed error has variance:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{Var}(\sqrt{w_i}\varepsilon_i)
+&amp;=w_i\operatorname{Var}(\varepsilon_i)\\
+&amp;=w_i\frac{\sigma^2}{w_i}\\
+&amp;=\sigma^2
+\end{aligned}
+\]</span></p>
+<p><span class="center alert">Therefore, the transformed errors have constant variance</span></p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>We transform the model so that the errors have a common variance</strong></p>
+</div>
+<div class="callout-content">
+
+</div>
+</div>
+</div>
+</section>
+<section id="weighted-least-squares-9" class="slide level2" style="font-size: 80%;">
+<h2>Weighted least squares</h2>
+<h3 id="the-weighted-least-squares-criterion">The weighted least squares criterion</h3>
+<p>Since the transformed errors have common variance, we can apply ordinary least squares to the transformed model.</p>
+<p>The resulting criterion is:</p>
+<p><span class="math display">\[
+\boxed{\sum_{i=1}^{n} w_i(y_i-\mathbf{x}_i^T\boldsymbol{\beta})^2}
+\]</span></p>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>Thus, weighted least squares estimates the coefficients by minimising the weighted residual sum of squares.</p>
+<p>Notice that the weights are applied to the <strong>squared residuals</strong>.</p>
+<p>They are not simply multiplied by the observed response values.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="weighted-least-squares-10" class="slide level2" style="font-size: 90%;">
+<h2>Weighted least squares</h2>
+<h3 id="the-weighted-least-squares-estimator">The weighted least squares estimator</h3>
+<p>In matrix notation, we can define the diagonal weight matrix as:</p>
+<p><span class="math display">\[
+\mathbf{W}
+=
+\begin{pmatrix}
+w_1 &amp; 0 &amp; \cdots &amp; 0\\
+0 &amp; w_2 &amp; \cdots &amp; 0\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+0 &amp; 0 &amp; \cdots &amp; w_n
+\end{pmatrix}
+\]</span></p>
+<p><br></p>
+<div class="fragment zoomInUp">
+<div class="columns">
+<div class="column">
+<h3 class="center" id="ordinary-least-squares-1"><strong>Ordinary least squares</strong></h3>
+<p><span class="math display">\[
+\boxed{
+  \widehat{\boldsymbol{\beta}} =
+  (\mathbf{X}^T\mathbf{X})^{-1} \mathbf{X}^T\mathbf{Y}
+}
+\]</span></p>
+</div><div class="column">
+<h3 class="center" id="weighted-least-squares-11"><strong>Weighted least squares</strong></h3>
+<p><span class="math display">\[
+\boxed{
+  \widehat{\boldsymbol{\beta}}_w =
+  (\mathbf{X}^T {\color{blue}{\mathbf{W}}} \mathbf{X})^{-1} \mathbf{X}^T {\color{blue}{\mathbf{W}}} \mathbf{Y}
+}
+\]</span></p>
+</div></div>
+</div>
+</section></section>
+<section>
+<section id="choosing-weights" class="title-slide slide level1 center" data-background-color="#40666e">
+<h1>Choosing weights</h1>
+
+</section>
+<section id="how-do-we-choose-weights" class="slide level2">
+<h2>How do we choose weights</h2>
+<p>In some situations, the error variances are known or can be calculated from the study design.</p>
+<p>For example:</p>
+<ul>
+<li>Sample means based on different sample sizes.</li>
+<li>Measurements with known differences in precision.</li>
+<li>Replicated measurements with known measurement variances.</li>
+</ul>
+<p><span class="alert">However, in many applications, the variances are unknown.</span></p>
+<p><strong>We then need to estimate the variance structure from the data</strong>.</p>
+</section>
+<section id="weights-when-variance-increases-with-a-predictor" class="slide level2" style="font-size: 80%;">
+<h2>Weights when variance increases with a predictor</h2>
+<p>Suppose diagnostic plots suggest that the error variance increases with a predictor <span class="math inline">\(X_j\)</span></p>
+<p><br></p>
+<div class="columns">
+<div class="column">
+<h3 class="center" id="we-can-consider"><strong>We can consider</strong></h3>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{Var}(\epsilon_i) &amp;= k \; X_{ij} \\[8pt]
+w_i &amp;\propto \frac{1}{kX_{ij}} \\[8pt]
+w_i &amp;= \frac{1}{X_{ij}}
+\end{aligned}
+\]</span></p>
+</div><div class="column">
+<div class="fragment fadeInRight">
+<h3 class="center" id="alternatively"><strong>Alternatively</strong></h3>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{Var}(\epsilon_i) &amp;= kX_{ij}^2 \\[8pt]
+w_i &amp;\propto \frac{1}{kX^2_{ij}} \\[8pt]
+w_i &amp;= \frac{1}{X_{ij}^2}
+\end{aligned}
+\]</span></p>
+</div>
+</div></div>
+<div class="fragment jackInTheBox">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The weights should be based on the assumed variance structure</strong></p>
+</div>
+<div class="callout-content">
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="choosing-weights-1" class="slide level2" style="font-size: 70%;">
+<h2>Choosing weights</h2>
+<h3 id="the-two-stage-approach">The two stage approach</h3>
+<p><span class="center alert">What if we do not know the variance function?</span></p>
+<p><span class="center alert">One approach is to estimate it from the residuals.</span></p>
+<p><br></p>
+<div class="fragment zoomInDown">
+<div class="columns">
+<div class="column">
+<h3 class="center" id="stage-1"><strong>Stage 1</strong></h3>
+<ul>
+<li>Fit the original regression model using OLS.</li>
+<li>Examine the residual plots to identify how the variance changes.</li>
+</ul>
+</div><div class="column">
+<h3 class="center" id="stage-2"><strong>Stage 2</strong></h3>
+<ul>
+<li>Use the residuals to estimate the variance function, then calculate weights:</li>
+</ul>
+<p><span class="math display">\[
+w_i=\frac{1}{\widehat{\sigma}_i^2}
+\]</span></p>
+<ul>
+<li>The resulting weights can then be used to fit a WLS model.</li>
+</ul>
+</div></div>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>We call this an <strong>estimated-weight approach</strong> because the weights are obtained from the data rather than known in advance.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="choosing-weights-2" class="slide level2" style="font-size: 80%;">
+<h2>Choosing weights</h2>
+<h3 id="estimating-the-variance-function">Estimating the variance function</h3>
+<p><span class="center">Suppose a residual plot shows increasing variability as the fitted values increase.</span></p>
+<p><span class="center alert">We can use the absolute residuals as a rough measure of the changing spread</span></p>
+<p><span class="math display">\[
+|e_i| \approx \sigma_i
+\]</span></p>
+<p>We can regress the absolute residuals on the fitted values or a relevant predictor.</p>
+<p>The fitted values from this auxiliary regression provide estimates of the standard deviation: <span class="math inline">\(\hat{\sigma_i}\)</span></p>
+<p><span class="math display">\[
+\boxed{w_i=\frac{1}{\widehat{\sigma}_i^2}}
+\]</span></p>
+</section>
+<section id="choosing-weights-3" class="slide level2" style="font-size: 80%;">
+<h2>Choosing weights</h2>
+<h3 id="iteratively-reweighted-least-squares">Iteratively reweighted least squares</h3>
+<p><br></p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>The two-stage approach can be repeated</strong></p>
+</div>
+<div class="callout-content">
+<ol type="1">
+<li>Fit an ordinary least squares model</li>
+<li>Estimate the variance function</li>
+<li>Calculate weights</li>
+<li>Fit a weighted model</li>
+<li>Re-estimate the variance function using the updated model</li>
+<li>Update the weights and refit</li>
+</ol>
+<p>This is called <strong>iteratively reweighted least squares</strong>.</p>
+<p>The process can be repeated until the estimates or weights change very little.</p>
+</div>
+</div>
+</div>
+</section></section>
+<section id="coding-example" class="title-slide slide level1 center" data-background-color="#40666e">
+<h1>Coding example</h1>
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="slide_15_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="slide_15_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="slide_15_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="slide_15_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="slide_15_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="slide_15_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="slide_15_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="slide_15_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="slide_15_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="slide_15_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+
+    <script>
+
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+
+      // slide changes (different for each slide format).
+
+      (function () {
+
+        // dispatch for htmlwidgets
+
+        function fireSlideEnter() {
+
+          const event = window.document.createEvent("Event");
+
+          event.initEvent("slideenter", true, true);
+
+          window.document.dispatchEvent(event);
+
+        }
+
+    
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          fireSlideEnter();
+
+    
+
+          // dispatch for shiny
+
+          if (window.jQuery) {
+
+            if (previousSlide) {
+
+              window.jQuery(previousSlide).trigger("hidden");
+
+            }
+
+            if (currentSlide) {
+
+              window.jQuery(currentSlide).trigger("shown");
+
+            }
+
+          }
+
+        }
+
+    
+
+        // hookup for slidy
+
+        if (window.w3c_slidy) {
+
+          window.w3c_slidy.add_observer(function (slide_num) {
+
+            // slide_num starts at position 1
+
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+
+          });
+
+        }
+
+    
+
+      })();
+
+    </script>
+
+    
+
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
